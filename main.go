@@ -6,6 +6,7 @@ import (
 	"final-project/routes"
 )
 
+// function main
 func main() {
 	config.InitDB()
 	e := routes.New()
