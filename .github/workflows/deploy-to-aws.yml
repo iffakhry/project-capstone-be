@@ -1,0 +1,25 @@
+name: Deploy to EC2
+on: 
+  push:
+    branches:
+      - main
+jobs:
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Deploy to EC2 using SSH
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.KEY }}
+        port: ${{ secrets.PORT }}
+        script: |
+          cd /home/ubuntu/app
+          git pull origin main
+          docker stop final-project
+          docker rm final-project
+          docker build -t finalproject-app:latest .
+          docker run -d -p 80:8080 --name final-project finalproject-app:latest
