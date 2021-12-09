@@ -11,12 +11,14 @@ type Users struct {
 	Token    string
 }
 
+// struktur get user *
 type GetUser struct {
 	ID    uint
 	Name  string
 	Email string
 }
 
+// struktur get login user
 type GetLoginUser struct {
 	ID    uint
 	Name  string
