@@ -2,7 +2,7 @@ name: Deploy to EC2
 on: 
   push:
     branches:
-      - main
+      - serve2
 jobs:
 
   build:
@@ -12,14 +12,14 @@ jobs:
     - name: Deploy to EC2 using SSH
       uses: appleboy/ssh-action@master
       with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
-        key: ${{ secrets.KEY }}
-        port: ${{ secrets.PORT }}
+        host: ${{ secrets.HOST2 }}
+        username: ${{ secrets.USERNAME2 }}
+        key: ${{ secrets.KEY2 }}
+        port: ${{ secrets.PORT2 }}
         script: |
           cd /home/ubuntu/app
           git pull origin main
           docker stop final-project
           docker rm final-project
           docker build -t final-app:latest .
-          docker run -d -p 80:8080 --name final-project final-app:latest
+          docker run -d -e "CONNECTION_DB=admin:admin123@tcp(final-project.cxhaug23hp7t.ap-southeast-1.rds.amazonaws.com:3306)/db_final_project?charset=utf8&parseTime=True&loc=Local" -p 80:8080 --name final-project final-app:latest
