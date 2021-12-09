@@ -18,7 +18,7 @@ jobs:
         port: ${{ secrets.PORT2 }}
         script: |
           cd /home/ubuntu/app
-          git pull origin main
+          git pull origin serve2
           docker stop finalProject
           docker rm finalProject
           docker build -t final-app:latest .
