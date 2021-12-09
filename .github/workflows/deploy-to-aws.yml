@@ -19,7 +19,7 @@ jobs:
         script: |
           cd /home/ubuntu/app
           git pull origin serve2
-          docker stop finalProject
-          docker rm finalProject
+          docker stop FinalProject
+          docker rm FinalProject
           docker build -t final-app:latest .
-          docker run -d -e "CONNECTION_DB=admin:admin123@tcp(final-project.cxhaug23hp7t.ap-southeast-1.rds.amazonaws.com:3306)/db_final_project?charset=utf8&parseTime=True&loc=Local" -p 80:8080 --name finalProject final-app:latest
+          docker run -d -e "CONNECTION_DB=admin:admin123@tcp(final-project.cxhaug23hp7t.ap-southeast-1.rds.amazonaws.com:3306)/db_final_project?charset=utf8&parseTime=True&loc=Local" -p 80:8080 --name FinalProject final-app:latest
