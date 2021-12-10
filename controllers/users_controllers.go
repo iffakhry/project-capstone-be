@@ -54,7 +54,7 @@ func CreateUserControllers(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Name"))
 	}
-	err = v.Var(new_user.Email, "required, email")
+	err = v.Var(new_user.Email, "required,email")
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Email"))
 	}
@@ -127,7 +127,7 @@ func UpdateUserControllers(c echo.Context) error {
 	if er != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Name"))
 	}
-	er = v.Var(users.Email, "required, email")
+	er = v.Var(users.Email, "required,email")
 	if er != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Email"))
 	}
