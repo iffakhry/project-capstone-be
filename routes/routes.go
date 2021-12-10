@@ -9,6 +9,7 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
+// function routes
 func New() *echo.Echo {
 
 	e := echo.New()

@@ -14,13 +14,6 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-// struktur data untuk validasi user
-type ValidatorUser struct {
-	Name     string `validate:"required"`
-	Email    string `validate:"required,email"`
-	Password string `validate:"required"`
-}
-
 // controller untuk menampilkan seluruh data users
 func GetAllUsersControllers(c echo.Context) error {
 	users, err := databases.GetAllUsers()
@@ -57,12 +50,22 @@ func CreateUserControllers(c echo.Context) error {
 	c.Bind(&new_user)
 
 	v := validator.New()
-	validasi_user := ValidatorUser{
-		Name:     new_user.Name,
-		Email:    new_user.Email,
-		Password: new_user.Password,
+	err := v.Var(new_user.Name, "required")
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Name"))
 	}
-	err := v.Struct(validasi_user)
+	err = v.Var(new_user.Email, "required, email")
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Email"))
+	}
+	err = v.Var(new_user.Password, "required")
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Password"))
+	}
+	err = v.Var(new_user.Phone, "required,e164")
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Telephone Number"))
+	}
 	if err == nil {
 		new_user.Password, _ = helper.HashPassword(new_user.Password) // generate plan password menjadi hash
 		_, err = databases.CreateUser(&new_user)
@@ -117,17 +120,27 @@ func UpdateUserControllers(c echo.Context) error {
 	c.Bind(&users)
 
 	v := validator.New()
-	validasi_user := ValidatorUser{
-		Name:     users.Name,
-		Email:    users.Email,
-		Password: users.Password,
+	er := v.Var(users.Name, "required")
+	if er != nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Name"))
 	}
-	e := v.Struct(validasi_user)
-	if e == nil {
+	er = v.Var(users.Email, "required, email")
+	if er != nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Email"))
+	}
+	er = v.Var(users.Password, "required")
+	if er != nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Password"))
+	}
+	er = v.Var(users.Phone, "required,e164")
+	if er != nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Telephone Number"))
+	}
+	if er == nil {
 		users.Password, _ = helper.HashPassword(users.Password) // generate plan password menjadi hash
-		_, e = databases.UpdateUser(id, &users)
+		_, er = databases.UpdateUser(id, &users)
 	}
-	if e != nil {
+	if er != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Bad Request"))
 	}
 	return c.JSON(http.StatusOK, response.SuccessResponseNonData("Success Operation"))

@@ -8,15 +8,20 @@ type Users struct {
 	Name     string `json:"name" form:"name"`
 	Email    string `gorm:"unique" json:"email" form:"email"`
 	Password string `json:"password" form:"password"`
-	Token    string
+	Phone    string `json:"phone" form:"phone"`
+	// Role     string
+	Token string
 }
 
+// struktur get user *
 type GetUser struct {
 	ID    uint
 	Name  string
 	Email string
+	Phone string
 }
 
+// struktur get login user
 type GetLoginUser struct {
 	ID    uint
 	Name  string
