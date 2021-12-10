@@ -9,8 +9,8 @@ type Users struct {
 	Email    string `gorm:"unique" json:"email" form:"email"`
 	Password string `json:"password" form:"password"`
 	Phone    string `gorm:"unique" json:"phone" form:"phone"`
-	// Role     string
-	Token string
+	Role     string
+	Token    string
 }
 
 // struktur get user *
@@ -26,4 +26,5 @@ type GetLoginUser struct {
 	ID    uint
 	Name  string
 	Token string
+	Role  string
 }

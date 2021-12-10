@@ -83,6 +83,7 @@ func LoginUser(plan_pass string, user *models.Users) (interface{}, error) {
 	get_login.ID = user.ID
 	get_login.Name = user.Name
 	get_login.Token = user.Token
+	get_login.Role = user.Role
 	if err = config.DB.Save(user).Error; err != nil {
 		return nil, err
 	}

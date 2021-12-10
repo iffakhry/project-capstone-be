@@ -69,11 +69,15 @@ func CreateUserControllers(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Telephone Number"))
 	}
+	if new_user.Email == "admin@admin.com" {
+		new_user.Role = "admin"
+	} else {
+		new_user.Role = "user"
+	}
 	if err == nil {
 		new_user.Password, _ = helper.HashPassword(new_user.Password) // generate plan password menjadi hash
 		_, err = databases.CreateUser(&new_user)
 	}
-	// check, _ := databases.GetUserByEmail(new_user.Email)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Bad Request"))
 	}
@@ -141,6 +145,11 @@ func UpdateUserControllers(c echo.Context) error {
 	er = v.Var(users.Phone, "required,e164")
 	if er != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Telephone Number"))
+	}
+	if users.Email == "admin@admin.com" {
+		users.Role = "admin"
+	} else {
+		users.Role = "user"
 	}
 	if er == nil {
 		users.Password, _ = helper.HashPassword(users.Password) // generate plan password menjadi hash
