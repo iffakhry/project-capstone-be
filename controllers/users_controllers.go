@@ -62,6 +62,9 @@ func CreateUserControllers(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Password"))
 	}
+	if len(new_user.Password) < 6 {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Password must consist of 6 characters or more"))
+	}
 	err = v.Var(new_user.Phone, "required,e164")
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Telephone Number"))
@@ -131,6 +134,9 @@ func UpdateUserControllers(c echo.Context) error {
 	er = v.Var(users.Password, "required")
 	if er != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Password"))
+	}
+	if len(users.Password) < 6 {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Password must consist of 6 characters or more"))
 	}
 	er = v.Var(users.Phone, "required,e164")
 	if er != nil {
