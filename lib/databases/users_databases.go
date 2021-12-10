@@ -33,6 +33,7 @@ func GetUserById(id int) (interface{}, error) {
 	get_user.ID = users.ID
 	get_user.Name = users.Name
 	get_user.Email = users.Email
+	get_user.Phone = users.Phone
 	return get_user, nil
 }
 
