@@ -19,7 +19,7 @@ func New() *echo.Echo {
 	}))
 
 	// route users tanpa JWT
-	e.POST("/users", controllers.CreateUserControllers)
+	e.POST("/signup", controllers.CreateUserControllers)
 	e.POST("/login", controllers.LoginUserControllers)
 	e.GET("/users/:id", controllers.GetUserControllers)
 	e.GET("/users", controllers.GetAllUsersControllers)

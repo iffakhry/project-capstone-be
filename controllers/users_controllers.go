@@ -30,7 +30,7 @@ func GetAllUsersControllers(c echo.Context) error {
 func GetUserControllers(c echo.Context) error {
 	id := c.Param("id")
 	conv_id, err := strconv.Atoi(id)
-	log.Println("id", conv_id)
+	// log.Println("id", conv_id)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Id"))
 	}
@@ -54,7 +54,7 @@ func CreateUserControllers(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Name"))
 	}
-	err = v.Var(new_user.Email, "required, email")
+	err = v.Var(new_user.Email, "required,email")
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Email"))
 	}
@@ -62,15 +62,22 @@ func CreateUserControllers(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Password"))
 	}
+	if len(new_user.Password) < 6 {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Password must consist of 6 characters or more"))
+	}
 	err = v.Var(new_user.Phone, "required,e164")
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Telephone Number"))
+	}
+	if new_user.Email == "admin@admin.com" {
+		new_user.Role = "admin"
+	} else {
+		new_user.Role = "user"
 	}
 	if err == nil {
 		new_user.Password, _ = helper.HashPassword(new_user.Password) // generate plan password menjadi hash
 		_, err = databases.CreateUser(&new_user)
 	}
-	// check, _ := databases.GetUserByEmail(new_user.Email)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Bad Request"))
 	}
@@ -90,8 +97,8 @@ func DeleteUserControllers(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
 	}
 
-	logged := middlewares.ExtractTokenId(c) // check token
-	if logged != id {
+	logged, role := middlewares.ExtractTokenId(c) // check token
+	if logged != id && role != "admin" {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
 	}
 	databases.DeleteUser(id)
@@ -112,8 +119,8 @@ func UpdateUserControllers(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
 	}
 
-	logged := middlewares.ExtractTokenId(c) // check token
-	if logged != id {
+	logged, role := middlewares.ExtractTokenId(c) // check token
+	if logged != id && role != "admin" {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
 	}
 	users := models.Users{}
@@ -124,7 +131,7 @@ func UpdateUserControllers(c echo.Context) error {
 	if er != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Name"))
 	}
-	er = v.Var(users.Email, "required, email")
+	er = v.Var(users.Email, "required,email")
 	if er != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Email"))
 	}
@@ -132,9 +139,17 @@ func UpdateUserControllers(c echo.Context) error {
 	if er != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Password"))
 	}
+	if len(users.Password) < 6 {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Password must consist of 6 characters or more"))
+	}
 	er = v.Var(users.Phone, "required,e164")
 	if er != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Telephone Number"))
+	}
+	if users.Email == "admin@admin.com" {
+		users.Role = "admin"
+	} else {
+		users.Role = "customer"
 	}
 	if er == nil {
 		users.Password, _ = helper.HashPassword(users.Password) // generate plan password menjadi hash
