@@ -30,7 +30,7 @@ func GetAllUsersControllers(c echo.Context) error {
 func GetUserControllers(c echo.Context) error {
 	id := c.Param("id")
 	conv_id, err := strconv.Atoi(id)
-	log.Println("id", conv_id)
+	// log.Println("id", conv_id)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Id"))
 	}
@@ -97,8 +97,8 @@ func DeleteUserControllers(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
 	}
 
-	logged := middlewares.ExtractTokenId(c) // check token
-	if logged != id {
+	logged, role := middlewares.ExtractTokenId(c) // check token
+	if logged != id || role != "admin" {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
 	}
 	databases.DeleteUser(id)
@@ -119,8 +119,8 @@ func UpdateUserControllers(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
 	}
 
-	logged := middlewares.ExtractTokenId(c) // check token
-	if logged != id {
+	logged, role := middlewares.ExtractTokenId(c) // check token
+	if logged != id || role != "admin" {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
 	}
 	users := models.Users{}
@@ -149,7 +149,7 @@ func UpdateUserControllers(c echo.Context) error {
 	if users.Email == "admin@admin.com" {
 		users.Role = "admin"
 	} else {
-		users.Role = "user"
+		users.Role = "customer"
 	}
 	if er == nil {
 		users.Password, _ = helper.HashPassword(users.Password) // generate plan password menjadi hash

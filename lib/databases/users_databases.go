@@ -76,7 +76,7 @@ func LoginUser(plan_pass string, user *models.Users) (interface{}, error) {
 	if match != nil {
 		return nil, match
 	}
-	user.Token, err = middlewares.CreateToken(int(user.ID)) // generate token
+	user.Token, err = middlewares.CreateToken(int(user.ID), user.Role) // generate token
 	if err != nil {
 		return nil, err
 	}
