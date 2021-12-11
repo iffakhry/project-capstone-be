@@ -2,7 +2,7 @@ package models
 
 import "gorm.io/gorm"
 
-type GrupProduct struct {
+type GroupProduct struct {
 	gorm.Model
 	UsersID              uint
 	ProductID            uint `json:"id_product" form:"id_product"`

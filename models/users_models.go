@@ -5,12 +5,13 @@ import "gorm.io/gorm"
 // struktur data users
 type Users struct {
 	gorm.Model
-	Name     string `json:"name" form:"name"`
-	Email    string `gorm:"unique" json:"email" form:"email"`
-	Password string `json:"password" form:"password"`
-	Phone    string `gorm:"unique" json:"phone" form:"phone"`
-	Role     string
-	Token    string
+	Name         string `json:"name" form:"name"`
+	Email        string `gorm:"unique" json:"email" form:"email"`
+	Password     string `json:"password" form:"password"`
+	Phone        string `gorm:"unique" json:"phone" form:"phone"`
+	Role         string
+	Token        string
+	GroupProduct []GroupProduct
 }
 
 // struktur get user *
