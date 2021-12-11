@@ -44,7 +44,7 @@ func GetUserControllers(c echo.Context) error {
 	return c.JSON(http.StatusOK, response.SuccessResponseData("Success Operation", user))
 }
 
-// controller untuk menambahkan user (registrasi)
+// controller untuk menambahkan user (registrasi) next
 func CreateUserControllers(c echo.Context) error {
 	new_user := models.Users{}
 	c.Bind(&new_user)
