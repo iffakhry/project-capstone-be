@@ -98,7 +98,7 @@ func DeleteUserControllers(c echo.Context) error {
 	}
 
 	logged, role := middlewares.ExtractTokenId(c) // check token
-	if logged != id || role != "admin" {
+	if logged != id && role != "admin" {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
 	}
 	databases.DeleteUser(id)
@@ -120,7 +120,7 @@ func UpdateUserControllers(c echo.Context) error {
 	}
 
 	logged, role := middlewares.ExtractTokenId(c) // check token
-	if logged != id || role != "admin" {
+	if logged != id && role != "admin" {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
 	}
 	users := models.Users{}
