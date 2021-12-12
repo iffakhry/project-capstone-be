@@ -11,6 +11,7 @@ type Users struct {
 	Phone    string `gorm:"unique" json:"phone" form:"phone"`
 	Role     string
 	Token    string
+	Products []Products
 }
 
 // struktur get user *
