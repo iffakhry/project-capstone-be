@@ -79,7 +79,7 @@ func CreateUserControllers(c echo.Context) error {
 		_, err = databases.CreateUser(&new_user)
 	}
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Bad Request"))
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Email or Telephone Number Already Exist"))
 	}
 	return c.JSON(http.StatusOK, response.SuccessResponseNonData("Success Operation"))
 }
@@ -156,7 +156,7 @@ func UpdateUserControllers(c echo.Context) error {
 		_, er = databases.UpdateUser(id, &users)
 	}
 	if er != nil {
-		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Bad Request"))
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Email or Telephone Number Already Exist"))
 	}
 	return c.JSON(http.StatusOK, response.SuccessResponseNonData("Success Operation"))
 }
