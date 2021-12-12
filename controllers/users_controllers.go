@@ -44,7 +44,7 @@ func GetUserControllers(c echo.Context) error {
 	return c.JSON(http.StatusOK, response.SuccessResponseData("Success Operation", user))
 }
 
-// controller untuk menambahkan user (registrasi)
+// controller untuk menambahkan user (registrasi) next
 func CreateUserControllers(c echo.Context) error {
 	new_user := models.Users{}
 	c.Bind(&new_user)
@@ -72,14 +72,14 @@ func CreateUserControllers(c echo.Context) error {
 	if new_user.Email == "admin@admin.com" {
 		new_user.Role = "admin"
 	} else {
-		new_user.Role = "user"
+		new_user.Role = "customer"
 	}
 	if err == nil {
 		new_user.Password, _ = helper.HashPassword(new_user.Password) // generate plan password menjadi hash
 		_, err = databases.CreateUser(&new_user)
 	}
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Bad Request"))
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Email or Telephone Number Already Exist"))
 	}
 	return c.JSON(http.StatusOK, response.SuccessResponseNonData("Success Operation"))
 }
@@ -156,7 +156,7 @@ func UpdateUserControllers(c echo.Context) error {
 		_, er = databases.UpdateUser(id, &users)
 	}
 	if er != nil {
-		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Bad Request"))
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Email or Telephone Number Already Exist"))
 	}
 	return c.JSON(http.StatusOK, response.SuccessResponseNonData("Success Operation"))
 }
