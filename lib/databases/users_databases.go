@@ -80,6 +80,7 @@ func LoginUser(plan_pass string, user *models.Users) (interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
+	// restruktur respons
 	get_login.ID = user.ID
 	get_login.Name = user.Name
 	get_login.Token = user.Token
