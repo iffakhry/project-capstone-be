@@ -112,3 +112,15 @@ func CreateProductControllers(c echo.Context) error {
 	}
 	return c.JSON(http.StatusOK, response.SuccessResponseNonData("Success Operation"))
 }
+
+// controller untuk menampilkan seluruh data product
+func GetAllProductControllers(c echo.Context) error {
+	product, err := databases.GetAllProduct()
+	if product == nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
+	}
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Bad Request"))
+	}
+	return c.JSON(http.StatusOK, response.SuccessResponseData("Success Operation", product))
+}
