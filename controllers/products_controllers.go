@@ -98,8 +98,8 @@ func CreateProductControllers(c echo.Context) error {
 	}
 	err = v.Struct(validasi_product)
 	if err == nil {
-		id_token, role := middlewares.ExtractTokenId(c)
-		if new_product.UsersID == uint(id_token) && role == "admin" {
+		_, role := middlewares.ExtractTokenId(c)
+		if role == "admin" {
 			_, err = databases.CreateProduct(&new_product)
 		} else {
 			return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
