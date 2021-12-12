@@ -11,15 +11,16 @@ type GroupProduct struct {
 	AdminFee             int
 	TotalPrice           int
 	Duration             string
+	Status               string
 }
 
 type GetGroupProduct struct {
 	ID                   uint
-	UsersID              uint
 	ProductID            uint
 	NameGroupProduct     string
 	CapacityGroupProduct int
 	AdminFee             int
 	TotalPrice           int
 	Duration             string
+	Status               string
 }

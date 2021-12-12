@@ -26,7 +26,7 @@ func CreateGroupProductControllers(c echo.Context) error {
 	return c.JSON(http.StatusOK, response.SuccessResponseNonData("Success Operation"))
 }
 
-func GetGroupProductController(c echo.Context) error {
+func GetGroupProductControllers(c echo.Context) error {
 	id := c.Param("id")
 	id_group_product, err := strconv.Atoi(id)
 	// log.Println("id", id_group_product)
@@ -50,6 +50,23 @@ func GetAllGroupProductControllers(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
 	}
 	if err != nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Bad Request"))
+	}
+	return c.JSON(http.StatusOK, response.SuccessResponseData("Success Operation", data))
+}
+
+func GetAvailableGroupProductControllers(c echo.Context) error {
+	status := c.Param("status")
+	// id_group_product, err := strconv.Atoi(id)
+	// log.Println("id", id_group_product)
+	if status != "available" {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Param"))
+	}
+	data, e := databases.GetGroupProductByAvailable(status)
+	if data == nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
+	}
+	if e != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Bad Request"))
 	}
 	return c.JSON(http.StatusOK, response.SuccessResponseData("Success Operation", data))
