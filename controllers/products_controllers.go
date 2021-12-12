@@ -7,6 +7,7 @@ import (
 	response "final-project/responses"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"net/url"
 	"strings"
@@ -105,6 +106,7 @@ func CreateProductControllers(c echo.Context) error {
 		}
 	}
 	if err != nil {
+		log.Println("error", err)
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Bad Request"))
 	}
 	return c.JSON(http.StatusOK, response.SuccessResponseNonData("Success Operation"))
