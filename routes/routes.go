@@ -26,6 +26,7 @@ func New() *echo.Echo {
 
 	// route product tanpa JWT
 	e.GET("/products", controllers.GetAllProductControllers)
+	e.GET("/products/:id", controllers.GetProductByIdControllers)
 
 	// group JWT
 	j := e.Group("/jwt")
