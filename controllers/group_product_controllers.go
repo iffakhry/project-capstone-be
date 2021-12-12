@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"final-project/lib/databases"
 	"final-project/middlewares"
 	"final-project/models"
 	response "final-project/responses"
@@ -16,49 +17,40 @@ func CreateGroupProductControllers(c echo.Context) error {
 	c.Bind(&new_group)
 
 	id_user, _ := middlewares.ExtractTokenId(c)
+	new_group.UsersID = uint(id_user)
 
-	new_group.AdminFee = 6500
-	new_group.CapacityGroupProduct = 4
-	new_group.Duration = "1-12-2021"
-	new_group.TotalPrice = new_group.AdminFee + 45000
-	new_group.NameGroupProduct = "Group Product " + strconv.Itoa(int(new_group.ID))
-
-	if id_user == 1 {
-
+	_, er := databases.CreateGroupProduct(&new_group)
+	if er != nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Bad Request"))
 	}
-
-	// v := validator.New()
-	// err := v.Var(new_group.Name, "required")
-	// if err != nil {
-	// 	return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Name"))
-	// }
-	// err = v.Var(new_group.Email, "required,email")
-	// if err != nil {
-	// 	return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Email"))
-	// }
-	// err = v.Var(new_group.Password, "required")
-	// if err != nil {
-	// 	return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Password"))
-	// }
-	// if len(new_group.Password) < 6 {
-	// 	return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Password must consist of 6 characters or more"))
-	// }
-	// err = v.Var(new_group.Phone, "required,e164")
-	// if err != nil {
-	// 	return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Telephone Number"))
-	// }
-	// if new_group.Email == "admin@admin.com" {
-	// 	new_group.Role = "admin"
-	// } else {
-	// 	new_group.Role = "user"
-	// }
-
-	// if err == nil {
-	// 	new_group.Password, _ = helper.HashPassword(new_group.Password) // generate plan password menjadi hash
-	// 	_, err = databases.CreateUser(&new_group)
-	// }
-	// if err != nil {
-	// 	return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Bad Request"))
-	// }
 	return c.JSON(http.StatusOK, response.SuccessResponseNonData("Success Operation"))
+}
+
+func GetGroupProductController(c echo.Context) error {
+	id := c.Param("id")
+	id_group_product, err := strconv.Atoi(id)
+	// log.Println("id", id_group_product)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Id"))
+	}
+	data, e := databases.GetGroupProductById(id_group_product)
+	if data == nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
+	}
+	if e != nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Bad Request"))
+	}
+	return c.JSON(http.StatusOK, response.SuccessResponseData("Success Operation", data))
+}
+
+// controller untuk menampilkan seluruh data users
+func GetAllGroupProductControllers(c echo.Context) error {
+	data, _, err := databases.GetAllGroupProduct()
+	if data == nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
+	}
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Bad Request"))
+	}
+	return c.JSON(http.StatusOK, response.SuccessResponseData("Success Operation", data))
 }
