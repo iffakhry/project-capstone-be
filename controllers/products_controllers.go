@@ -7,7 +7,6 @@ import (
 	response "final-project/responses"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"net/url"
 	"strings"
@@ -89,14 +88,15 @@ func CreateProductControllers(c echo.Context) error {
 	}
 
 	v := validator.New()
-	validasi_homestay := ValidatorProduct{
+	validasi_product := ValidatorProduct{
 		Name_Product:   new_product.Name_Product,
 		Price:          new_product.Price,
 		Detail_Product: new_product.Detail_Product,
+		Limit:          new_product.Limit,
 		Photo:          new_product.Photo,
 		Url:            new_product.Url,
 	}
-	err = v.Struct(validasi_homestay)
+	err = v.Struct(validasi_product)
 	if err == nil {
 		id_token, role := middlewares.ExtractTokenId(c)
 		if new_product.UsersID == uint(id_token) && role == "admin" {
@@ -106,7 +106,7 @@ func CreateProductControllers(c echo.Context) error {
 		}
 	}
 	if err != nil {
-		log.Println("error", err)
+		// log.Println("error", err)
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Bad Request"))
 	}
 	return c.JSON(http.StatusOK, response.SuccessResponseNonData("Success Operation"))
