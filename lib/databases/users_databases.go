@@ -90,3 +90,13 @@ func LoginUser(plan_pass string, user *models.Users) (interface{}, error) {
 	}
 	return get_login, nil
 }
+
+// function database untuk mendapatkan role by id
+// func GetRoleById(id int) (string, error) {
+// 	var get_role_by_id_user models.Users
+// 	query := config.DB.Table("users").Select("*").Where("users.deleted_at IS NULL AND users.id = ?", id).Find(&get_role_by_id_user)
+// 	if query.Error != nil || query.RowsAffected == 0 {
+// 		return "", query.Error
+// 	}
+// 	return get_role_by_id_user.Role, nil
+// }

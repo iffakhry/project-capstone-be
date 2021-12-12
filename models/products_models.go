@@ -10,4 +10,14 @@ type Products struct {
 	Price          int    `json:"price" form:"price"`
 	Photo          string `json:"photo" form:"photo"`
 	Url            string
+	UsersID        uint
+}
+
+type GetProduct struct {
+	gorm.Model
+	Name_Product   string
+	Detail_Product string
+	Price          string
+	Photo          string
+	Url            string
 }
