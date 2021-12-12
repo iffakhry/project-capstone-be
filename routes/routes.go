@@ -33,6 +33,6 @@ func New() *echo.Echo {
 	j.DELETE("/users/:id", controllers.DeleteUserControllers)
 
 	// route product dengan JWT
-	j.PUT("/products", controllers.CreateProductControllers)
+	j.POST("/products", controllers.CreateProductControllers)
 	return e
 }

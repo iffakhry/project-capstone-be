@@ -25,6 +25,7 @@ type ValidatorProduct struct {
 	Name_Product   string `validate:"required"`
 	Detail_Product string `validate:"required"`
 	Price          int    `validate:"required,gt=0"`
+	Limit          int    `validate:"required,gt=0"`
 	Photo          string `validate:"required"`
 	Url            string `validate:"required"`
 }
