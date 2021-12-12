@@ -72,7 +72,7 @@ func CreateUserControllers(c echo.Context) error {
 	if new_user.Email == "admin@admin.com" {
 		new_user.Role = "admin"
 	} else {
-		new_user.Role = "user"
+		new_user.Role = "customer"
 	}
 	if err == nil {
 		new_user.Password, _ = helper.HashPassword(new_user.Password) // generate plan password menjadi hash
