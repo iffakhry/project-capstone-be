@@ -7,6 +7,7 @@ import (
 	response "final-project/responses"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"net/url"
 	"strings"
@@ -99,11 +100,11 @@ func CreateProductControllers(c echo.Context) error {
 	err = v.Struct(validasi_product)
 	if err == nil {
 		_, role := middlewares.ExtractTokenId(c)
-		if role == "admin" {
-			_, err = databases.CreateProduct(&new_product)
-		} else {
+		if role != "admin" {
 			return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
 		}
+		log.Println("role", role)
+		_, err = databases.CreateProduct(&new_product)
 	}
 	if err != nil {
 		// log.Println("error", err)
