@@ -6,10 +6,12 @@ import (
 
 type Order struct {
 	gorm.Model
-	UsersID        uint
-	GroupProductID uint `json:"id_group_product" form:"id_group_product"`
-	Price_Order    int
-	Credit         CreditCard
+	UsersID          uint
+	GroupProductID   uint
+	PriceOrder       int
+	NameProduct      string
+	DetailCredential string
+	Credit           CreditCard
 }
 
 type CreditCard struct {
