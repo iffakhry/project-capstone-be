@@ -33,3 +33,17 @@ func GetProductById(id int) (interface{}, error) {
 	}
 	return get_product_by_id, nil
 }
+
+// function database untuk memperbarui data product by id
+func UpdateProduct(id int, update_product *models.Products) (interface{}, error) {
+	var product models.Products
+	query_select := config.DB.Find(&product, id)
+	if query_select.Error != nil || query_select.RowsAffected == 0 {
+		return 0, query_select.Error
+	}
+	query_update := config.DB.Model(&product).Updates(update_product)
+	if query_update.Error != nil {
+		return nil, query_update.Error
+	}
+	return product, nil
+}
