@@ -23,7 +23,7 @@ func GetAllUsers() (interface{}, error) {
 // function database untuk menampilkan user by id
 func GetUserById(id int) (interface{}, error) {
 	var get_user_by_id models.GetUser
-	query := config.DB.Table("users").Select("*").Where("products.deleted_at IS NULL AND products.id = ?", id).Find(&get_user_by_id)
+	query := config.DB.Table("users").Select("*").Where("users.deleted_at IS NULL AND users.id = ?", id).Find(&get_user_by_id)
 	if query.Error != nil || query.RowsAffected == 0 {
 		return nil, query.Error
 	}
