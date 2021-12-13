@@ -12,12 +12,13 @@ type Products struct {
 	Photo          string `json:"photo" form:"photo"`
 	Url            string
 	UsersID        uint
+	GroupProduct   []GroupProduct
 }
 
 type GetProduct struct {
 	Name_Product   string
 	Detail_Product string
-	Price          string
+	Price          int
 	Limit          int
 	Photo          string
 	Url            string

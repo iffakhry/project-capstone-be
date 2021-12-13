@@ -5,22 +5,26 @@ import "gorm.io/gorm"
 type GroupProduct struct {
 	gorm.Model
 	UsersID              uint
-	ProductID            uint `json:"id_product" form:"id_product"`
+	ProductsID           uint `json:"products_id" form:"products_id"`
 	NameGroupProduct     string
 	CapacityGroupProduct int
 	AdminFee             int
 	TotalPrice           int
-	Duration             string
+	DurationGroup        string
 	Status               string
 }
 
 type GetGroupProduct struct {
 	ID                   uint
-	ProductID            uint
+	ProductsID           uint
 	NameGroupProduct     string
+	Limit                int
 	CapacityGroupProduct int
+	Price                int
 	AdminFee             int
 	TotalPrice           int
-	Duration             string
+	DurationGroup        string
+	Name_Product         string
 	Status               string
+	Url                  string
 }
