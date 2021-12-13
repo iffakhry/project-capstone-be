@@ -47,3 +47,15 @@ func UpdateProduct(id int, update_product *models.Products) (interface{}, error)
 	}
 	return product, nil
 }
+
+// function database untuk menghapus product by id
+func DeleteProduct(id int) (interface{}, error) {
+	var product models.Products
+	check_product := config.DB.Find(&product, id).RowsAffected
+
+	err := config.DB.Delete(&product).Error
+	if err != nil || check_product > 0 {
+		return nil, err
+	}
+	return product, nil
+}

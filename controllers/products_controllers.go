@@ -142,6 +142,7 @@ func GetProductByIdControllers(c echo.Context) error {
 	return c.JSON(http.StatusOK, response.SuccessResponseData("Success Operation", product))
 }
 
+// controller untuk memperbarui data product by id
 func UpdateProductControllers(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -232,5 +233,23 @@ func UpdateProductControllers(c echo.Context) error {
 		// log.Println("error", err)
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Bad Request"))
 	}
+	return c.JSON(http.StatusOK, response.SuccessResponseNonData("Success Operation"))
+}
+
+// controller untuk menghapus data product by id
+func DeleteProductControllers(c echo.Context) error {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Id"))
+	}
+	product, _ := databases.GetProductById(id)
+	if product == nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
+	}
+	_, role := middlewares.ExtractTokenId(c)
+	if role != "admin" {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
+	}
+	databases.DeleteProduct(id)
 	return c.JSON(http.StatusOK, response.SuccessResponseNonData("Success Operation"))
 }
