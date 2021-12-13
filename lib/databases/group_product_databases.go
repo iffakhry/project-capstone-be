@@ -23,7 +23,7 @@ func CreateGroupProduct(group *models.GroupProduct, id_product uint) (interface{
 		group.CapacityGroupProduct = 1
 		group.AdminFee = fee
 		group.TotalPrice = fee + price
-		group.DurationGroup = duration.Format("01-02-2006")
+		group.DurationGroup = duration.Format("02-01-2006")
 		group.Status = "Available"
 
 		if err := config.DB.Create(&group).Error; err != nil {
