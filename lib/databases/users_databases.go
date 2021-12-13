@@ -13,7 +13,7 @@ var user models.Users
 // function database untuk menampilkan seluruh data users
 func GetAllUsers() (interface{}, error) {
 	var users []models.GetUser
-	query := config.DB.Table("users").Select("*").Find(&users)
+	query := config.DB.Table("users").Select("*").Where("users.deleted_at IS NULL").Find(&users)
 	if query.Error != nil || query.RowsAffected == 0 {
 		return nil, query.Error
 	}
@@ -22,19 +22,12 @@ func GetAllUsers() (interface{}, error) {
 
 // function database untuk menampilkan user by id
 func GetUserById(id int) (interface{}, error) {
-	users := models.Users{}
-	var get_user models.GetUser
-
-	err := config.DB.Find(&users, id)
-	rows_affected := config.DB.Find(&users, id).RowsAffected
-	if err.Error != nil || rows_affected < 1 {
-		return nil, err.Error
+	var get_user_by_id models.GetUser
+	query := config.DB.Table("users").Select("*").Where("products.deleted_at IS NULL AND products.id = ?", id).Find(&get_user_by_id)
+	if query.Error != nil || query.RowsAffected == 0 {
+		return nil, query.Error
 	}
-	get_user.ID = users.ID
-	get_user.Name = users.Name
-	get_user.Email = users.Email
-	get_user.Phone = users.Phone
-	return get_user, nil
+	return get_user_by_id, nil
 }
 
 // function database untuk menambahkan user baru (registrasi)

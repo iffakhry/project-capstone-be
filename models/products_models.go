@@ -17,7 +17,7 @@ type Products struct {
 type GetProduct struct {
 	Name_Product   string
 	Detail_Product string
-	Price          string
+	Price          int
 	Limit          int
 	Photo          string
 	Url            string
