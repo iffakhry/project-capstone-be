@@ -39,3 +39,13 @@ func CreateOrder(Order *models.OrderRequest, id_group int) (interface{}, error) 
 	config.DB.Create(&Order.CreditCard)
 	return Create_Res, nil
 }
+
+func GetOrderByIdGroup(id int) (interface{}, error) {
+	order := []models.GetOrder{}
+	// UpdateGroupProductCapacity(id)
+	query := config.DB.Table("orders").Select("users.name,orders.users_id,orders.group_product_id").Joins("join users on orders.users_id = users.id").Where("orders.deleted_at IS NULL AND orders.group_product_id = ? ", id).Find(&order)
+	if query.Error != nil || query.RowsAffected < 1 {
+		return nil, query.Error
+	}
+	return order, nil
+}

@@ -24,6 +24,9 @@ func New() *echo.Echo {
 	e.GET("/users/:id", controllers.GetUserControllers)
 	e.GET("/users", controllers.GetAllUsersControllers)
 
+	//order
+	e.GET("/order/:id", controllers.GetOrderControllers)
+
 	//route group product tanpa JWT
 	e.GET("/products/group", controllers.GetAllGroupProductControllers)
 	e.GET("/products/group/:id", controllers.GetGroupProductControllers)

@@ -32,3 +32,19 @@ func CreateOrderControllers(c echo.Context) error {
 	return c.JSON(http.StatusBadRequest, response.SuccessResponseData("Success Operation", data))
 
 }
+
+func GetOrderControllers(c echo.Context) error {
+	id := c.Param("id")
+	id_group_product, err := strconv.Atoi(id)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Id"))
+	}
+	data, e := databases.GetOrderByIdGroup(id_group_product)
+	if data == nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
+	}
+	if e != nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Bad Request"))
+	}
+	return c.JSON(http.StatusOK, response.SuccessResponseData("Success Operation", data))
+}

@@ -41,6 +41,10 @@ func GetAllGroupProduct() (interface{}, int, error) {
 	if query.Error != nil {
 		return nil, 0, query.Error
 	}
+	for i, _ := range group {
+		user_order, _ := GetOrderByIdGroup(int(group[i].ID))
+		group[i].GetOrder = user_order
+	}
 	return group, len(group), nil
 }
 
@@ -50,6 +54,24 @@ func GetGroupProductById(id int) (interface{}, error) {
 	query := config.DB.Table("group_products").Select(query_join).Joins("join products on group_products.products_id = products.id").Where("group_products.deleted_at IS NULL AND group_products.id = ? ", id).Find(&group)
 	if query.Error != nil || query.RowsAffected < 1 {
 		return nil, query.Error
+	}
+	user_order, _ := GetOrderByIdGroup(int(group.ID))
+	group.GetOrder = user_order
+
+	return group, nil
+}
+
+func GetGroupProductByAvailable(str string) (interface{}, error) {
+	group := []models.GetGroupProduct{}
+	// UpdateGroupProductCapacity(id)\
+	query := config.DB.Table("group_products").Select(query_join).Joins("join products on group_products.products_id = products.id").Where("group_products.deleted_at IS NULL AND group_products.status = ?", str).Find(&group)
+
+	if query.Error != nil || query.RowsAffected < 1 {
+		return nil, query.Error
+	}
+	for i, _ := range group {
+		user_order, _ := GetOrderByIdGroup(int(group[i].ID))
+		group[i].GetOrder = user_order
 	}
 	return group, nil
 }
@@ -70,17 +92,6 @@ func UpdateGroupProductCapacity(id_group_product int) (interface{}, error) {
 	query1 := config.DB.Model(&group).Where("group_products.id = ?", id_group_product).Update("capacity_group_product", capacity)
 	if query1.Error != nil {
 		return nil, query1.Error
-	}
-	return group, nil
-}
-
-func GetGroupProductByAvailable(str string) (interface{}, error) {
-	group := []models.GetGroupProduct{}
-	// UpdateGroupProductCapacity(id)\
-	query := config.DB.Table("group_products").Select(query_join).Joins("join products on group_products.products_id = products.id").Where("group_products.deleted_at IS NULL AND group_products.status = ?", str).Find(&group)
-
-	if query.Error != nil || query.RowsAffected < 1 {
-		return nil, query.Error
 	}
 	return group, nil
 }

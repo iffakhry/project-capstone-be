@@ -28,4 +28,5 @@ type GetGroupProduct struct {
 	Name_Product         string
 	Status               string
 	Url                  string
+	GetOrder             interface{}
 }
