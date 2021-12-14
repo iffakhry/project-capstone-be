@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 
 	validator "github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
@@ -51,7 +52,8 @@ func CreateUserControllers(c echo.Context) error {
 
 	v := validator.New()
 	err := v.Var(new_user.Name, "required,alphanumeric")
-	if err != nil && len(new_user.Name) > 0 && new_user.Name != "" {
+	substr_name := strings.Contains(new_user.Name, " ")
+	if err != nil && substr_name == true {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Name"))
 	}
 	err = v.Var(new_user.Email, "required,email")
