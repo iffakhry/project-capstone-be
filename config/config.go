@@ -33,4 +33,5 @@ func InitDB() {
 func InitMigrate() {
 	DB.AutoMigrate(&models.Users{})
 	DB.AutoMigrate(&models.GroupProduct{})
+	DB.AutoMigrate(&models.Products{})
 }

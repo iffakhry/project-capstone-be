@@ -19,9 +19,12 @@ func CreateGroupProductControllers(c echo.Context) error {
 	id_user, _ := middlewares.ExtractTokenId(c)
 	new_group.UsersID = uint(id_user)
 
-	_, er := databases.CreateGroupProduct(&new_group)
+	d, er := databases.CreateGroupProduct(&new_group, new_group.ProductsID)
 	if er != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Bad Request"))
+	}
+	if d == nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Id Product Not Found"))
 	}
 	return c.JSON(http.StatusOK, response.SuccessResponseNonData("Success Operation"))
 }
@@ -29,7 +32,6 @@ func CreateGroupProductControllers(c echo.Context) error {
 func GetGroupProductControllers(c echo.Context) error {
 	id := c.Param("id")
 	id_group_product, err := strconv.Atoi(id)
-	// log.Println("id", id_group_product)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Id"))
 	}
@@ -57,8 +59,6 @@ func GetAllGroupProductControllers(c echo.Context) error {
 
 func GetAvailableGroupProductControllers(c echo.Context) error {
 	status := c.Param("status")
-	// id_group_product, err := strconv.Atoi(id)
-	// log.Println("id", id_group_product)
 	if status != "available" {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Param"))
 	}
