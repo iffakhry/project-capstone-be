@@ -212,7 +212,7 @@ paths:
           $ref: '#/components/responses/getGroupProductSuccess'
         '400':
           $ref: '#/components/responses/getGroupProductFailed'
-  /products/group/status/available:
+  /products/group/status/{status}:
     get:
       tags:
         - Group Products
@@ -223,7 +223,7 @@ paths:
         '200':
           $ref: '#/components/responses/getAllGroupProductsAvailableSuccess'
         '400':
-          $ref: '#/components/responses/getAllGroupProductsFailed'
+          $ref: '#/components/responses/getAllGroupProductsAvailableFailed'
   /jwt/products/group:
     post:
       tags:
@@ -494,15 +494,15 @@ components:
             Url: 
               type: string
     responseProductWithDataArray:
-      type: array
-      items:
-        type: object
-        properties:
-          Code:
-            type: integer
-          Message:
-            type: string
-          Data:
+      type: object
+      properties:
+        Code:
+          type: integer
+        Message:
+          type: string
+        Data:
+          type: array
+          items:
             type: object
             properties:
               ID:
@@ -548,7 +548,6 @@ components:
               type: integer 
             DurationGroup:
               type: string
-              format: date
             Name_Product: 
               type: string
             Status: 
@@ -585,7 +584,6 @@ components:
                   type: integer 
                 DurationGroup:
                   type: string
-                  format: date
                 Name_Product: 
                   type: string
                 Status: 
@@ -595,35 +593,49 @@ components:
     responseOrderWithData:
       type: object
       properties:
-        ID:
+        Code:
           type: integer
-        UsersID:
-          type: integer
-        GroupProductID:
-          type: integer
-        NameProduct:
+        Message:
           type: string
-        Price_Order:
-          type: integer
-        Credential:
-          type: string
+        Data:
+          type: object
+          properties:
+            ID:
+              type: integer
+            UsersID:
+              type: integer
+            GroupProductID:
+              type: integer
+            NameProduct:
+              type: string
+            Price_Order:
+              type: integer
+            Credential:
+              type: string
     responseOrderWithDataArray:
-      type: array
-      items:
-        type: object
-        properties:
-          ID:
-            type: integer
-          UsersID:
-            type: integer
-          GroupProductID:
-            type: integer
-          NameProduct:
-            type: string
-          Price_Order:
-            type: integer
-          Credential:
-            type: string
+      type: object
+      properties:
+        Code:
+          type: integer
+        Message:
+          type: string
+        Data:
+          type: array 
+          items:
+            type: object
+            properties:
+              ID:
+                type: integer
+              UsersID:
+                type: integer
+              GroupProductID:
+                type: integer
+              NameProduct:
+                type: string
+              Price_Order:
+                type: integer
+              Credential:
+                type: string
     responseNonData: 
       type: object
       properties:
@@ -640,7 +652,7 @@ components:
         type: integer
         example: 1
     availParam:
-      name: available
+      name: status
       in: path
       required: true
       schema:
@@ -1132,6 +1144,19 @@ components:
           schema:
             $ref: '#/components/schemas/responseNonData'
           examples:
+            Data Not Found:
+              $ref: '#/components/examples/dataNotFound'
+            Bad Request:
+              $ref: '#/components/examples/badRequest'
+    getAllGroupProductsAvailableFailed:
+      description: Bad Request Response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/responseNonData'
+          examples:
+            Invalid Param:
+              $ref: '#/components/examples/invalidParam'
             Data Not Found:
               $ref: '#/components/examples/dataNotFound'
             Bad Request:
