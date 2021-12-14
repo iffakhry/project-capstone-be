@@ -16,7 +16,10 @@ func CreateGroupProductControllers(c echo.Context) error {
 	new_group := models.GroupProduct{}
 	c.Bind(&new_group)
 
-	id_user, _ := middlewares.ExtractTokenId(c)
+	id_user, role := middlewares.ExtractTokenId(c)
+	if role == "admin" {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
+	}
 	new_group.UsersID = uint(id_user)
 
 	d, er := databases.CreateGroupProduct(&new_group, new_group.ProductsID)
