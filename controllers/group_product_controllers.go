@@ -14,10 +14,16 @@ import (
 // controller untuk menambahkan user (registrasi)
 func CreateGroupProductControllers(c echo.Context) error {
 	new_group := models.GroupProduct{}
+	id := c.Param("id")
+	id_product, err := strconv.Atoi(id)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Param"))
+	}
 	c.Bind(&new_group)
 
 	id_user, _ := middlewares.ExtractTokenId(c)
 	new_group.UsersID = uint(id_user)
+	new_group.ProductsID = uint(id_product)
 
 	d, er := databases.CreateGroupProduct(&new_group, new_group.ProductsID)
 	if er != nil {

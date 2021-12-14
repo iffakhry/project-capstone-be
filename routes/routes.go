@@ -34,7 +34,8 @@ func New() *echo.Echo {
 	// group JWT
 	j := e.Group("/jwt")
 	j.Use(middleware.JWT([]byte(constants.SECRET_JWT)))
-	j.POST("/products/group", controllers.CreateGroupProductControllers)
+	// j.POST("/products/group", controllers.CreateGroupProductControllers)
+	j.POST("/products/group/:id", controllers.CreateGroupProductControllers)
 
 	// route users dengan JWT
 	j.PUT("/users/:id", controllers.UpdateUserControllers)
