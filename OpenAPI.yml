@@ -348,6 +348,7 @@ components:
         name:
           type: string
           minLength: 1
+          description: only contain alphanumeric and starts not with space
         email:
           type: string
           format: email
