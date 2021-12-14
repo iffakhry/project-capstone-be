@@ -50,7 +50,7 @@ func CreateUserControllers(c echo.Context) error {
 	c.Bind(&new_user)
 
 	v := validator.New()
-	err := v.Var(new_user.Name, "required,alphanumeric,startsnotwith= ")
+	err := v.Var(new_user.Name, "required,alphanumeric,startsnotwith=' '")
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Name"))
 	}
