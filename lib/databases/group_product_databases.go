@@ -93,3 +93,13 @@ func GetDataProduct(id_product int) (name string, price, limit int, er error) {
 	}
 	return get_product_by_id.Name_Product, get_product_by_id.Price, get_product_by_id.Limit, nil
 }
+
+func GetDataGroupProductById(id int) (t_price, limit int, n_group, n_product string, er error) {
+	group := models.GetGroupProduct{}
+	// UpdateGroupProductCapacity(id)
+	query := config.DB.Table("group_products").Select(query_join).Joins("join products on group_products.products_id = products.id").Where("group_products.deleted_at IS NULL AND group_products.id = ? ", id).Find(&group)
+	if query.Error != nil || query.RowsAffected < 1 {
+		return 0, 0, "", "", query.Error
+	}
+	return group.TotalPrice, group.Limit, group.NameGroupProduct, group.Name_Product, nil
+}

@@ -46,5 +46,8 @@ func New() *echo.Echo {
 	j.POST("/products", controllers.CreateProductControllers)
 	j.PUT("/products/:id", controllers.UpdateProductControllers)
 	j.DELETE("/products/:id", controllers.DeleteProductControllers)
+
+	//route order
+	j.POST("/order/:id_group", controllers.CreateOrderControllers)
 	return e
 }

@@ -11,22 +11,22 @@ type Order struct {
 	PriceOrder       int
 	NameProduct      string
 	DetailCredential string
-	Credit           CreditCard
+	CreditCard       CreditCard
 }
 
 type CreditCard struct {
 	OrderID uint
-	Typ     string `json:"typ" form:"typ"`
-	Name    string `json:"name" form:"name"`
-	Number  string `json:"number" form:"number"`
-	Cvv     int    `json:"cvv" form:"cvv"`
-	Month   int    `json:"month" form:"month"`
-	Year    int    `json:"year" form:"year"`
+	Typ     string `json:"typ" `
+	Name    string `json:"name" `
+	Number  string `json:"number" `
+	Cvv     int    `json:"cvv" `
+	Month   int    `json:"month" `
+	Year    int    `json:"year" `
 }
 
 type OrderRequest struct {
-	Order  Order      `json:"order" `
-	Credit CreditCard `json:"credit_card" `
+	Order      Order      `json:"order" `
+	CreditCard CreditCard `json:"credit_card" `
 }
 
 // type GetReserv struct {
