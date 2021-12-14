@@ -1,38 +1,31 @@
 openapi: '3.0.3'
 info:
-  title: 'Project#2 Alta-BE4: Airbnb App'
-  version: '1.1'
-  description: 'OpenAPI for Project Airbnb App'
+  title: 'Final Project Alta: Barengin'
+  version: '1.0'
+  description: 'API Documentation for Barengin'
   contact: 
-    name: Moch. Syahryil Mahendra
-    email: nurilhuda7337@gmail.com
-    url: https://github.com/sahrilmahendra
-servers:
-  - url: https://{environment}.server.test/api/v1
-    description: SwaggerHub API Auto Mocking
-    variables:
-      environment:
-        default: dev
-        enum: [
-          dev,
-          prod
-        ]
+    name: Barengin Official
+    url: https://barengin.site
+    email: sahrilmahendra@gmail.com
 externalDocs: 
-  description: "Repository Github Project#2 Airbnb App"
-  url: https://github.com/sahrilmahendra/project2-airbnb
+  description: "GitHub Repository of Final Project: Barengin"
+  url: https://github.com/project-capstone
+servers:
+  - url: https://barengin.site
+    description: Base URL that will be used for endpoints
 tags:
   - name: Authentication
-    description: Authentication
+    description: Endpoint for verifying who a user is
+  - name: Sign Up
+    description: Endpoint for user registration
   - name: Users
-    description: User control
-  - name: Homestay
-    description: Homestay data management
-  - name: Facility
-    description: Feature of a facility
-  - name: Homestay Facilities
-    description: Feature of a homestay facilities
-  - name: Reservations
-    description: Feature of a homestay reservation
+    description: Endpoint for perform operations on user
+  - name: Products
+    description: Endpoint for perform operations on product
+  - name: Group Products
+    description: Endpoint for perform operations on group product
+  - name: Orders
+    description: Endpoint for perform operations on order
 paths:
 ####################################
 #  AUTHENTICATION
@@ -41,7 +34,7 @@ paths:
     post:
       tags:
         - Authentication
-      summary: Get access to account
+      summary: Get token for access to account
       requestBody:
         $ref: '#/components/requestBodies/requestBodyLogin'
       responses:
@@ -50,13 +43,13 @@ paths:
         '400':
           $ref: '#/components/responses/loginFailed'
 ####################################
-#  USERS
+#  SIGN UP
 ####################################
-  /users:
+  /signup:
     post:
       tags:
-        - Users
-      summary: Create a new account
+        - Sign Up
+      summary: Create a new account for customer
       requestBody:
         $ref: '#/components/requestBodies/requestBodyUser'
       responses:
@@ -64,10 +57,16 @@ paths:
           $ref: '#/components/responses/successOperationNonData'
         '400':
           $ref: '#/components/responses/createUserFailed'
+####################################
+#  USERS
+####################################
+  /users:
     get:
       tags:
         - Users
-      summary: Get all users
+      summary: Get all customer's data for admin
+      #security:
+       # - JWTAuth: []
       responses:
         '200':
           $ref: '#/components/responses/getAllUsersSuccess'
@@ -77,7 +76,9 @@ paths:
     get:
       tags:
         - Users
-      summary: Get user by id
+      summary: Get customer's data by id
+      #security:
+       # - JWTAuth: []
       parameters:
         - $ref: '#/components/parameters/idParam'
       responses:
@@ -85,10 +86,11 @@ paths:
           $ref: '#/components/responses/getUserSuccess'
         '400':
           $ref: '#/components/responses/getUserFailed'
+  /jwt/users/{id}:
     put:
       tags:
         - Users
-      summary: Update user by id
+      summary: Update customer's data by id
       security:
         - JWTAuth: []
       parameters:
@@ -103,7 +105,7 @@ paths:
     delete:
       tags:
         - Users
-      summary: Delete user by id
+      summary: Delete customer's data by id
       security:
         - JWTAuth: []
       parameters:
@@ -113,91 +115,69 @@ paths:
           $ref: '#/components/responses/successOperationNonData'
         '400':
           $ref: '#/components/responses/deleteUserFailed'
- ####################################
- #  HOMESTAY
- ####################################
-  /homestay:
-    post:
-      tags:
-        - Homestay
-      summary: Create a new homestay
-      security:
-        - JWTAuth: []
-      requestBody:
-        $ref: '#/components/requestBodies/requestBodyHomestay'
-      responses:
-        '200':
-          $ref: '#/components/responses/successOperationNonData'
-        '400':
-          $ref: '#/components/responses/createHomestayFailed'
-        '500':
-          $ref: '#/components/responses/HomestayServerFailed'
+####################################
+#  PRODUCTS
+####################################
+  /products:
     get:
       tags:
-      - Homestay
-      summary: Get all homestays
+      - Products
+      summary: Get all products
       responses:
         '200':
-          $ref: '#/components/responses/getManyHomestaysSuccess'
+          $ref: '#/components/responses/getAllProductsSuccess'
         '400':
-          $ref: '#/components/responses/getManyHomestaysFailed'
-  /homestay/address/:id:
+          $ref: '#/components/responses/getAllProductsFailed'
+  /products/{id}:
     get:
       tags:
-        - Homestay
-      summary: Get homestay by address
-      parameters:
-        - $ref: '#/components/parameters/addressParam'
-      responses:
-        '200':
-          $ref: '#/components/responses/getManyHomestaysSuccess'
-        '400':
-          $ref: '#/components/responses/getManyHomestaysFailed'
-  /homestay/mine:
-    get:
-      tags:
-        - Homestay
-      summary: Get homestay belong to user
-      security:
-        - JWTAuth: []
-      responses:
-        '200':
-          $ref: '#/components/responses/getManyHomestaysSuccess'
-        '400':
-          $ref: '#/components/responses/getManyHomestaysFailed'
-  /homestay/{id}:
-    get:
-      tags:
-        - Homestay
-      summary: Get homestay by id
+        - Products
+      summary: Get product by id
       parameters:
         - $ref: '#/components/parameters/idParam'
       responses:
         '200':
-          $ref: '#/components/responses/getHomestaySuccess'
+          $ref: '#/components/responses/getProductSuccess'
         '400':
-          $ref: '#/components/responses/getHomestayFailed'
+          $ref: '#/components/responses/getProductFailed'
+  /jwt/products:
+    post:
+      tags:
+        - Products
+      summary: Create a new product for admin
+      security:
+        - JWTAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/requestBodyProduct'
+      responses:
+        '200':
+          $ref: '#/components/responses/successOperationNonData'
+        '400':
+          $ref: '#/components/responses/createProductFailed'
+        '500':
+          $ref: '#/components/responses/productServerFailed'
+  /jwt/products/{id}:
     put:
       tags:
-        - Homestay
-      summary: Update homestay by id
+        - Products
+      summary: Update product by id for admin
       security:
         - JWTAuth: []
       parameters:
         - $ref: '#/components/parameters/idParam'
       requestBody:
-        $ref: '#/components/requestBodies/requestBodyHomestayUpdate'
+        $ref: '#/components/requestBodies/requestBodyProductUpdate'
       responses:
         '200':
           $ref: '#/components/responses/successOperationNonData'
         '400':
-          $ref: '#/components/responses/updateHomestayFailed'
+          $ref: '#/components/responses/updateProductFailed'
         '500':
-          $ref: '#/components/responses/HomestayServerFailed'
+          $ref: '#/components/responses/productServerFailed'
     delete:
       tags:
-      - Homestay
-      summary: Delete homestay by id
+      - Products
+      summary: Delete product by id for admin
       security:
         - JWTAuth: []
       parameters:
@@ -206,81 +186,136 @@ paths:
         '200':
           $ref: '#/components/responses/successOperationNonData'
         '400':
-          $ref: '#/components/responses/deleteHomestayFailed'
+          $ref: '#/components/responses/deleteProductFailed'
 ####################################
-#  FACILITY
+#  GROUP PRODUCTS
 ####################################
-  /facility:
+  /products/group:
     get:
       tags:
-      - Facility
-      summary: Get all facilities
+        - Group Products
+      summary: Get all Group Products
       responses:
         '200':
-          $ref: '#/components/responses/getAllFacilitiesSuccess'
+          $ref: '#/components/responses/getAllGroupProductsSuccess'
         '400':
-          $ref: '#/components/responses/getAllFacilitiesFailed'
-####################################
-#  HOMESTAY FACILITIES
-####################################
-  /homestay/facilities:
+          $ref: '#/components/responses/getAllGroupProductsFailed'
+  /products/group/{id}:
+    get:
+      tags:
+        - Group Products
+      summary: Get Group Products by id
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      responses:
+        '200':
+          $ref: '#/components/responses/getGroupProductSuccess'
+        '400':
+          $ref: '#/components/responses/getGroupProductFailed'
+  /products/group/status/{status}:
+    get:
+      tags:
+        - Group Products
+      summary: Get All Group Products by available
+      parameters:
+        - $ref: '#/components/parameters/availParam'
+      responses:
+        '200':
+          $ref: '#/components/responses/getAllGroupProductsAvailableSuccess'
+        '400':
+          $ref: '#/components/responses/getAllGroupProductsAvailableFailed'
+  /jwt/products/group:
     post:
       tags:
-      - Homestay Facilities
-      summary: Create a homestay facility
+      - Group Products
+      summary: Create a new group product
       security:
         - JWTAuth: []
       requestBody:
-        $ref: '#/components/requestBodies/requestBodyHomestayFacility'
+        $ref: '#/components/requestBodies/requestBodyGroupProduct'
       responses:
         '200':
           $ref: '#/components/responses/successOperationNonData'
         '400':
-          $ref: '#/components/responses/createHomestayFacilityFailed'
-    get:
+          $ref: '#/components/responses/createGroupProductFailed'
+####################################
+#  ORDERS
+####################################
+  /jwt/orders:
+    post:
       tags:
-        - Homestay Facilities
-      summary: Get all homestay facilities
+      - Orders
+      summary: Create a new order
       security:
         - JWTAuth: []
+      requestBody:
+        $ref: '#/components/requestBodies/requestBodyOrder'
       responses:
         '200':
-          $ref: '#/components/responses/getAllHomestayFacilitiesSuccess'
+          $ref: '#/components/responses/successOperationNonData'
         '400':
-          $ref: '#/components/responses/getAllHomestayFacilitiesFailed'
-  /homestay/facilities/{id}:
+          $ref: '#/components/responses/createOrderFailed'
+  /jwt/orders/users/{id}:
     get:
       tags:
-        - Homestay Facilities
-      summary: Get homestay facilities by id
-      security:
-        - JWTAuth: []
+      - Orders
+      summary: Get all orders by user's id
       parameters:
         - $ref: '#/components/parameters/idParam'
+      security:
+        - JWTAuth: []
       responses:
         '200':
-          $ref: '#/components/responses/getHomestayFacilitySuccess'
+          $ref: '#/components/responses/getAllUserOrdersSuccess'
         '400':
-          $ref: '#/components/responses/getHomestayFacilityFailed'
+          $ref: '#/components/responses/getManyOrdersFailed'
+  /jwt/orders/group/{id}:
+    get:
+      tags:
+        - Orders
+      summary: Get all orders by id_group_product
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      security:
+        - JWTAuth: []
+      responses:
+        '200':
+          $ref: '#/components/responses/getAllGroupOrdersSuccess'
+        '400':
+          $ref: '#/components/responses/getManyOrdersFailed'
+  /jwt/orders/{id}:
+    get:
+      tags:
+        - Orders
+      summary: Get order by id
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      security:
+        - JWTAuth: []
+      responses:
+        '200':
+          $ref: '#/components/responses/getOrderSuccess'
+        '400':
+          $ref: '#/components/responses/getOrderFailed'
     put:
       tags:
-      - Homestay Facilities
-      summary: Update homestay facility by id
+        - Orders
+      summary: Update order by id
       security:
         - JWTAuth: []
       parameters:
         - $ref: '#/components/parameters/idParam'
       requestBody:
-        $ref: '#/components/requestBodies/requestBodyHomestayFacilityUpdate'
+        $ref: '#/components/requestBodies/requestBodyOrderUpdate'
       responses:
         '200':
           $ref: '#/components/responses/successOperationNonData'
         '400':
-          $ref: '#/components/responses/updateHomestayFacilityFailed'      
+          $ref: '#/components/responses/updateOrderFailed'
     delete:
       tags:
-        - Homestay Facilities
-      summary: Delete homestay facility by id
+      - Orders
+      summary: Delete order by id
       security:
         - JWTAuth: []
       parameters:
@@ -289,49 +324,7 @@ paths:
         '200':
           $ref: '#/components/responses/successOperationNonData'
         '400':
-          $ref: '#/components/responses/deleteHomestayFacilityFailed'
-####################################
-#  RESERVATIONS
-####################################
-  /reservations/check:
-    post:
-      tags:
-        - Reservations
-      summary: Check. is homestay available?
-      security:
-        - JWTAuth: []
-      requestBody:
-        $ref: '#/components/requestBodies/requestBodyCheckReservation'
-      responses:
-        '200':
-          $ref: '#/components/responses/checkReservationSuccess'
-        '400':
-          $ref: '#/components/responses/checkReservationFailed'
-  /reservations:
-    post:
-      tags:
-      - Reservations
-      summary: Create a new reservation
-      security:
-        - JWTAuth: []
-      requestBody:
-        $ref: '#/components/requestBodies/requestBodyReservation'
-      responses:
-        '200':
-          $ref: '#/components/responses/successOperationNonData'
-        '400':
-          $ref: '#/components/responses/createReservationFailed'
-    get:
-      tags:
-      - Reservations
-      summary: Get all reservations
-      security:
-        - JWTAuth: []
-      responses:
-        '200':
-          $ref: '#/components/responses/getAllReservationSuccess'
-        '400':
-          $ref: '#/components/responses/getAllReservationFailed'
+          $ref: '#/components/responses/deleteOrderFailed'
 ####################################
 #  COMPONENTS
 ####################################
@@ -342,65 +335,64 @@ components:
       properties:
         email:
           type: string
-          minLength: 1
         password:
           type: string
-          minLength: 1
     requestDataUser:
       type: object
+      required:
+        - name
+        - email
+        - password
+        - phone
       properties:
         name:
           type: string
           minLength: 1
+          description: only contain alphanumeric and starts not with space
         email:
           type: string
-          minLength: 1
+          format: email
+          description: inputted email must be unique
         password:
           type: string
-          minLength: 1
-    requestDataHomestay:
-      type: object
-      properties:
-        name_homestay:
+          minLength: 6
+        phone:
           type: string
+          format: e164
+          description: inputted phone number must be unique
+    requestDataProduct:
+      type: object
+      required:
+        - name_product
+        - detail_product
+        - price
+        - limit
+        - photo
+      properties:
+        name_product:
+          type: string
+          description: "minLength: 1"
+        detail_product:
+          type: string
+          description: "minLength: 1"
         price:
           type: integer
-        description:
+          description: "minimum value: 1"
+        limit:
+          type: integer
+          description: "minimum value: 1"
+        photo:
           type: string
-        address:
-          type: string
-        file:
-          type: string
-        url:
-          type: string
-    requestDataHomestayFacility:
+          format: binary
+          description: "allowed file extension: jpg, png, & jpeg"
+    requestDataGroupProduct:
       type: object
       properties:
-        homestay_id:
+        products_id:
           type: integer
-        facility_id:
-          type: integer
-    requestDataReservationCheck:
+    requestDataOrder:
       type: object
       properties:
-        homestay_id:
-          type: integer
-        start_date:
-          type: string
-        end_date:
-          type: string
-    requestDataReservation:
-      type: object
-      properties:
-        reservation:
-          type: object
-          properties:
-            homestay_id:
-              type: integer
-            start_date:
-              type: string
-            end_date:
-              type: string
         credit_card:
           type: object
           properties:
@@ -416,6 +408,11 @@ components:
               type: integer
             year:
               type: integer
+    requestDataOrderUpdate:
+      type: object
+      properties:
+        credential:
+          type: string
     responseLoginWithData:
       type: object
       properties:
@@ -431,6 +428,8 @@ components:
             Name:
               type: string
             Token:
+              type: string
+            Role: 
               type: string
     responseUserWithData:
       type: object
@@ -448,11 +447,13 @@ components:
               type: string
             Email:
               type: string
+            Phone:
+              type: string
     responseUserWithDataArray:
       type: object
       properties:
         Code:
-          type: integer
+          type: integer  
         Message:
           type: string
         Data:
@@ -466,7 +467,9 @@ components:
                 type: string
               Email:
                 type: string
-    responseHomestayWithData:
+              Phone:
+                type: string    
+    responseProductWithData:
       type: object
       properties:
         Code:
@@ -478,73 +481,117 @@ components:
           properties:
             ID:
               type: integer
-            Name_Homestay:
+            NameProduct:
+              type: string
+            DetailProduct:
               type: string
             Price:
-              type: string 
-            Description:
-              type: string
-            Address: 
-              type: string
-            Latitude:
-              type: number
-            Longitude:
-              type: number
-            UsersID:
               type: integer
-            File:
+            Limit:
+              type: integer
+            Photo:
+              type: string
+              format: binary
+            Url: 
+              type: string
+    responseProductWithDataArray:
+      type: object
+      properties:
+        Code:
+          type: integer
+        Message:
+          type: string
+        Data:
+          type: array
+          items:
+            type: object
+            properties:
+              ID:
+                type: integer
+              NameProduct:
+                type: string
+              DetailProduct:
+                type: string
+              Price:
+                type: integer
+              Limit:
+                type: integer
+              Photo:
+                type: string
+                format: binary
+              Url: 
+                type: string
+    responseGroupProductWithData:
+      type: object
+      properties:
+        Code:
+          type: integer
+        Message:
+          type: string
+        Data:
+          type: object
+          properties:
+            ID:
+              type: integer
+            ProductsID:
+              type: integer
+            NameGroupProduct:
+              type: string
+            Limit:
+              type: integer
+            CapacityGroupProduct:
+              type: integer
+            Price:
+              type: integer
+            AdminFee:
+              type: integer
+            TotalPrice:
+              type: integer 
+            DurationGroup:
+              type: string
+            Name_Product: 
+              type: string
+            Status: 
               type: string
             Url:
               type: string
-    responseHomestayWithDataArray:
-      type: object
-      properties:
-        Code:
-          type: integer
-        Message:
-          type: string
-        Data:
-          type: array
-          items:
-            type: object
-            properties:
-              ID:
-                type: integer
-              Name_Homestay:
-                type: string
-              Price:
-                type: string 
-              Description:
-                type: string
-              Address: 
-                type: string
-              Latitude:
-                type: number
-              Longitude:
-                type: number
-              UsersID:
-                type: integer
-              File:
-                type: string
-              Url:
-                type: string  
-    responseFacilityWithDataArray:
-      type: object
-      properties:
-        Code:
-          type: integer
-        Message:
-          type: string
-        Data:
-          type: array
-          items:
-            type: object
-            properties:
-              ID:
-                type: integer
-              Name_Facility:
-                type: string
-    responseHomestayFacilityWithData:
+    responseGroupProductWithDataArray:
+        type: object
+        properties:
+          Code:
+            type: integer
+          Message:
+            type: string
+          Data:
+            type: array
+            items:
+              type: object
+              properties:
+                ID:
+                  type: integer
+                ProductsID:
+                  type: integer
+                NameGroupProduct:
+                  type: string
+                Limit:
+                  type: integer
+                CapacityGroupProduct:
+                  type: integer
+                Price:
+                  type: integer
+                AdminFee:
+                  type: integer
+                TotalPrice:
+                  type: integer 
+                DurationGroup:
+                  type: string
+                Name_Product: 
+                  type: string
+                Status: 
+                  type: string
+                Url:
+                  type: string  
+    responseOrderWithData:
       type: object
       properties:
         Code:
@@ -556,15 +603,17 @@ components:
           properties:
             ID:
               type: integer
-            HomestayID:
+            UsersID:
               type: integer
-            FacilityID:
+            GroupProductID:
               type: integer
-            Name_Facility:
+            NameProduct:
               type: string
-            Name_Homestay:
+            Price_Order:
+              type: integer
+            Credential:
               type: string
-    responseHomestayFacilityWithDataArray:
+    responseOrderWithDataArray:
       type: object
       properties:
         Code:
@@ -572,46 +621,22 @@ components:
         Message:
           type: string
         Data:
-          type: array
+          type: array 
           items:
             type: object
             properties:
               ID:
                 type: integer
-              HomestayID:
-                type: integer
-              FacilityID:
-                type: integer
-              Name_Facility:
-                type: string
-              Name_Homestay:
-                type: string
-    responseReservationWithDataArray:
-      type: object
-      properties:
-        Code:
-          type: integer
-        Message:
-          type: string
-        Data:
-          type: array
-          items:
-            type: object
-            properties:
               UsersID:
                 type: integer
-              HomestayID:
+              GroupProductID:
                 type: integer
-              Name_Homestay:
+              NameProduct:
                 type: string
-              Start_date:
-                type: string
-              End_date:
-                type: string
-              Price:
+              Price_Order:
                 type: integer
-              Total_harga:
-                type: integer
+              Credential:
+                type: string
     responseNonData: 
       type: object
       properties:
@@ -627,19 +652,19 @@ components:
       schema:
         type: integer
         example: 1
-    addressParam:
-      name: address
+    availParam:
+      name: status
       in: path
       required: true
       schema:
         type: string
-        example: dago
+        example: available
   securitySchemes:
     JWTAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
-      description: "use Token"
+      description: "use Token"  
   requestBodies:
     requestBodyLogin:
       required: true
@@ -650,16 +675,19 @@ components:
           examples:
             user1:
               value:
-                email: supriadi15001@gmail.com
-                password: qwerty
+                email: admin@admin.com
+                password: admin123
             user2:
               value:
-                email: sahrilmahendra@gmail.com
-                password: asdfg
+                email: s@g.sb
+                password: asd!@#1
             user3:
               value:
                 email: nurilhuda7337@gmail.com
-                password: "12345"
+                password: "12345678"
+        multipart/form-data:
+          schema:
+            $ref: '#/components/schemas/requestDataLogin'        
     requestBodyUser:
       required: true
       content:
@@ -671,17 +699,23 @@ components:
               value:
                 name: Nuril Huda
                 email: nurilhuda7337@gmail.com
-                password: qwerty
+                password: "12345678"
+                phone: "+6281234567890"
             newUser2:
               value:
                 name: Supriadi
-                email: supriadi15001@gmail.com
-                password: qwerty
+                email: s@g.sb
+                password: asd!@#12
+                phone: "+67712345"
             newUser3:
               value:
                 name: Sahril Mahendra
                 email: sahrilmahendra@gmail.com
-                password: qwerty
+                password: qwertyui
+                phone: "+62899999999999"
+        multipart/form-data:
+          schema:
+            $ref: '#/components/schemas/requestDataUser'
     requestBodyUserUpdate:
       required: true
       content:
@@ -691,116 +725,93 @@ components:
           examples:
             newData1:
               value:
-                name: Sahril Real
-                email: sahrilasli@gmail.com
-                password: rahasia
-            newData2:
-              value:
-                name: Nuriel Noah
-                email: nurielnoah@gmail.com
-                password: saudaranyaarielnoah
-            newData3:
-              value:
-                name: New Supriadi
-                email: supriadinew@gmail.com
+                name: Supriadi Baru
+                email: new.s@yahoo.co.id
                 password: newpass
-    requestBodyHomestay:
+                phone: "+628966066096"
+        multipart/form-data:
+          schema:
+            $ref: '#/components/schemas/requestDataUser'
+    requestBodyProduct:
+      required: true
+      content:
+        multipart/form-data:
+          schema:
+            $ref: '#/components/schemas/requestDataProduct'
+    requestBodyProductUpdate:
+      required: true
+      content:
+        multipart/form-data:
+          schema:
+            $ref: '#/components/schemas/requestDataProduct'
+    requestBodyGroupProduct:
       required: true
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/requestDataHomestay'
+            $ref: '#/components/schemas/requestDataGroupProduct'
           examples:
-            homestay1:
+            group1:
               value:
-                name_homestay: Rumah Jendela
-                price: 1300000
-                description: We serve the best our place for your satisfaction
-                address: Dago Atas, Bandung
-                file: homestay-try-upload-file-2021-12-05T07:19:15.jpeg
-                url: https://storage.googleapis.com/sahril-bucket/homestay-try-upload-file-2021-12-05T07:19:15.jpeg
-    requestBodyHomestayUpdate:
-      required: true
-      content:
-        application/json:
+                products_id: 2
+            group2:
+              value:
+                products_id: 3
+        multipart/form-data:
           schema:
-            $ref: '#/components/schemas/requestDataHomestay'
-          examples:
-            homestay1:
-              value:
-                name_homestay: Rumah Jendela Update
-                price: 1500000
-                description: We improve our place for your satisfaction
-                address: Dago, Bandung
-                file: homestay-try2-upload-file-2021-12-05T07:19:15.jpeg
-                url: https://storage.googleapis.com/sahril-bucket/homestay-try-upload-file-2021-12-05T07:19:15.jpeg
-    requestBodyHomestayFacility:
-      required: true
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/requestDataHomestayFacility'
-          examples:
-            newHometayFacility:
-              value:
-                homestay_id: 1
-                facility_id: 1
-    requestBodyHomestayFacilityUpdate:
-      required: true
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/requestDataHomestayFacility'
-          examples:
-            newDataHometayFacility:
-              value:
-                homestay_id: 2
-                facility_id: 3
-    requestBodyCheckReservation:
+            $ref: '#/components/schemas/requestDataGroupProduct'
+    requestBodyOrder: 
       required: true
       content:
         application/json:
           schema:  
-            $ref: '#/components/schemas/requestDataReservationCheck'
+            $ref: '#/components/schemas/requestDataOrder'
           example:
-            homestay_id: 1
-            start_date: "2021-11-30"
-            end_date: "2021-12-01"
-    requestBodyReservation: 
-      required: true
-      content:
-        application/json:
-          schema:  
-            $ref: '#/components/schemas/requestDataReservation'
-          example:
-            reservation:
-              homestay_id: 1
-              start_date: "2021-11-30"
-              end_date: "2021-12-01"
             credit_card:
-                typ: Master Card
-                name: Supriadi
-                number: 1111-1111-1111-1111
-                cvv: 111
-                month: 12
-                year: 21
+              typ: Visa
+              name: Supriadi
+              number: 1234-1234-1234-1234
+              cvv: 234
+              month: 12
+              year: 21
+    requestBodyOrderUpdate: 
+      required: true
+      content:
+        application/json:
+          schema:  
+            $ref: '#/components/schemas/requestDataOrderUpdate'
+          example:
+            credential: "email: subs.netflix@mail.com, password: qwertyui"
   responses:
     loginSuccess:
-      description: Login Success
+      description: Success Response Data
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/responseLoginWithData'
-          example:
-            Code: 200
-            Message: Login Success
-            Data: {
-              ID: 1,
-              Name: Supriadi,
-              Token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOjE2MzgxOTUwMDksInVzZXJJZCI6MX0.0gso_gffYqaDGmCTqYClvhaNZZdbe7FbV7hJ02lOpoQ
-            }
+          examples:
+            Admin:
+              value:
+                Code: 200
+                Message: Login Success
+                Data: {
+                  ID: 1,
+                  Name: Admin,
+                  Token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.emV2MzgxOeyJhdXRob3JpTUwMDksInVzZXJJZCI6MX0kIjp0cnVlLCJleHAiOjE.aDGmCTqYbV7hJ02lOpoQ0gso_gffYqClvhaNZZdbe7F,
+                  Role: admin
+                }
+            Customer:
+              value:
+                Code: 200
+                Message: Login Success
+                Data: {
+                  ID: 3,
+                  Name: Supriadi,
+                  Token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOjE2MzgxOTUwMDksInVzZXJJZCI6MX0.0gso_gffYqaDGmCTqYClvhaNZZdbe7FbV7hJ02lOpoQ,
+                  Role: customer
+                }
     loginFailed:
-      description: Login Failed
+      description: Bad Request Response
       content:
         application/json:
           schema:
@@ -809,7 +820,7 @@ components:
             Code: 400 
             Message: Email or Password Incorrect
     successOperationNonData:
-      description: Successful operation
+      description: Success Response Non Data
       content:
         application/json:
           schema:
@@ -818,16 +829,26 @@ components:
             Code: 200
             Message: Success Operation
     createUserFailed:
-      description: Bad Request
+      description: Bad Request Response
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/responseNonData'
           examples:
-            Bad Request:
-              $ref: '#/components/examples/badRequest'
+            Invalid Name:
+              $ref: '#/components/examples/invalidName'
+            Invalid Email:
+              $ref: '#/components/examples/invalidEmail'
+            Invalid Password:
+              $ref: '#/components/examples/invalidPassword'
+            Password Must Consist Of:
+              $ref: '#/components/examples/passwordMustConsistOf'
+            Invalid Telephone Number:
+              $ref: '#/components/examples/invalidTelephoneNumber'
+            Email or Telephone Number Already Exist:
+              $ref: '#/components/examples/emailOrTelephoneNumberAlreadyExist'
     getAllUsersSuccess:
-      description: Successful operation
+      description: Success Response Data
       content:
         application/json:
           schema:
@@ -835,23 +856,28 @@ components:
           example:
             Code: 200
             Message: Success Operation
-            Data: [{
-              ID: 1,
-              Name: Supriadi,
-              Email: supriadi15000@gmail.com
+            Data: [
+              {
+                ID: 2,
+                Name: Nuril Huda,
+                Email: nurilhuda7337@gmail.com,
+                Phone: "+6281234567890"
               },
               {
-              ID: 2,
-              Name: Nuril Huda,
-              Email: nurilhuda7337@gmail.com
+                ID: 3,
+                Name: Supriadi,
+                Email: s@g.sb,
+                Phone: "+67712345890"
               },
               {
-              ID: 3,
-              Name: Sahril Mahendra,
-              Email: sahrilmahendra@gmail.com
-              }]
+                ID: 4,
+                Name: Sahril Mahendra,
+                Email: sahrilmahendra@gmail.com,
+                Phone: "+62899999999999"
+              }
+            ]
     getAllUsersFailed:
-      description: Bad Request
+      description: Bad Request Response
       content:
         application/json:
           schema:
@@ -862,7 +888,7 @@ components:
             Bad Request:
               $ref: '#/components/examples/badRequest'
     getUserSuccess:
-      description: Successful operation
+      description: Success Response Data
       content:
         application/json:
           schema:
@@ -871,12 +897,13 @@ components:
             Code: 200
             Message: Success Operation
             Data: {
-              ID: 1,
-              Name: Supriadi,
-              Email: supriadi15000@gmail.com
+              ID: 2,
+              Name: Nuril Huda,
+              Email: nurilhuda7337@gmail.com,
+              Phone: "+6281234567890"
             }
     getUserFailed:
-      description: Bad Request
+      description: Bad Request Response
       content:
         application/json:
           schema:
@@ -889,7 +916,7 @@ components:
             Bad Request:
               $ref: '#/components/examples/badRequest'
     updateUserFailed:
-      description: Bad Request
+      description: Bad Request Response
       content:
         application/json:
           schema:
@@ -901,10 +928,20 @@ components:
               $ref: '#/components/examples/dataNotFound'
             Access Forbidden:
                 $ref: '#/components/examples/accessForbidden'
-            Bad Request:
-              $ref: '#/components/examples/badRequest'
+            Invalid Name:
+              $ref: '#/components/examples/invalidName'
+            Invalid Email:
+              $ref: '#/components/examples/invalidEmail'
+            Invalid Password:
+              $ref: '#/components/examples/invalidPassword'
+            Password Must Consist Of:
+              $ref: '#/components/examples/passwordMustConsistOf'
+            Invalid Telephone Number:
+              $ref: '#/components/examples/invalidTelephoneNumber'
+            Email or Telephone Number Already Exist:
+              $ref: '#/components/examples/emailOrTelephoneNumberAlreadyExist'
     deleteUserFailed:
-      description: Bad Request
+      description: Bad Request Response
       content:
         application/json:
           schema:
@@ -916,8 +953,8 @@ components:
               $ref: '#/components/examples/dataNotFound'
             Access Forbidden:
                 $ref: '#/components/examples/accessForbidden'
-    createHomestayFailed:
-      description: Bad Request
+    createProductFailed:
+      description: Bad Request Response
       content:
         application/json:
           schema:
@@ -929,10 +966,12 @@ components:
               $ref: '#/components/examples/illegalFile'
             Size File Too Big:
               $ref: '#/components/examples/sizeFileTooBig'
+            Access Forbidden: 
+              $ref: '#/components/examples/accessForbidden'
             Bad Request:
               $ref: '#/components/examples/badRequest'
-    HomestayServerFailed:
-      description: Internal Server Error
+    productServerFailed:
+      description: Internal Server Error Response
       content:
         application/json:
           schema:
@@ -942,41 +981,37 @@ components:
               $ref: '#/components/examples/cantConnecttoServer'
             Failed to Upload File:
               $ref: '#/components/examples/failedtoUploadFile'
-    getManyHomestaysSuccess:
-      description: Successful Operation
+    getAllProductsSuccess:
+      description: Success Response Data
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/responseHomestayWithDataArray'
+            $ref: '#/components/schemas/responseProductWithDataArray'
           example:
             Code: 200
             Message: Success Operation
             Data: [
-                { ID: 1,
-                Name_Homestay: Rumah Jendela,
-                Price: 1300000,
-                Description: We serve the best our place for your satisfaction,
-                Address: "Dago, Bandung",
-                Latitude: -6.877258,
-                Longitude: 107.617412,
-                UsersID: 1,
-                File: homestay-try-upload-file-2021-12-05T07:19:15.jpeg,
-                Url: https://storage.googleapis.com/sahril-bucket/homestay-try-upload-file-2021-12-05T07:19:15.jpeg
-                },
-                { ID: 2,
-                Name_Homestay: Rumah Kaca,
-                Price: 1500000,
-                Description: Fresh and cool. Wuuush..,
-                Address: "Dago, Bandung",
-                Latitude: -6.877258,
-                Longitude: 107.617412,
-                UsersID: 1,
-                File: homestay-upload-file-2021-12-05T07:19:15.jpeg,
-                Url: https://storage.googleapis.com/sahril-bucket/homestay-upload-file-2021-12-05T07:19:15.jpeg
-                }
+              { 
+                ID: 1,
+                NameProduct: Netflix,
+                DetailProduct: Langganan Netflix untuk 1 bulan,
+                Price: 200000,
+                Limit: 4,
+                Photo: logo-netflix-upload-file-2021-12-12T07:19:15.jpeg,
+                Url: https://storage.googleapis.com/sahril-bucket/netflix-try-upload-file-2021-12-12T07:19:15.jpeg
+              },
+              { 
+                ID: 2,
+                NameProduct: Spotify,
+                DetailProduct: Langganan Spotify untuk 1 bulan,
+                Price: 100000,
+                Limit: 5,
+                Photo: logo-spotify-upload-file-2021-12-12T12:12:12.jpeg,
+                Url: https://storage.googleapis.com/sahril-bucket/spotify-try-upload-file-2021-12-12T07:19:15.jpeg
+              }
             ]
-    getManyHomestaysFailed:
-      description: Bad Request
+    getAllProductsFailed:
+      description: Bad Request Response
       content:
         application/json:
           schema:
@@ -986,29 +1021,26 @@ components:
               $ref: '#/components/examples/dataNotFound'
             Bad Request:
               $ref: '#/components/examples/badRequest'
-    getHomestaySuccess:
-      description: Successful Operation
+    getProductSuccess:
+      description: Success Response Data
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/responseHomestayWithData'
+            $ref: '#/components/schemas/responseProductWithData'
           example:
             Code: 200
             Message: Success Operation
             Data: { 
-                ID: 1,
-                Name_Homestay: Rumah Jendela,
-                Price: 1300000,
-                Description: We serve the best our place for your satisfaction,
-                Address: "Dago, Bandung",
-                Latitude: -6.877258,
-                Longitude: 107.617412,
-                UsersID: 1,
-                File: homestay-try-upload-file-2021-12-05T07:19:15.jpeg,
-                Url: https://storage.googleapis.com/sahril-bucket/homestay-try-upload-file-2021-12-05T07:19:15.jpeg
+              ID: 3,
+              NameProduct: Gramedia,
+              DetailProduct: Langganan Gramedia untuk 1 bulan,
+              Price: 150000,
+              Limit: 4,
+              Photo: logo-netflix-upload-file-2021-12-12T07:19:15.jpeg,
+              Url: https://storage.googleapis.com/sahril-bucket/netflix-try-upload-file-2021-12-12T07:19:15.jpeg
             }
-    getHomestayFailed:
-      description: Bad Request
+    getProductFailed:
+      description: Bad Request Response
       content:
         application/json:
           schema:
@@ -1020,8 +1052,8 @@ components:
               $ref: '#/components/examples/dataNotFound'
             Bad Request:
               $ref: '#/components/examples/badRequest'
-    updateHomestayFailed:
-      description: Bad Request
+    updateProductFailed:
+      description: Bad Request Response
       content:
         application/json:
           schema:
@@ -1041,7 +1073,207 @@ components:
               $ref: '#/components/examples/illegalFile'
             Size File Too Big:
               $ref: '#/components/examples/sizeFileTooBig'
-    deleteHomestayFailed:
+    deleteProductFailed:
+      description: Bad Request Response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/responseNonData'
+          examples:
+            Invalid Id:
+              $ref: '#/components/examples/invalidId'
+            Data Not Found:
+              $ref: '#/components/examples/dataNotFound'
+            Access Forbidden:
+              $ref: '#/components/examples/accessForbidden'
+    createGroupProductFailed:
+      description: Bad Request Response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/responseNonData'
+          examples:
+            Invalid Param:
+              $ref: '#/components/examples/invalidParam'
+            Bad Request:
+              $ref: '#/components/examples/badRequest'
+            Id Product Not Found: 
+              $ref: '#/components/examples/idProductNotFound'
+    getAllGroupProductsSuccess:
+      description: Success Response Data
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/responseGroupProductWithDataArray'
+          example:
+            Code: 200
+            Message: Success Operation
+            Data: [
+              { 
+                ID: 1,
+                ProducstID: 3, 
+                NameGroupProduct: Youtube-Music-1,
+                Limit: 6,
+                CapacityGroupProduct: 1,
+                Price: 300000,
+                AdminFee: 5000,
+                TotalPrice: 305000,
+                DurationGroup: 12-26-2021,
+                Name_Product: Youtube-Music,
+                Status: Available,
+                Url: https://storage.googleapis.com/barengin-bucket/Youtube-Music-2021-12-13T10:06:45.jpg
+              },
+              { 
+                ID: 2,
+                ProducstID: 3, 
+                NameGroupProduct: Youtube-Music-1,
+                Limit: 6,
+                CapacityGroupProduct: 1,
+                Price: 300000,
+                AdminFee: 5000,
+                TotalPrice: 305000,
+                DurationGroup: 12-26-2021,
+                Name_Product: Youtube-Music,
+                Status: Available,
+                Url: https://storage.googleapis.com/barengin-bucket/Youtube-Music-2021-12-13T10:06:45.jpg
+              }
+            ]
+    getAllGroupProductsFailed:
+      description: Bad Request Response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/responseNonData'
+          examples:
+            Data Not Found:
+              $ref: '#/components/examples/dataNotFound'
+            Bad Request:
+              $ref: '#/components/examples/badRequest'
+    getAllGroupProductsAvailableFailed:
+      description: Bad Request Response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/responseNonData'
+          examples:
+            Invalid Param:
+              $ref: '#/components/examples/invalidParam'
+            Data Not Found:
+              $ref: '#/components/examples/dataNotFound'
+            Bad Request:
+              $ref: '#/components/examples/badRequest'
+    getAllGroupProductsAvailableSuccess:
+      description: Success Response Data
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/responseGroupProductWithDataArray'
+          example:
+            Code: 200
+            Message: Success Operation
+            Data: [
+              { 
+                ID: 1,
+                ProducstID: 3, 
+                NameGroupProduct: Youtube-Music-1,
+                Limit: 6,
+                CapacityGroupProduct: 1,
+                Price: 300000,
+                AdminFee: 5000,
+                TotalPrice: 305000,
+                DurationGroup: 12-26-2021,
+                Name_Product: Youtube-Music,
+                Status: Available,
+                Url: https://storage.googleapis.com/barengin-bucket/Youtube-Music-2021-12-13T10:06:45.jpg
+              },
+              { 
+                ID: 2,
+                ProducstID: 3, 
+                NameGroupProduct: Youtube-Music-1,
+                Limit: 6,
+                CapacityGroupProduct: 1,
+                Price: 300000,
+                AdminFee: 5000,
+                TotalPrice: 305000,
+                DurationGroup: 12-26-2021,
+                Name_Product: Youtube-Music,
+                Status: Available,
+                Url: https://storage.googleapis.com/barengin-bucket/Youtube-Music-2021-12-13T10:06:45.jpg
+              }
+            ]
+    getGroupProductSuccess:
+      description: Success Response Data
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/responseGroupProductWithData'
+          example:
+            Code: 200
+            Message: Success Operation
+            Data: { 
+                ID: 1,
+                ProducstID: 3, 
+                NameGroupProduct: Youtube-Music-1,
+                Limit: 6,
+                CapacityGroupProduct: 1,
+                Price: 300000,
+                AdminFee: 5000,
+                TotalPrice: 305000,
+                DurationGroup: 12-26-2021,
+                Name_Product: Youtube-Music,
+                Status: Available,
+                Url: https://storage.googleapis.com/barengin-bucket/Youtube-Music-2021-12-13T10:06:45.jpg
+              }
+    getGroupProductFailed:
+      description: Bad Request Response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/responseNonData'
+          examples:
+            Invalid Id:
+              $ref: '#/components/examples/invalidId'
+            Data Not Found:
+              $ref: '#/components/examples/dataNotFound'
+            Bad Request:
+              $ref: '#/components/examples/badRequest'
+    createOrderFailed:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/responseNonData'
+          examples:
+            Bad Request:
+              $ref: '#/components/examples/badRequest'
+    getAllUserOrdersSuccess:
+      description: Success Operation
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/responseOrderWithDataArray'
+          example:
+            Code: 200
+            Message: Success Operation
+            Data: [
+              {
+                ID: 1,
+                UsersID: 2,
+                GroupProductID: 1,
+                NameProduct: Spotify,
+                PriceOrder: 26500,
+                Credential: "email: subs.spotify@mail.com, password: spotify123"
+              },
+              {
+                ID: 2,
+                UsersID: 2,
+                GroupProductID: 2,
+                NameProduct: Netflix,
+                PriceOrder: 56500,
+                Credential: "email: subs.netflix@mail.com, password: netflix123"
+              }            
+            ]
+    getManyOrdersFailed:
       description: Bad Request
       content:
         application/json:
@@ -1054,98 +1286,51 @@ components:
               $ref: '#/components/examples/dataNotFound'
             Access Forbidden:
               $ref: '#/components/examples/accessForbidden'
-    getAllFacilitiesSuccess:
-      description: Successful Operation
+    getAllGroupOrdersSuccess:
+      description: Success Operation
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/responseFacilityWithDataArray'
+            $ref: '#/components/schemas/responseOrderWithDataArray'
           example:
             Code: 200
             Message: Success Operation
-            Data: [{
+            Data: [
+              {
                 ID: 1,
-                Name_Facility: Wi-Fi,
+                UsersID: 2,
+                GroupProductID: 1,
+                NameProduct: Spotify,
+                PriceOrder: 26500,
+                Credential: "email: subs.spotify@mail.com, password: spotify123"
               },
               {
-                ID: 2,
-                Name_Facility: Kolam Renang,
+                ID: 4,
+                UsersID: 5,
+                GroupProductID: 1,
+                NameProduct: Spotify,
+                PriceOrder: 26500,
+                Credential: "email: subs.spotify@mail.com, password: spotify123"
               }            
             ]
-    getAllFacilitiesFailed:
-      description: Bad Request
+    getOrderSuccess:
+      description: Success Operation
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/responseNonData'
-          examples:
-            Data Not Found:
-              $ref: '#/components/examples/dataNotFound'
-            Bad Request:
-              $ref: '#/components/examples/badRequest'
-    createHomestayFacilityFailed:
-      description: Bad Request
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/responseNonData'
-          examples:
-            Bad Request:
-              $ref: '#/components/examples/badRequest'
-            Data is Available:
-              $ref: '#/components/examples/dataisAvailable'
-    getAllHomestayFacilitiesSuccess:
-      description: Successful Operation
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/responseHomestayFacilityWithDataArray'
-          example:
-            Code: 200
-            Message: Success Operation
-            Data: [{
-                ID: 1,
-                HomestayID: 1,
-                FacilityID: 1,
-                Name_Facility: Wi-Fi,
-                Name_Homestay: Rumah Jendela
-              },
-              {
-                ID: 2,
-                HomestayID: 1,
-                FacilityID: 2,
-                Name_Facility: Kolam Renang,
-                Name_Homestay: Rumah Jendela
-              }            
-            ]
-    getAllHomestayFacilitiesFailed:
-      description: Bad Request
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/responseNonData'
-          examples:
-            Data Not Found:
-              $ref: '#/components/examples/dataNotFound'
-            Bad Request:
-              $ref: '#/components/examples/badRequest'
-    getHomestayFacilitySuccess:
-      description: Successful Operation
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/responseHomestayFacilityWithData'
+            $ref: '#/components/schemas/responseOrderWithData'
           example:
             Code: 200
             Message: Success Operation
             Data: {
-                ID: 1,
-                HomestayID: 1,
-                FacilityID: 1,
-                Name_Facility: Wi-Fi,
-                Name_Homestay: Rumah Jendela
+              ID: 1,
+              UsersID: 2,
+              GroupProductID: 1,
+              NameProduct: Spotify,
+              PriceOrder: 26500,
+              Credential: "email: subs.spotify@mail.com, password: spotify123"
             }
-    getHomestayFacilityFailed:
+    getOrderFailed:
       description: Bad Request
       content:
         application/json:
@@ -1158,8 +1343,8 @@ components:
               $ref: '#/components/examples/dataNotFound'
             Bad Request:
               $ref: '#/components/examples/badRequest'
-    updateHomestayFacilityFailed:
-      description: Bad Request
+    updateOrderFailed:
+      description: Bad Request Response
       content:
         application/json:
           schema:
@@ -1169,107 +1354,23 @@ components:
               $ref: '#/components/examples/invalidId'
             Data Not Found:
               $ref: '#/components/examples/dataNotFound'
-            Data is Available:
-              $ref: '#/components/examples/dataisAvailable'
-            Bad Request:
-              $ref: '#/components/examples/badRequest'
-    deleteHomestayFacilityFailed:
-      description: Bad Request
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/responseNonData'
-          examples:
-            Invalid Id:
-              $ref: '#/components/examples/invalidId'
-            Access Forbidden:
-              $ref: '#/components/examples/accessForbidden'
-    checkReservationSuccess:
-      description: Successful Operation
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/responseNonData'
-          examples:
-            Available:
-              value:
-                Code: 200
-                Message: Success Operation
-                Data: Available
-            Not Available:
-              value:
-                Code: 200
-                Message: Success Operation
-                Data: Not Available
-    checkReservationFailed:
-      description: Bad Request
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/responseNonData'
-          examples:
-            Invalid Date:
-              $ref: '#/components/examples/invalidDate'
-            Bad Request:
-              $ref: '#/components/examples/badRequest'
-            Data Not Found:
-              $ref: '#/components/examples/dataNotFound'
-    createReservationFailed:
-      description: Bad Request
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/responseNonData'
-          examples:
-            Data Not Found:
-              $ref: '#/components/examples/dataNotFound'
-            Invalid Date:
-              $ref: '#/components/examples/invalidDate'
-            Not Available:
-              $ref: '#/components/examples/notAvailable'
             Access Forbidden:
               $ref: '#/components/examples/accessForbidden'
             Bad Request:
               $ref: '#/components/examples/badRequest'
-    getAllReservationSuccess:
-      description: Successful Operation
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/responseReservationWithDataArray'
-          example:
-            Code: 200
-            Message: Success Operation
-            Data: [{
-              UserID: 3,
-              HomestayID: 1,
-              Name_Homestay: Rumah Jendela,
-              Start_date: "2021-11-30",
-              End_date: "2021-13-01",
-              Price: 1300000,
-              Total_harga: 2600000
-              },
-              {
-                UserID: 3,
-                HomestayID: 2,
-                Name_Homestay: Rumah Kaca,
-                Start_date: "2021-11-30",
-                End_date: "2021-13-01",
-                Price: 1500000,
-                Total_harga: 3000000,
-              }            
-            ]
-    getAllReservationFailed:
-      description: Bad Request
+    deleteOrderFailed:
+      description: Bad Request Response
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/responseNonData'
           examples:
-            Bad Request:
-              $ref: '#/components/examples/badRequest'
+            Invalid Id:
+              $ref: '#/components/examples/invalidId'
             Data Not Found:
               $ref: '#/components/examples/dataNotFound'
+            Access Forbidden:
+                $ref: '#/components/examples/accessForbidden'
   examples:
     accessForbidden:
       value:
@@ -1291,6 +1392,10 @@ components:
       value:
         Code: 400
         Message: Data Not Found
+    emailOrTelephoneNumberAlreadyExist:
+      value: 
+        Code: 400
+        Message: Email or Telephone Number Already Exist
     failedtoUploadFile:
       value:
         Code: 500
@@ -1299,23 +1404,48 @@ components:
       value:
         Code: 400
         Message: File Extension Not Allowed
-    invalidId:
+    idProductNotFound:
       value:
         Code: 400
-        Message: Invalid Id
-    invalidDate:
-      value:
-        Code: 400
-        Message: Invalid Date
+        Message: Id Product Not Found
     illegalFile:
       value:
         Code: 400
         Message: Illegal File
+    invalidEmail:
+      value:
+        Code: 400
+        Message: Invalid Email
+    invalidId:
+      value:
+        Code: 400
+        Message: Invalid Id
+    invalidName:
+      value:
+        Code: 400
+        Message: Invalid Name
+    invalidParam:
+      value:
+        Code: 400
+        Message: Invalid Parameter
+    invalidPassword:
+      value:
+        Code: 400
+        Message: Invalid Password
+    invalidTelephoneNumber:
+      value:
+        Code: 400
+        Message: Invalid Telephone Number
     notAvailable:
       value:
         Code: 400
         Message: Not Available
+    passwordMustConsistOf:
+      value:
+        Code: 400
+        Message: Password must consist of 6 characters or more
     sizeFileTooBig:
       value:
         Code: 400
         Message: Size File Too Big
+    
