@@ -42,7 +42,7 @@ func GetAllGroupProduct() (interface{}, int, error) {
 		return nil, 0, query.Error
 	}
 	for i, _ := range group {
-		user_order, _ := GetOrderByIdGroup(int(group[i].ID))
+		user_order, _ := GetUserOrderByIdGroup(int(group[i].ID))
 		group[i].GetOrder = user_order
 	}
 	return group, len(group), nil
@@ -55,7 +55,7 @@ func GetGroupProductById(id int) (interface{}, error) {
 	if query.Error != nil || query.RowsAffected < 1 {
 		return nil, query.Error
 	}
-	user_order, _ := GetOrderByIdGroup(int(group.ID))
+	user_order, _ := GetUserOrderByIdGroup(int(group.ID))
 	group.GetOrder = user_order
 
 	return group, nil
@@ -70,7 +70,7 @@ func GetGroupProductByAvailable(str string) (interface{}, error) {
 		return nil, query.Error
 	}
 	for i, _ := range group {
-		user_order, _ := GetOrderByIdGroup(int(group[i].ID))
+		user_order, _ := GetUserOrderByIdGroup(int(group[i].ID))
 		group[i].GetOrder = user_order
 	}
 	return group, nil
@@ -83,16 +83,9 @@ func GetGroupProductByIdProducts(id_products int) (interface{}, error) {
 	if query.Error != nil || query.RowsAffected < 1 {
 		return nil, query.Error
 	}
-	return group, nil
-}
-
-func GetGroupProductByAvailable(str string) (interface{}, error) {
-	group := []models.GetGroupProduct{}
-	// UpdateGroupProductCapacity(id)\
-	query := config.DB.Table("group_products").Select(query_join).Joins("join products on group_products.products_id = products.id").Where("group_products.deleted_at IS NULL AND group_products.status = ?", str).Find(&group)
-
-	if query.Error != nil || query.RowsAffected < 1 {
-		return nil, query.Error
+	for i, _ := range group {
+		user_order, _ := GetUserOrderByIdGroup(int(group[i].ID))
+		group[i].GetOrder = user_order
 	}
 	return group, nil
 }
@@ -126,12 +119,12 @@ func GetDataProduct(id_product int) (name string, price, limit int, er error) {
 	return get_product_by_id.Name_Product, get_product_by_id.Price, get_product_by_id.Limit, nil
 }
 
-func GetDataGroupProductById(id int) (t_price, limit int, n_group, n_product string, er error) {
+func GetDataGroupProductById(id int) (t_price, limit int, n_group, n_product, status string, er error) {
 	group := models.GetGroupProduct{}
 	// UpdateGroupProductCapacity(id)
 	query := config.DB.Table("group_products").Select(query_join).Joins("join products on group_products.products_id = products.id").Where("group_products.deleted_at IS NULL AND group_products.id = ? ", id).Find(&group)
 	if query.Error != nil || query.RowsAffected < 1 {
-		return 0, 0, "", "", query.Error
+		return 0, 0, "", "", "", query.Error
 	}
-	return group.TotalPrice, group.Limit, group.NameGroupProduct, group.Name_Product, nil
+	return group.TotalPrice, group.Limit, group.NameGroupProduct, group.Name_Product, group.Status, nil
 }

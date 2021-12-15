@@ -30,6 +30,14 @@ type OrderRequest struct {
 }
 
 type GetOrder struct {
+	UsersID          uint
+	GroupProductID   uint
+	PriceOrder       int
+	NameProduct      string
+	DetailCredential string
+}
+
+type GetUserOrder struct {
 	UsersID        uint
 	GroupProductID uint
 	Name           string
