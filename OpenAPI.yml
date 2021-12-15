@@ -1056,8 +1056,8 @@ components:
           schema:
             $ref: '#/components/schemas/responseNonData'
           examples:
-            Invalid Param:
-              $ref: '#/components/examples/invalidParam'
+            Access Forbidden:
+              $ref: '#/components/examples/accessForbidden'
             Bad Request:
               $ref: '#/components/examples/badRequest'
             Id Product Not Found: 
