@@ -20,7 +20,7 @@ func CreateGroupProduct(group *models.GroupProduct, id_product uint) (interface{
 		fee := 5000
 
 		group.NameGroupProduct = name + "-" + strconv.Itoa(len_group+1)
-		group.CapacityGroupProduct = 1
+		group.CapacityGroupProduct = 0
 		group.AdminFee = fee
 		group.TotalPrice = fee + price
 		group.DurationGroup = duration.Format("02-01-2006")
@@ -29,7 +29,11 @@ func CreateGroupProduct(group *models.GroupProduct, id_product uint) (interface{
 		if err := config.DB.Create(&group).Error; err != nil {
 			return nil, err
 		}
-		return group, nil
+		Create_Res := models.ResGroup{
+			GroupProductID: group.ID,
+		}
+
+		return Create_Res, nil
 	}
 
 	return nil, er
@@ -41,6 +45,10 @@ func GetAllGroupProduct() (interface{}, int, error) {
 	if query.Error != nil {
 		return nil, 0, query.Error
 	}
+	for i, _ := range group {
+		user_order, _ := GetUserOrderByIdGroup(int(group[i].ID))
+		group[i].GetOrder = user_order
+	}
 	return group, len(group), nil
 }
 
@@ -50,6 +58,38 @@ func GetGroupProductById(id int) (interface{}, error) {
 	query := config.DB.Table("group_products").Select(query_join).Joins("join products on group_products.products_id = products.id").Where("group_products.deleted_at IS NULL AND group_products.id = ? ", id).Find(&group)
 	if query.Error != nil || query.RowsAffected < 1 {
 		return nil, query.Error
+	}
+	user_order, _ := GetUserOrderByIdGroup(int(group.ID))
+	group.GetOrder = user_order
+
+	return group, nil
+}
+
+func GetGroupProductByAvailable(str string) (interface{}, error) {
+	group := []models.GetGroupProduct{}
+	// UpdateGroupProductCapacity(id)\
+	query := config.DB.Table("group_products").Select(query_join).Joins("join products on group_products.products_id = products.id").Where("group_products.deleted_at IS NULL AND group_products.status = ?", str).Find(&group)
+
+	if query.Error != nil || query.RowsAffected < 1 {
+		return nil, query.Error
+	}
+	for i, _ := range group {
+		user_order, _ := GetUserOrderByIdGroup(int(group[i].ID))
+		group[i].GetOrder = user_order
+	}
+	return group, nil
+}
+
+func GetGroupProductByIdProducts(id_products int) (interface{}, error) {
+	group := []models.GetGroupProduct{}
+	// UpdateGroupProductCapacity(id)
+	query := config.DB.Table("group_products").Select(query_join).Joins("join products on group_products.products_id = products.id").Where("group_products.deleted_at IS NULL AND group_products.products_id = ? ", id_products).Find(&group)
+	if query.Error != nil || query.RowsAffected < 1 {
+		return nil, query.Error
+	}
+	for i, _ := range group {
+		user_order, _ := GetUserOrderByIdGroup(int(group[i].ID))
+		group[i].GetOrder = user_order
 	}
 	return group, nil
 }
@@ -74,17 +114,6 @@ func UpdateGroupProductCapacity(id_group_product int) (interface{}, error) {
 	return group, nil
 }
 
-func GetGroupProductByAvailable(str string) (interface{}, error) {
-	group := []models.GetGroupProduct{}
-	// UpdateGroupProductCapacity(id)\
-	query := config.DB.Table("group_products").Select(query_join).Joins("join products on group_products.products_id = products.id").Where("group_products.deleted_at IS NULL AND group_products.status = ?", str).Find(&group)
-
-	if query.Error != nil || query.RowsAffected < 1 {
-		return nil, query.Error
-	}
-	return group, nil
-}
-
 func GetDataProduct(id_product int) (name string, price, limit int, er error) {
 	var get_product_by_id models.GetProduct
 	query := config.DB.Table("products").Select("*").Where("products.deleted_at IS NULL AND products.id = ?", id_product).Find(&get_product_by_id)
@@ -92,4 +121,14 @@ func GetDataProduct(id_product int) (name string, price, limit int, er error) {
 		return "", 0, 0, query.Error
 	}
 	return get_product_by_id.Name_Product, get_product_by_id.Price, get_product_by_id.Limit, nil
+}
+
+func GetDataGroupProductById(id int) (t_price, limit int, n_group, n_product, status string, er error) {
+	group := models.GetGroupProduct{}
+	// UpdateGroupProductCapacity(id)
+	query := config.DB.Table("group_products").Select(query_join).Joins("join products on group_products.products_id = products.id").Where("group_products.deleted_at IS NULL AND group_products.id = ? ", id).Find(&group)
+	if query.Error != nil || query.RowsAffected < 1 {
+		return 0, 0, "", "", "", query.Error
+	}
+	return group.TotalPrice, group.Limit, group.NameGroupProduct, group.Name_Product, group.Status, nil
 }

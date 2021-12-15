@@ -34,6 +34,16 @@ func GetProductById(id int) (interface{}, error) {
 	return get_product_by_id, nil
 }
 
+// function database untuk menampilkan data url dan photo product by id
+func GetPhotoUrlProductById(id int) (string, string, error) {
+	var get_product_by_id models.GetProduct
+	query := config.DB.Table("products").Select("*").Where("products.deleted_at IS NULL AND products.id = ?", id).Find(&get_product_by_id)
+	if query.Error != nil || query.RowsAffected == 0 {
+		return "", "", query.Error
+	}
+	return get_product_by_id.Photo, get_product_by_id.Url, nil
+}
+
 // function database untuk memperbarui data product by id
 func UpdateProduct(id int, update_product *models.Products) (interface{}, error) {
 	var product models.Products

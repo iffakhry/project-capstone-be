@@ -24,10 +24,13 @@ func New() *echo.Echo {
 	e.GET("/users/:id", controllers.GetUserControllers)
 	e.GET("/users", controllers.GetAllUsersControllers)
 
+	//order
+
 	//route group product tanpa JWT
 	e.GET("/products/group", controllers.GetAllGroupProductControllers)
-	e.GET("/products/group/:id", controllers.GetGroupProductControllers)
+	e.GET("/products/group/:id_group", controllers.GetByIdGroupProductControllers)
 	e.GET("/products/group/status/:status", controllers.GetAvailableGroupProductControllers)
+	e.GET("/products/group/products/:id_products", controllers.GetByIdProductsGroupProductControllers)
 
 	// route product tanpa JWT
 	e.GET("/products", controllers.GetAllProductControllers)
@@ -36,7 +39,9 @@ func New() *echo.Echo {
 	// group JWT
 	j := e.Group("/jwt")
 	j.Use(middleware.JWT([]byte(constants.SECRET_JWT)))
-	j.POST("/products/group", controllers.CreateGroupProductControllers)
+
+	// group product JWT
+	j.POST("/products/group/:id_products", controllers.CreateGroupProductControllers)
 
 	// route users dengan JWT
 	j.PUT("/users/:id", controllers.UpdateUserControllers)
@@ -46,5 +51,11 @@ func New() *echo.Echo {
 	j.POST("/products", controllers.CreateProductControllers)
 	j.PUT("/products/:id", controllers.UpdateProductControllers)
 	j.DELETE("/products/:id", controllers.DeleteProductControllers)
+
+	//route order
+	j.POST("/orders/:id_group", controllers.CreateOrderControllers)
+	j.GET("/orders/id/:id_order", controllers.GetOrderByIdOrderControllers)
+	j.GET("/orders/group/:id_group", controllers.GetOrderByIdGroupControllers)
+	j.GET("/orders/users/:id_user", controllers.GetOrderByIdUsersControllers)
 	return e
 }
