@@ -16,6 +16,7 @@ type Products struct {
 }
 
 type GetProduct struct {
+	ID             uint
 	Name_Product   string
 	Detail_Product string
 	Price          int

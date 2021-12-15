@@ -8,6 +8,7 @@ import (
 	response "final-project/responses"
 	"log"
 	"net/http"
+	"regexp"
 	"strconv"
 
 	validator "github.com/go-playground/validator/v10"
@@ -51,8 +52,13 @@ func CreateUserControllers(c echo.Context) error {
 
 	v := validator.New()
 	err := v.Var(new_user.Name, "required")
+	validID := regexp.MustCompile(`^[0-9A-Za-z_.]+$`)
+	// log.Println(validID.MatchString(new_user.Name))
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Name"))
+	}
+	if !validID.MatchString(new_user.Name) {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Name can only contains alphanumeric"))
 	}
 	err = v.Var(new_user.Email, "required,email")
 	if err != nil {

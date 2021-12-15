@@ -23,7 +23,7 @@ func CreateGroupProduct(group *models.GroupProduct, id_product uint) (interface{
 		group.CapacityGroupProduct = 1
 		group.AdminFee = fee
 		group.TotalPrice = fee + price
-		group.DurationGroup = duration.Format("01-02-2006")
+		group.DurationGroup = duration.Format("02-01-2006")
 		group.Status = "Available"
 
 		if err := config.DB.Create(&group).Error; err != nil {
@@ -80,7 +80,7 @@ func UpdateGroupProductCapacity(id_group_product int) (interface{}, error) {
 	config.DB.Find(&group, id_group_product)
 	_, _, limit, _ := GetDataProduct(int(group.ProductsID))
 	if group.CapacityGroupProduct >= limit-1 {
-		query := config.DB.Model(&group).Where("group_products.id = ?", id_group_product).Updates(map[string]interface{}{"status": "Not Available", "capacity_group_product": limit})
+		query := config.DB.Model(&group).Where("group_products.id = ?", id_group_product).Updates(map[string]interface{}{"status": "Full", "capacity_group_product": limit})
 		if query.Error != nil {
 			return nil, query.Error
 		}
