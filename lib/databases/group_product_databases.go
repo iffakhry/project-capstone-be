@@ -20,7 +20,7 @@ func CreateGroupProduct(group *models.GroupProduct, id_product uint) (interface{
 		fee := 5000
 
 		group.NameGroupProduct = name + "-" + strconv.Itoa(len_group+1)
-		group.CapacityGroupProduct = 1
+		group.CapacityGroupProduct = 0
 		group.AdminFee = fee
 		group.TotalPrice = fee + price
 		group.DurationGroup = duration.Format("02-01-2006")
