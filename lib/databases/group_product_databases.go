@@ -54,6 +54,27 @@ func GetGroupProductById(id int) (interface{}, error) {
 	return group, nil
 }
 
+func GetGroupProductByIdProducts(id_products int) (interface{}, error) {
+	group := []models.GetGroupProduct{}
+	// UpdateGroupProductCapacity(id)
+	query := config.DB.Table("group_products").Select(query_join).Joins("join products on group_products.products_id = products.id").Where("group_products.deleted_at IS NULL AND group_products.products_id = ? ", id_products).Find(&group)
+	if query.Error != nil || query.RowsAffected < 1 {
+		return nil, query.Error
+	}
+	return group, nil
+}
+
+func GetGroupProductByAvailable(str string) (interface{}, error) {
+	group := []models.GetGroupProduct{}
+	// UpdateGroupProductCapacity(id)\
+	query := config.DB.Table("group_products").Select(query_join).Joins("join products on group_products.products_id = products.id").Where("group_products.deleted_at IS NULL AND group_products.status = ?", str).Find(&group)
+
+	if query.Error != nil || query.RowsAffected < 1 {
+		return nil, query.Error
+	}
+	return group, nil
+}
+
 func UpdateGroupProductCapacity(id_group_product int) (interface{}, error) {
 	group := models.GroupProduct{}
 	config.DB.Find(&group, id_group_product)
@@ -70,17 +91,6 @@ func UpdateGroupProductCapacity(id_group_product int) (interface{}, error) {
 	query1 := config.DB.Model(&group).Where("group_products.id = ?", id_group_product).Update("capacity_group_product", capacity)
 	if query1.Error != nil {
 		return nil, query1.Error
-	}
-	return group, nil
-}
-
-func GetGroupProductByAvailable(str string) (interface{}, error) {
-	group := []models.GetGroupProduct{}
-	// UpdateGroupProductCapacity(id)\
-	query := config.DB.Table("group_products").Select(query_join).Joins("join products on group_products.products_id = products.id").Where("group_products.deleted_at IS NULL AND group_products.status = ?", str).Find(&group)
-
-	if query.Error != nil || query.RowsAffected < 1 {
-		return nil, query.Error
 	}
 	return group, nil
 }

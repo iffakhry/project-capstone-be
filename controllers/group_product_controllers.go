@@ -14,7 +14,7 @@ import (
 // controller untuk menambahkan user (registrasi)
 func CreateGroupProductControllers(c echo.Context) error {
 	new_group := models.GroupProduct{}
-	id := c.Param("id")
+	id := c.Param("id_products")
 	id_product, err := strconv.Atoi(id)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Param"))
@@ -35,13 +35,28 @@ func CreateGroupProductControllers(c echo.Context) error {
 	return c.JSON(http.StatusOK, response.SuccessResponseNonData("Success Operation"))
 }
 
-func GetGroupProductControllers(c echo.Context) error {
-	id := c.Param("id")
+func GetByIdGroupProductControllers(c echo.Context) error {
+	id := c.Param("id_group")
 	id_group_product, err := strconv.Atoi(id)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Id"))
 	}
 	data, e := databases.GetGroupProductById(id_group_product)
+	if data == nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
+	}
+	if e != nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Bad Request"))
+	}
+	return c.JSON(http.StatusOK, response.SuccessResponseData("Success Operation", data))
+}
+func GetByIdProductsGroupProductControllers(c echo.Context) error {
+	id := c.Param("id_products")
+	id_products, err := strconv.Atoi(id)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Id"))
+	}
+	data, e := databases.GetGroupProductByIdProducts(id_products)
 	if data == nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
 	}
