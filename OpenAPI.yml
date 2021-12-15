@@ -71,7 +71,7 @@ paths:
         '200':
           $ref: '#/components/responses/getAllUsersSuccess'
         '400':
-          $ref: '#/components/responses/getAllUsersFailed'
+          $ref: '#/components/responses/getAllDataFailed'
   /users/{id}:
     get:
       tags:
@@ -85,7 +85,7 @@ paths:
         '200':
           $ref: '#/components/responses/getUserSuccess'
         '400':
-          $ref: '#/components/responses/getUserFailed'
+          $ref: '#/components/responses/getDataByIdFailed'
   /jwt/users/{id}:
     put:
       tags:
@@ -114,7 +114,7 @@ paths:
         '200':
           $ref: '#/components/responses/successOperationNonData'
         '400':
-          $ref: '#/components/responses/deleteUserFailed'
+          $ref: '#/components/responses/deleteDataByIdFailed'
 ####################################
 #  PRODUCTS
 ####################################
@@ -127,7 +127,7 @@ paths:
         '200':
           $ref: '#/components/responses/getAllProductsSuccess'
         '400':
-          $ref: '#/components/responses/getAllProductsFailed'
+          $ref: '#/components/responses/getAllDataFailed'
   /products/{id}:
     get:
       tags:
@@ -139,7 +139,7 @@ paths:
         '200':
           $ref: '#/components/responses/getProductSuccess'
         '400':
-          $ref: '#/components/responses/getProductFailed'
+          $ref: '#/components/responses/getDataByIdFailed'
   /jwt/products:
     post:
       tags:
@@ -186,7 +186,7 @@ paths:
         '200':
           $ref: '#/components/responses/successOperationNonData'
         '400':
-          $ref: '#/components/responses/deleteProductFailed'
+          $ref: '#/components/responses/deleteDataByIdFailed'
 ####################################
 #  GROUP PRODUCTS
 ####################################
@@ -199,7 +199,7 @@ paths:
         '200':
           $ref: '#/components/responses/getAllGroupProductsSuccess'
         '400':
-          $ref: '#/components/responses/getAllGroupProductsFailed'
+          $ref: '#/components/responses/getAllDataFailed'
   /products/group/{id}:
     get:
       tags:
@@ -211,7 +211,7 @@ paths:
         '200':
           $ref: '#/components/responses/getGroupProductSuccess'
         '400':
-          $ref: '#/components/responses/getGroupProductFailed'
+          $ref: '#/components/responses/getDataByIdFailed'
   /products/group/status/{status}:
     get:
       tags:
@@ -876,7 +876,7 @@ components:
                 Phone: "+62899999999999"
               }
             ]
-    getAllUsersFailed:
+    getAllDataFailed:
       description: Bad Request Response
       content:
         application/json:
@@ -902,7 +902,7 @@ components:
               Email: nurilhuda7337@gmail.com,
               Phone: "+6281234567890"
             }
-    getUserFailed:
+    getDataByIdFailed:
       description: Bad Request Response
       content:
         application/json:
@@ -940,7 +940,7 @@ components:
               $ref: '#/components/examples/invalidTelephoneNumber'
             Email or Telephone Number Already Exist:
               $ref: '#/components/examples/emailOrTelephoneNumberAlreadyExist'
-    deleteUserFailed:
+    deleteDataByIdFailed:
       description: Bad Request Response
       content:
         application/json:
@@ -1010,17 +1010,6 @@ components:
                 Url: https://storage.googleapis.com/sahril-bucket/spotify-try-upload-file-2021-12-12T07:19:15.jpeg
               }
             ]
-    getAllProductsFailed:
-      description: Bad Request Response
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/responseNonData'
-          examples:
-            Data Not Found:
-              $ref: '#/components/examples/dataNotFound'
-            Bad Request:
-              $ref: '#/components/examples/badRequest'
     getProductSuccess:
       description: Success Response Data
       content:
@@ -1039,19 +1028,6 @@ components:
               Photo: logo-netflix-upload-file-2021-12-12T07:19:15.jpeg,
               Url: https://storage.googleapis.com/sahril-bucket/netflix-try-upload-file-2021-12-12T07:19:15.jpeg
             }
-    getProductFailed:
-      description: Bad Request Response
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/responseNonData'
-          examples:
-            Invalid Id:
-              $ref: '#/components/examples/invalidId'
-            Data Not Found:
-              $ref: '#/components/examples/dataNotFound'
-            Bad Request:
-              $ref: '#/components/examples/badRequest'
     updateProductFailed:
       description: Bad Request Response
       content:
@@ -1073,19 +1049,6 @@ components:
               $ref: '#/components/examples/illegalFile'
             Size File Too Big:
               $ref: '#/components/examples/sizeFileTooBig'
-    deleteProductFailed:
-      description: Bad Request Response
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/responseNonData'
-          examples:
-            Invalid Id:
-              $ref: '#/components/examples/invalidId'
-            Data Not Found:
-              $ref: '#/components/examples/dataNotFound'
-            Access Forbidden:
-              $ref: '#/components/examples/accessForbidden'
     createGroupProductFailed:
       description: Bad Request Response
       content:
@@ -1138,17 +1101,6 @@ components:
                 Url: https://storage.googleapis.com/barengin-bucket/Youtube-Music-2021-12-13T10:06:45.jpg
               }
             ]
-    getAllGroupProductsFailed:
-      description: Bad Request Response
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/responseNonData'
-          examples:
-            Data Not Found:
-              $ref: '#/components/examples/dataNotFound'
-            Bad Request:
-              $ref: '#/components/examples/badRequest'
     getAllGroupProductsAvailableFailed:
       description: Bad Request Response
       content:
@@ -1224,19 +1176,6 @@ components:
                 Status: Available,
                 Url: https://storage.googleapis.com/barengin-bucket/Youtube-Music-2021-12-13T10:06:45.jpg
               }
-    getGroupProductFailed:
-      description: Bad Request Response
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/responseNonData'
-          examples:
-            Invalid Id:
-              $ref: '#/components/examples/invalidId'
-            Data Not Found:
-              $ref: '#/components/examples/dataNotFound'
-            Bad Request:
-              $ref: '#/components/examples/badRequest'
     createOrderFailed:
       description: Bad Request
       content:
