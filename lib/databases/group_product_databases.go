@@ -29,7 +29,11 @@ func CreateGroupProduct(group *models.GroupProduct, id_product uint) (interface{
 		if err := config.DB.Create(&group).Error; err != nil {
 			return nil, err
 		}
-		return group, nil
+		Create_Res := models.ResGroup{
+			GroupProductID: group.ID,
+		}
+
+		return Create_Res, nil
 	}
 
 	return nil, er

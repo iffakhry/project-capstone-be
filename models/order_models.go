@@ -29,11 +29,15 @@ type OrderRequest struct {
 	CreditCard CreditCard `json:"credit_card" `
 }
 
+type Response struct {
+	OrderID uint
+}
+
 type GetOrder struct {
 	UsersID          uint
 	GroupProductID   uint
-	PriceOrder       int
 	NameProduct      string
+	PriceOrder       int
 	DetailCredential string
 }
 

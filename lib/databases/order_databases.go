@@ -24,23 +24,23 @@ func CreateOrder(Order *models.OrderRequest, id_group int) (in string, i interfa
 	if err := config.DB.Create(&Order.Order).Error; err != nil {
 		return "", nil, err
 	}
-	req_credit := models.CreditCard{
+	// req_credit := models.CreditCard{
+	// 	OrderID: Order.Order.ID,
+	// 	Typ:     Order.CreditCard.Typ,
+	// 	Name:    Order.CreditCard.Name,
+	// 	Number:  Order.CreditCard.Number,
+	// 	Cvv:     Order.CreditCard.Cvv,
+	// 	Month:   Order.CreditCard.Month,
+	// 	Year:    Order.CreditCard.Year,
+	// }
+	// req_order := models.Order{
+	// 	CreditCard: req_credit,
+	// }
+
+	Create_Res := models.Response{
 		OrderID: Order.Order.ID,
-		Typ:     Order.CreditCard.Typ,
-		Name:    Order.CreditCard.Name,
-		Number:  Order.CreditCard.Number,
-		Cvv:     Order.CreditCard.Cvv,
-		Month:   Order.CreditCard.Month,
-		Year:    Order.CreditCard.Year,
-	}
-	req_order := models.Order{
-		CreditCard: req_credit,
 	}
 
-	Create_Res := models.OrderRequest{
-		Order:      req_order,
-		CreditCard: req_credit,
-	}
 	Order.CreditCard.OrderID = Order.Order.ID
 	config.DB.Create(&Order.CreditCard)
 	UpdateGroupProductCapacity(id_group)
