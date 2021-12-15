@@ -135,6 +135,9 @@ func UpdateUserControllers(c echo.Context) error {
 	if er != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Name"))
 	}
+	if !regexp.MustCompile("^[0-9A-Za-z_.]+$").MatchString(users.Name) {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Name can only contains alphanumeric"))
+	}
 	er = v.Var(users.Email, "required,email")
 	if er != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Email"))
