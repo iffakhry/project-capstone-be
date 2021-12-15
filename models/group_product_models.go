@@ -12,6 +12,7 @@ type GroupProduct struct {
 	TotalPrice           int
 	DurationGroup        string
 	Status               string
+	Order                []Order
 }
 
 type GetGroupProduct struct {
@@ -27,4 +28,5 @@ type GetGroupProduct struct {
 	Name_Product         string
 	Status               string
 	Url                  string
+	GetOrder             interface{}
 }

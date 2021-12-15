@@ -12,6 +12,7 @@ type Users struct {
 	Role         string
 	Token        string
 	GroupProduct []GroupProduct
+	Order        []Order
 }
 
 // struktur get user *
