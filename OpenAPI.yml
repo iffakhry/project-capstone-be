@@ -200,11 +200,23 @@ paths:
           $ref: '#/components/responses/getAllGroupProductsSuccess'
         '400':
           $ref: '#/components/responses/getAllDataFailed'
-  /products/group/{id}:
+  /products/group/{id_products}:
     get:
       tags:
         - Group Products
-      summary: Get Group Products by id
+      summary: Get All Group Products by id products
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      responses:
+        '200':
+          $ref: '#/components/responses/getAllGroupProductsSuccess'
+        '400':
+          $ref: '#/components/responses/getDataByIdFailed'
+  /products/group/id/{id_group}:
+    get:
+      tags:
+        - Group Products
+      summary: Get Group Products by id group product
       parameters:
         - $ref: '#/components/parameters/idParam'
       responses:
@@ -224,15 +236,15 @@ paths:
           $ref: '#/components/responses/getAllGroupProductsAvailableSuccess'
         '400':
           $ref: '#/components/responses/getAllGroupProductsAvailableFailed'
-  /jwt/products/group:
+  /jwt/products/group/{id_products}:
     post:
       tags:
       - Group Products
       summary: Create a new group product
       security:
         - JWTAuth: []
-      requestBody:
-        $ref: '#/components/requestBodies/requestBodyGroupProduct'
+      parameters:
+        - $ref: '#/components/parameters/idParam'
       responses:
         '200':
           $ref: '#/components/responses/successOperationNonData'
@@ -348,7 +360,7 @@ components:
         name:
           type: string
           minLength: 1
-          description: only contain alphanumeric and starts not with space
+          pattern: '^0-9A-Za-z_.$'
         email:
           type: string
           format: email
@@ -837,6 +849,8 @@ components:
           examples:
             Invalid Name:
               $ref: '#/components/examples/invalidName'
+            Name alphanumeric:
+              $ref: '#/components/examples/nameAlphanumeric'
             Invalid Email:
               $ref: '#/components/examples/invalidEmail'
             Invalid Password:
@@ -1058,6 +1072,8 @@ components:
           examples:
             Invalid Param:
               $ref: '#/components/examples/invalidParam'
+            Access Forbidden:
+              $ref: '#/components/examples/accessForbidden'
             Bad Request:
               $ref: '#/components/examples/badRequest'
             Id Product Not Found: 
@@ -1375,6 +1391,10 @@ components:
       value:
         Code: 400
         Message: Invalid Telephone Number
+    nameAlphanumeric:
+      value:
+        Code: 400
+        Message: Name can only contains alphanumeric
     notAvailable:
       value:
         Code: 400
