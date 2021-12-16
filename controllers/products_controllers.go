@@ -49,8 +49,7 @@ func CreateProductControllers(c echo.Context) error {
 
 	f, uploaded_file, err := c.Request().FormFile("photo")
 	if err != nil {
-		log.Println(err)
-		return c.JSON(http.StatusInternalServerError, response.InternalServerErrorResponse("Failed to Upload File 1"))
+		return c.JSON(http.StatusInternalServerError, response.InternalServerErrorResponse("Failed to Upload File"))
 	}
 
 	defer f.Close()
@@ -77,20 +76,18 @@ func CreateProductControllers(c echo.Context) error {
 	sw := storageClient.Bucket(bucket).Object(uploaded_file.Filename).NewWriter(ctx)
 
 	if _, err := io.Copy(sw, f); err != nil {
-		log.Println(err)
-		return c.JSON(http.StatusInternalServerError, response.InternalServerErrorResponse("Failed to Upload File 2"))
+		return c.JSON(http.StatusInternalServerError, response.InternalServerErrorResponse("Failed to Upload File"))
 	}
 
 	if err := sw.Close(); err != nil {
-		log.Println(err)
-		return c.JSON(http.StatusInternalServerError, response.InternalServerErrorResponse("Failed to Upload File 3"))
+		return c.JSON(http.StatusInternalServerError, response.InternalServerErrorResponse("Failed to Upload File"))
 	}
 
 	u, err := url.Parse("https://storage.googleapis.com/" + bucket + "/" + sw.Attrs().Name)
 	new_product.Url = fmt.Sprintf("%v", u)
 	if err != nil {
 		log.Println(err)
-		return c.JSON(http.StatusInternalServerError, response.InternalServerErrorResponse("Failed to Upload File 4"))
+		return c.JSON(http.StatusInternalServerError, response.InternalServerErrorResponse("Failed to Upload File"))
 	}
 
 	v := validator.New()
