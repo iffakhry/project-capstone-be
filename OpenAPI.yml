@@ -200,28 +200,28 @@ paths:
           $ref: '#/components/responses/getAllGroupProductsSuccess'
         '400':
           $ref: '#/components/responses/getAllDataFailed'
-  /products/group/{id_products}:
-    get:
-      tags:
-        - Group Products
-      summary: Get All Group Products by id products
-      parameters:
-        - $ref: '#/components/parameters/idParam'
-      responses:
-        '200':
-          $ref: '#/components/responses/getAllGroupProductsSuccess'
-        '400':
-          $ref: '#/components/responses/getDataByIdFailed'
-  /products/group/id/{id_group}:
+  /products/group/{id_group}:
     get:
       tags:
         - Group Products
       summary: Get Group Products by id group product
       parameters:
-        - $ref: '#/components/parameters/idParam'
+        - $ref: '#/components/parameters/idGroup'
       responses:
         '200':
           $ref: '#/components/responses/getGroupProductSuccess'
+        '400':
+          $ref: '#/components/responses/getDataByIdFailed'
+  /products/group/products/{id_products}:
+    get:
+      tags:
+        - Group Products
+      summary: Get All Group Products by id products
+      parameters:
+        - $ref: '#/components/parameters/idProducts'
+      responses:
+        '200':
+          $ref: '#/components/responses/getAllGroupProductsSuccess'
         '400':
           $ref: '#/components/responses/getDataByIdFailed'
   /products/group/status/{status}:
@@ -230,7 +230,7 @@ paths:
         - Group Products
       summary: Get All Group Products by available
       parameters:
-        - $ref: '#/components/parameters/availParam'
+        - $ref: '#/components/parameters/statusParam'
       responses:
         '200':
           $ref: '#/components/responses/getAllGroupProductsAvailableSuccess'
@@ -244,99 +244,89 @@ paths:
       security:
         - JWTAuth: []
       parameters:
-        - $ref: '#/components/parameters/idParam'
+        - $ref: '#/components/parameters/idProducts'
       responses:
         '200':
-          $ref: '#/components/responses/successOperationNonData'
+          $ref: '#/components/responses/createGroupProductSuccess'
         '400':
           $ref: '#/components/responses/createGroupProductFailed'
 ####################################
 #  ORDERS
 ####################################
-  /jwt/orders:
+  /jwt/orders/{id_group}:
     post:
       tags:
       - Orders
       summary: Create a new order
+      parameters:
+        - $ref: '#/components/parameters/idGroup'
       security:
         - JWTAuth: []
       requestBody:
         $ref: '#/components/requestBodies/requestBodyOrder'
       responses:
         '200':
-          $ref: '#/components/responses/successOperationNonData'
+          $ref: '#/components/responses/createOrderSuccess'
         '400':
           $ref: '#/components/responses/createOrderFailed'
-  /jwt/orders/users/{id}:
-    get:
-      tags:
-      - Orders
-      summary: Get all orders by user's id
-      parameters:
-        - $ref: '#/components/parameters/idParam'
-      security:
-        - JWTAuth: []
-      responses:
-        '200':
-          $ref: '#/components/responses/getAllUserOrdersSuccess'
-        '400':
-          $ref: '#/components/responses/getManyOrdersFailed'
-  /jwt/orders/group/{id}:
+  /jwt/orders/id/{id_order}:
     get:
       tags:
         - Orders
-      summary: Get all orders by id_group_product
+      summary: Get order by id_order
       parameters:
-        - $ref: '#/components/parameters/idParam'
-      security:
-        - JWTAuth: []
-      responses:
-        '200':
-          $ref: '#/components/responses/getAllGroupOrdersSuccess'
-        '400':
-          $ref: '#/components/responses/getManyOrdersFailed'
-  /jwt/orders/{id}:
-    get:
-      tags:
-        - Orders
-      summary: Get order by id
-      parameters:
-        - $ref: '#/components/parameters/idParam'
+        - $ref: '#/components/parameters/idOrder'
       security:
         - JWTAuth: []
       responses:
         '200':
           $ref: '#/components/responses/getOrderSuccess'
         '400':
-          $ref: '#/components/responses/getOrderFailed'
+          $ref: '#/components/responses/OrderResponseFailed'
+  /jwt/orders/group/{id_group}:
+    get:
+      tags:
+        - Orders
+      summary: Get all order by id_group
+      parameters:
+        - $ref: '#/components/parameters/idGroup'
+      security:
+        - JWTAuth: []
+      responses:
+        '200':
+          $ref: '#/components/responses/getAllOrdersSuccess'
+        '400':
+          $ref: '#/components/responses/OrderResponseFailed'
+  /jwt/orders/users/{id_user}:
+    get:
+      tags:
+      - Orders
+      summary: Get all orders by user's id
+      parameters:
+        - $ref: '#/components/parameters/idUser'
+      security:
+        - JWTAuth: []
+      responses:
+        '200':
+          $ref: '#/components/responses/getAllOrdersSuccess'
+        '400':
+          $ref: '#/components/responses/OrderResponseFailed'
+  /jwt/orders/update/{id_order}:
     put:
       tags:
         - Orders
-      summary: Update order by id
+      summary: Update order by id_order
       security:
         - JWTAuth: []
       parameters:
-        - $ref: '#/components/parameters/idParam'
+        - $ref: '#/components/parameters/idOrder'
       requestBody:
         $ref: '#/components/requestBodies/requestBodyOrderUpdate'
       responses:
         '200':
-          $ref: '#/components/responses/successOperationNonData'
+          $ref: '#/components/responses/getOrderSuccess'
         '400':
-          $ref: '#/components/responses/updateOrderFailed'
-    delete:
-      tags:
-      - Orders
-      summary: Delete order by id
-      security:
-        - JWTAuth: []
-      parameters:
-        - $ref: '#/components/parameters/idParam'
-      responses:
-        '200':
-          $ref: '#/components/responses/successOperationNonData'
-        '400':
-          $ref: '#/components/responses/deleteOrderFailed'
+          $ref: '#/components/responses/OrderResponseFailed'
 ####################################
 #  COMPONENTS
 ####################################
@@ -396,12 +386,31 @@ components:
         photo:
           type: string
           format: binary
-          description: "allowed file extension: jpg, png, & jpeg"
-    requestDataGroupProduct:
+          description: "allowed file extension: jpg, png, jpeg && size <= 1050000 byte"
+    requestDataProductUpdate:
       type: object
+      required:
+        - name_product
+        - detail_product
+        - price
+        - limit
       properties:
-        products_id:
+        name_product:
+          type: string
+          description: "minLength: 1"
+        detail_product:
+          type: string
+          description: "minLength: 1"
+        price:
           type: integer
+          description: "minimum value: 1"
+        limit:
+          type: integer
+          description: "minimum value: 1"
+        photo:
+          type: string
+          format: binary
+          description: "allowed file extension: jpg, png, jpeg && size <= 1050000 byte"
     requestDataOrder:
       type: object
       properties:
@@ -423,15 +432,13 @@ components:
     requestDataOrderUpdate:
       type: object
       properties:
-        credential:
+        detail:
           type: string
     responseLoginWithData:
       type: object
       properties:
         Code:
           type: integer
-        Message:
-          type: string
         Data:
           type: object
           properties:
@@ -443,13 +450,13 @@ components:
               type: string
             Role: 
               type: string
+        Message:
+          type: string
     responseUserWithData:
       type: object
       properties:
         Code:
           type: integer
-        Message:
-          type: string
         Data:
           type: object
           properties:
@@ -461,13 +468,13 @@ components:
               type: string
             Phone:
               type: string
+        Message:
+          type: string
     responseUserWithDataArray:
       type: object
       properties:
         Code:
-          type: integer  
-        Message:
-          type: string
+          type: integer 
         Data:
           type: array
           items:
@@ -480,14 +487,14 @@ components:
               Email:
                 type: string
               Phone:
-                type: string    
+                type: string
+        Message:
+          type: string    
     responseProductWithData:
       type: object
       properties:
         Code:
           type: integer
-        Message:
-          type: string
         Data:
           type: object
           properties:
@@ -506,13 +513,13 @@ components:
               format: binary
             Url: 
               type: string
+        Message:
+          type: string      
     responseProductWithDataArray:
       type: object
       properties:
         Code:
           type: integer
-        Message:
-          type: string
         Data:
           type: array
           items:
@@ -533,13 +540,13 @@ components:
                 format: binary
               Url: 
                 type: string
+        Message:
+          type: string
     responseGroupProductWithData:
       type: object
       properties:
         Code:
           type: integer
-        Message:
-          type: string
         Data:
           type: object
           properties:
@@ -567,13 +574,24 @@ components:
               type: string
             Url:
               type: string
+            GetOrder: 
+              type: array
+              items:
+                type: object
+                properties:
+                  UsersID:
+                    type: integer
+                  GroupProductID:
+                    type: integer
+                  Name:
+                    type: string
+        Message:
+          type: string
     responseGroupProductWithDataArray:
         type: object
         properties:
           Code:
             type: integer
-          Message:
-            type: string
           Data:
             type: array
             items:
@@ -602,53 +620,87 @@ components:
                 Status: 
                   type: string
                 Url:
-                  type: string  
+                  type: string
+                GetOrder: 
+                  type: array
+                  nullable: true
+                  items:
+                    type: object
+                    properties:
+                      UsersID:
+                        type: integer
+                      GroupProductID:
+                        type: integer
+                      Name:
+                        type: string
+          Message:
+            type: string  
+    responseCreateGroupProductWithData:
+      type: object
+      properties:
+        Code:
+          type: integer
+        Data:
+          type: object
+          properties:
+            GroupProductID:
+              type: integer
+        Message:
+          type: string
+    responseCreateOrderWithData:
+      type: object
+      properties:
+        Code:
+          type: integer
+        Data:
+          type: object
+          properties:
+            OrderID:
+              type: integer
+        Message:
+          type: string
     responseOrderWithData:
       type: object
       properties:
         Code:
           type: integer
-        Message:
-          type: string
         Data:
           type: object
           properties:
-            ID:
-              type: integer
             UsersID:
               type: integer
             GroupProductID:
               type: integer
             NameProduct:
               type: string
-            Price_Order:
+            PriceOrder:
               type: integer
-            Credential:
+            DetailCredential:
               type: string
+        Message:
+          type: string
     responseOrderWithDataArray:
       type: object
       properties:
         Code:
           type: integer
-        Message:
-          type: string
         Data:
           type: array 
           items:
             type: object
             properties:
-              ID:
-                type: integer
               UsersID:
                 type: integer
               GroupProductID:
                 type: integer
               NameProduct:
                 type: string
-              Price_Order:
+              PriceOrder:
                 type: integer
-              Credential:
+              DetailCredential:
                 type: string
+        Message:
+          type: string
     responseNonData: 
       type: object
       properties:
@@ -657,6 +709,20 @@ components:
         Message:
           type: string 
   parameters:
+    idGroup:
+      name: id_group
+      in: path
+      required: true
+      schema:
+        type: integer
+        example: 1
+    idOrder:
+      name: id_order
+      in: path
+      required: true
+      schema:
+        type: integer
+        example: 1
     idParam:
       name: id
       in: path
@@ -664,7 +730,21 @@ components:
       schema:
         type: integer
         example: 1
-    availParam:
+    idProducts:
+      name: id_products
+      in: path
+      required: true
+      schema:
+        type: integer
+        example: 1
+    idUser:
+      name: id_user
+      in: path
+      required: true
+      schema:
+        type: integer
+        example: 1
+    statusParam:
       name: status
       in: path
       required: true
@@ -755,23 +835,7 @@ components:
       content:
         multipart/form-data:
           schema:
-            $ref: '#/components/schemas/requestDataProduct'
-    requestBodyGroupProduct:
-      required: true
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/requestDataGroupProduct'
-          examples:
-            group1:
-              value:
-                products_id: 2
-            group2:
-              value:
-                products_id: 3
-        multipart/form-data:
-          schema:
-            $ref: '#/components/schemas/requestDataGroupProduct'
+            $ref: '#/components/schemas/requestDataProductUpdate'
     requestBodyOrder: 
       required: true
       content:
@@ -793,7 +857,7 @@ components:
           schema:  
             $ref: '#/components/schemas/requestDataOrderUpdate'
           example:
-            credential: "email: subs.netflix@mail.com, password: qwertyui"
+            detail: "email: subs.netflix@mail.com, password: qwertyui"
   responses:
     loginSuccess:
       description: Success Response Data
@@ -1063,6 +1127,18 @@ components:
               $ref: '#/components/examples/illegalFile'
             Size File Too Big:
               $ref: '#/components/examples/sizeFileTooBig'
+    createGroupProductSuccess:
+      description: Success Operation
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/responseCreateGroupProductWithData'
+          example:
+            Code: 200
+            Message: Success Operation
+            Data: { 
+              GroupProductID: 1,
+            }
     createGroupProductFailed:
       description: Bad Request Response
       content:
@@ -1192,6 +1268,18 @@ components:
                 Status: Available,
                 Url: https://storage.googleapis.com/barengin-bucket/Youtube-Music-2021-12-13T10:06:45.jpg
               }
+    createOrderSuccess:
+      description: Success Operation
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/responseCreateOrderWithData'
+          example:
+            Code: 200
+            Message: Success Operation
+            Data: { 
+              OrderID: 1,
+            }
     createOrderFailed:
       description: Bad Request
       content:
@@ -1199,75 +1287,16 @@ components:
           schema:
             $ref: '#/components/schemas/responseNonData'
           examples:
-            Bad Request:
-              $ref: '#/components/examples/badRequest'
-    getAllUserOrdersSuccess:
-      description: Success Operation
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/responseOrderWithDataArray'
-          example:
-            Code: 200
-            Message: Success Operation
-            Data: [
-              {
-                ID: 1,
-                UsersID: 2,
-                GroupProductID: 1,
-                NameProduct: Spotify,
-                PriceOrder: 26500,
-                Credential: "email: subs.spotify@mail.com, password: spotify123"
-              },
-              {
-                ID: 2,
-                UsersID: 2,
-                GroupProductID: 2,
-                NameProduct: Netflix,
-                PriceOrder: 56500,
-                Credential: "email: subs.netflix@mail.com, password: netflix123"
-              }            
-            ]
-    getManyOrdersFailed:
-      description: Bad Request
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/responseNonData'
-          examples:
-            Invalid Id:
-              $ref: '#/components/examples/invalidId'
-            Data Not Found:
-              $ref: '#/components/examples/dataNotFound'
+            Invalid Param:
+              $ref: '#/components/examples/invalidParam'
             Access Forbidden:
               $ref: '#/components/examples/accessForbidden'
-    getAllGroupOrdersSuccess:
-      description: Success Operation
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/responseOrderWithDataArray'
-          example:
-            Code: 200
-            Message: Success Operation
-            Data: [
-              {
-                ID: 1,
-                UsersID: 2,
-                GroupProductID: 1,
-                NameProduct: Spotify,
-                PriceOrder: 26500,
-                Credential: "email: subs.spotify@mail.com, password: spotify123"
-              },
-              {
-                ID: 4,
-                UsersID: 5,
-                GroupProductID: 1,
-                NameProduct: Spotify,
-                PriceOrder: 26500,
-                Credential: "email: subs.spotify@mail.com, password: spotify123"
-              }            
-            ]
+            Group Product Full:
+              $ref: '#/components/examples/groupProductFull'
+            Bad Request:
+              $ref: '#/components/examples/badRequest'
+            Id Group Product Not Found:
+              $ref: '#/components/examples/idGroupProductNotFound'
     getOrderSuccess:
       description: Success Operation
       content:
@@ -1276,16 +1305,15 @@ components:
             $ref: '#/components/schemas/responseOrderWithData'
           example:
             Code: 200
-            Message: Success Operation
             Data: {
-              ID: 1,
-              UsersID: 2,
-              GroupProductID: 1,
+              UsersID: 7,
+              GroupProductID: 8,
               NameProduct: Spotify,
-              PriceOrder: 26500,
-              Credential: "email: subs.spotify@mail.com, password: spotify123"
+              PriceOrder: 50833,
+              DetailCredential: "email: subs.spotify@mail.com, password: spotify123"
             }
-    getOrderFailed:
+            Message: Success Operation
+    OrderResponseFailed:
       description: Bad Request
       content:
         application/json:
@@ -1296,36 +1324,37 @@ components:
               $ref: '#/components/examples/invalidId'
             Data Not Found:
               $ref: '#/components/examples/dataNotFound'
+            Access Forbidden:
+              $ref: '#/components/examples/dataNotFound'
             Bad Request:
               $ref: '#/components/examples/badRequest'
-    updateOrderFailed:
-      description: Bad Request Response
+    getAllOrdersSuccess:
+      description: Success Operation
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/responseNonData'
-          examples:
-            Invalid Id:
-              $ref: '#/components/examples/invalidId'
-            Data Not Found:
-              $ref: '#/components/examples/dataNotFound'
-            Access Forbidden:
-              $ref: '#/components/examples/accessForbidden'
-            Bad Request:
-              $ref: '#/components/examples/badRequest'
-    deleteOrderFailed:
-      description: Bad Request Response
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/responseNonData'
-          examples:
-            Invalid Id:
-              $ref: '#/components/examples/invalidId'
-            Data Not Found:
-              $ref: '#/components/examples/dataNotFound'
-            Access Forbidden:
-                $ref: '#/components/examples/accessForbidden'
+            $ref: '#/components/schemas/responseOrderWithDataArray'
+          example:
+            Code: 200
+            Message: Success Operation
+            Data: [
+              {
+                ID: 1,
+                UsersID: 79,
+                GroupProductID: 1,
+                NameProduct: Youtube-Music,
+                PriceOrder: 50833,
+                Credential: "email: subs.spotify@mail.com, password: spotify123"
+              },
+              {
+                ID: 2,
+                UsersID: 79,
+                GroupProductID: 1,
+                NameProduct: Youtube-Music,
+                PriceOrder: 50833,
+                Credential: "email: subs.netflix@mail.com, password: netflix123"
+              }            
+            ]
   examples:
     accessForbidden:
       value:
@@ -1359,6 +1388,14 @@ components:
       value:
         Code: 400
         Message: File Extension Not Allowed
+    groupProductFull:
+      value:
+        Code: 400
+        Message: Group Product Full
+    idGroupProductNotFound:
+      value:
+        Code: 400
+        Message: Id Group Product Not Found
     idProductNotFound:
       value:
         Code: 400
