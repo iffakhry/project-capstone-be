@@ -29,6 +29,10 @@ type OrderRequest struct {
 	CreditCard CreditCard `json:"credit_card" `
 }
 
+type Detail struct {
+	DetailCredential string `json:"detail" form:"detail"`
+}
+
 type GetOrder struct {
 	UsersID          uint
 	GroupProductID   uint

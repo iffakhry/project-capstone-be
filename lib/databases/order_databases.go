@@ -96,3 +96,13 @@ func CekUserInGroup(id_group, id_user uint) (interface{}, error) {
 	}
 	return order, nil
 }
+
+func UpdateOrderDetail(id_order int, detail string) (interface{}, error) {
+	order := models.Order{}
+	res := models.GetOrder{}
+	query1 := config.DB.Model(&order).Where("orders.id = ?", id_order).Update("detail_credential", detail).Find(&res, id_order)
+	if query1.Error != nil {
+		return nil, query1.Error
+	}
+	return res, nil
+}

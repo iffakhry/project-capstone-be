@@ -104,6 +104,28 @@ func GetOrderByIdUsersControllers(c echo.Context) error {
 	return c.JSON(http.StatusOK, response.SuccessResponseData("Success Operation", data))
 }
 
+func UpdateOrderControllers(c echo.Context) error {
+	detail := models.Detail{}
+	id_order, err := strconv.Atoi(c.Param("id_order"))
+	c.Bind(&detail)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Id"))
+	}
+	_, role := middlewares.ExtractTokenId(c)
+
+	data, e := databases.UpdateOrderDetail(id_order, detail.DetailCredential)
+	if data == nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
+	}
+	if role != "admin" {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
+	}
+	if e != nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Bad Request"))
+	}
+	return c.JSON(http.StatusOK, response.SuccessResponseData("Success Operation", data))
+}
+
 // func CekOrderControllers(c echo.Context) error {
 // 	id := c.Param("id_group")
 // 	id_group_product, err := strconv.Atoi(id)

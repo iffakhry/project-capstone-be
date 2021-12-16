@@ -57,5 +57,6 @@ func New() *echo.Echo {
 	j.GET("/orders/id/:id_order", controllers.GetOrderByIdOrderControllers)
 	j.GET("/orders/group/:id_group", controllers.GetOrderByIdGroupControllers)
 	j.GET("/orders/users/:id_user", controllers.GetOrderByIdUsersControllers)
+	j.PUT("/orders/update/:id_order", controllers.UpdateOrderControllers)
 	return e
 }
