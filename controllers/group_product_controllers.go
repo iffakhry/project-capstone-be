@@ -35,7 +35,7 @@ func CreateGroupProductControllers(c echo.Context) error {
 	if d == nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Id Product Not Found"))
 	}
-	return c.JSON(http.StatusOK, response.SuccessResponseNonData("Success Operation"))
+	return c.JSON(http.StatusOK, response.SuccessResponseData("Success Operation", d))
 }
 
 func GetByIdGroupProductControllers(c echo.Context) error {

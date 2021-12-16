@@ -169,47 +169,52 @@ func UpdateProductControllers(c echo.Context) error {
 	}
 
 	f, uploaded_file, err := c.Request().FormFile("photo")
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, response.BadRequestResponse("Failed to Upload File"))
+	if uploaded_file != nil {
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, response.BadRequestResponse("Failed to Upload File"))
+		}
+
+		defer f.Close()
+
+		ext := strings.Split(uploaded_file.Filename, ".")
+		extension := ext[len(ext)-1]
+		check_extension := strings.ToLower(extension)
+		if check_extension != "jpg" && check_extension != "png" && check_extension != "jpeg" {
+			return c.JSON(http.StatusBadRequest, response.BadRequestResponse("File Extension Not Allowed"))
+		}
+
+		if uploaded_file.Size == 0 {
+			return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Illegal File"))
+		} else if uploaded_file.Size > 1050000 {
+			return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Size File Too Big"))
+		}
+		t := time.Now()
+		formatted := fmt.Sprintf("%d-%02d-%02dT%02d:%02d:%02d",
+			t.Year(), t.Month(), t.Day(),
+			t.Hour(), t.Minute(), t.Second())
+		photo_name := strings.ReplaceAll(update_product.Name_Product, " ", "-")
+		uploaded_file.Filename = fmt.Sprintf("%s-%s.%s", photo_name, formatted, extension)
+		update_product.Photo = uploaded_file.Filename
+		sw := storageClient.Bucket(bucket).Object(uploaded_file.Filename).NewWriter(ctx)
+
+		if _, err := io.Copy(sw, f); err != nil {
+			return c.JSON(http.StatusInternalServerError, response.InternalServerErrorResponse("Failed to Upload File"))
+		}
+
+		if err := sw.Close(); err != nil {
+			return c.JSON(http.StatusInternalServerError, response.InternalServerErrorResponse("Failed to Upload File"))
+		}
+
+		u, err := url.Parse("https://storage.googleapis.com/" + bucket + "/" + sw.Attrs().Name)
+		update_product.Url = fmt.Sprintf("%v", u)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, response.InternalServerErrorResponse("Failed to Upload File"))
+		}
+	} else {
+		photo, url, _ := databases.GetPhotoUrlProductById(id)
+		update_product.Photo = photo
+		update_product.Url = url
 	}
-
-	defer f.Close()
-
-	ext := strings.Split(uploaded_file.Filename, ".")
-	extension := ext[len(ext)-1]
-	check_extension := strings.ToLower(extension)
-	if check_extension != "jpg" && check_extension != "png" && check_extension != "jpeg" {
-		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("File Extension Not Allowed"))
-	}
-
-	if uploaded_file.Size == 0 {
-		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Illegal File"))
-	} else if uploaded_file.Size > 1050000 {
-		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Size File Too Big"))
-	}
-	t := time.Now()
-	formatted := fmt.Sprintf("%d-%02d-%02dT%02d:%02d:%02d",
-		t.Year(), t.Month(), t.Day(),
-		t.Hour(), t.Minute(), t.Second())
-	photo_name := strings.ReplaceAll(update_product.Name_Product, " ", "-")
-	uploaded_file.Filename = fmt.Sprintf("%s-%s.%s", photo_name, formatted, extension)
-	update_product.Photo = uploaded_file.Filename
-	sw := storageClient.Bucket(bucket).Object(uploaded_file.Filename).NewWriter(ctx)
-
-	if _, err := io.Copy(sw, f); err != nil {
-		return c.JSON(http.StatusInternalServerError, response.InternalServerErrorResponse("Failed to Upload File"))
-	}
-
-	if err := sw.Close(); err != nil {
-		return c.JSON(http.StatusInternalServerError, response.InternalServerErrorResponse("Failed to Upload File"))
-	}
-
-	u, err := url.Parse("https://storage.googleapis.com/" + bucket + "/" + sw.Attrs().Name)
-	update_product.Url = fmt.Sprintf("%v", u)
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, response.InternalServerErrorResponse("Failed to Upload File"))
-	}
-
 	v := validator.New()
 	validasi_product := ValidatorProduct{
 		Name_Product:   update_product.Name_Product,

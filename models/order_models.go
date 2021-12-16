@@ -33,11 +33,15 @@ type Detail struct {
 	DetailCredential string `json:"detail" form:"detail"`
 }
 
+type Response struct {
+	OrderID uint
+}
+
 type GetOrder struct {
 	UsersID          uint
 	GroupProductID   uint
-	PriceOrder       int
 	NameProduct      string
+	PriceOrder       int
 	DetailCredential string
 }
 

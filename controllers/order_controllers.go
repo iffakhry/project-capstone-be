@@ -52,11 +52,11 @@ func GetOrderByIdOrderControllers(c echo.Context) error {
 	token, _ := middlewares.ExtractTokenId(c)
 
 	data, e, id_user := databases.GetOrderByIdOrder(id_order)
-	if id_user != uint(token) {
-		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
-	}
 	if data == nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
+	}
+	if id_user != uint(token) {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
 	}
 	if e != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Bad Request"))

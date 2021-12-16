@@ -30,3 +30,7 @@ type GetGroupProduct struct {
 	Url                  string
 	GetOrder             interface{}
 }
+
+type ResGroup struct {
+	GroupProductID uint
+}

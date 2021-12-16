@@ -20,7 +20,7 @@ func CreateGroupProduct(group *models.GroupProduct, id_product uint) (interface{
 		fee := 5000
 
 		group.NameGroupProduct = name + "-" + strconv.Itoa(len_group+1)
-		group.CapacityGroupProduct = 1
+		group.CapacityGroupProduct = 0
 		group.AdminFee = fee
 		group.TotalPrice = fee + price
 		group.DurationGroup = duration.Format("02-01-2006")
@@ -29,7 +29,11 @@ func CreateGroupProduct(group *models.GroupProduct, id_product uint) (interface{
 		if err := config.DB.Create(&group).Error; err != nil {
 			return nil, err
 		}
-		return group, nil
+		Create_Res := models.ResGroup{
+			GroupProductID: group.ID,
+		}
+
+		return Create_Res, nil
 	}
 
 	return nil, er
