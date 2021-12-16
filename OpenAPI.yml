@@ -233,14 +233,14 @@ paths:
         - $ref: '#/components/parameters/statusParam'
       responses:
         '200':
-          $ref: '#/components/responses/getAllGroupProductsAvailableSuccess'
+          $ref: '#/components/responses/getAllGroupProductsSuccess'
         '400':
           $ref: '#/components/responses/getAllGroupProductsAvailableFailed'
   /jwt/products/group/{id_products}:
     post:
       tags:
       - Group Products
-      summary: Create a new group product
+      summary: Create a new group product for customers only
       security:
         - JWTAuth: []
       parameters:
@@ -354,6 +354,7 @@ components:
         email:
           type: string
           format: email
+          minLength: 5
           description: inputted email must be unique
         password:
           type: string
@@ -361,6 +362,8 @@ components:
         phone:
           type: string
           format: e164
+          minLength: 8
+          maxLength: 16
           description: inputted phone number must be unique
     requestDataProduct:
       type: object
@@ -500,9 +503,9 @@ components:
           properties:
             ID:
               type: integer
-            NameProduct:
+            Name_Product:
               type: string
-            DetailProduct:
+            Detail_Product:
               type: string
             Price:
               type: integer
@@ -527,9 +530,9 @@ components:
             properties:
               ID:
                 type: integer
-              NameProduct:
+              Name_Product:
                 type: string
-              DetailProduct:
+              Detail_Product:
                 type: string
               Price:
                 type: integer
@@ -765,18 +768,14 @@ components:
           schema:
             $ref: '#/components/schemas/requestDataLogin'
           examples:
-            user1:
+            Admin:
               value:
                 email: admin@admin.com
                 password: admin123
-            user2:
+            Customer:
               value:
-                email: s@g.sb
-                password: asd!@#1
-            user3:
-              value:
-                email: nurilhuda7337@gmail.com
-                password: "12345678"
+                email: perospero@mail.com
+                password: qwerty
         multipart/form-data:
           schema:
             $ref: '#/components/schemas/requestDataLogin'        
@@ -789,22 +788,22 @@ components:
           examples:
             newUser1:
               value:
-                name: Nuril Huda
+                name: NurilHuda
                 email: nurilhuda7337@gmail.com
-                password: "12345678"
+                password: qwerty
                 phone: "+6281234567890"
             newUser2:
               value:
-                name: Supriadi
-                email: s@g.sb
+                name: sup.sup77
+                email: s@g.s
                 password: asd!@#12
-                phone: "+67712345"
+                phone: "+6771234"
             newUser3:
               value:
-                name: Sahril Mahendra
-                email: sahrilmahendra@gmail.com
-                password: qwertyui
-                phone: "+62899999999999"
+                name: sahril_mhdra
+                email: sahril88@yahoo.co.id
+                password: test123
+                phone: "+628999999999999"
         multipart/form-data:
           schema:
             $ref: '#/components/schemas/requestDataUser'
@@ -817,7 +816,7 @@ components:
           examples:
             newData1:
               value:
-                name: Supriadi Baru
+                name: SupriadiBaru
                 email: new.s@yahoo.co.id
                 password: newpass
                 phone: "+628966066096"
@@ -869,23 +868,23 @@ components:
             Admin:
               value:
                 Code: 200
-                Message: Login Success
                 Data: {
-                  ID: 1,
-                  Name: Admin,
-                  Token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.emV2MzgxOeyJhdXRob3JpTUwMDksInVzZXJJZCI6MX0kIjp0cnVlLCJleHAiOjE.aDGmCTqYbV7hJ02lOpoQ0gso_gffYqClvhaNZZdbe7F,
+                  ID: 4,
+                  Name: admin,
+                  Token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOjE2Mzk2OTAwMjMsInJvbGUiOiJhZG1pbiIsInVzZXJJZCI6NH0.1Ij1ZVqpqPDOVXzaXyqcyNMlnbLTfwD28Byv0aWNjAQ,
                   Role: admin
                 }
+                Message: Login Success
             Customer:
               value:
                 Code: 200
-                Message: Login Success
                 Data: {
-                  ID: 3,
-                  Name: Supriadi,
-                  Token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOjE2MzgxOTUwMDksInVzZXJJZCI6MX0.0gso_gffYqaDGmCTqYClvhaNZZdbe7FbV7hJ02lOpoQ,
+                  ID: 150,
+                  Name: perospero,
+                  Token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOjE2Mzk2OTAxOTgsInJvbGUiOiJjdXN0b21lciIsInVzZXJJZCI6MTUwfQ.SJfS9BOfxJdNXzrRSTlRUXGItxQuUlMarALMD37Ronc,
                   Role: customer
                 }
+                Message: Login Success
     loginFailed:
       description: Bad Request Response
       content:
@@ -933,27 +932,27 @@ components:
             $ref: '#/components/schemas/responseUserWithDataArray'
           example:
             Code: 200
-            Message: Success Operation
             Data: [
               {
+                ID: 1,
+                Name: try,
+                Email: try@example.com,
+                Phone: "+6281111222333"
+              },
+              {
                 ID: 2,
-                Name: Nuril Huda,
-                Email: nurilhuda7337@gmail.com,
-                Phone: "+6281234567890"
+                Name: test123,
+                Email: test123@example.com,
+                Phone: "+6281444555666"
               },
               {
                 ID: 3,
-                Name: Supriadi,
-                Email: s@g.sb,
-                Phone: "+67712345890"
-              },
-              {
-                ID: 4,
-                Name: Sahril Mahendra,
-                Email: sahrilmahendra@gmail.com,
-                Phone: "+62899999999999"
+                Name: coba123,
+                Email: coba123@example.com,
+                Phone: "+6281777777777"
               }
             ]
+            Message: Success Operation
     getAllDataFailed:
       description: Bad Request Response
       content:
@@ -973,13 +972,13 @@ components:
             $ref: '#/components/schemas/responseUserWithData'
           example:
             Code: 200
-            Message: Success Operation
             Data: {
-              ID: 2,
-              Name: Nuril Huda,
-              Email: nurilhuda7337@gmail.com,
-              Phone: "+6281234567890"
+              ID: 1,
+              Name: try,
+              Email: try@example.com,
+              Phone: "+6281111222333"  
             }
+            Message: Success Operation
     getDataByIdFailed:
       description: Bad Request Response
       content:
@@ -1067,27 +1066,27 @@ components:
             $ref: '#/components/schemas/responseProductWithDataArray'
           example:
             Code: 200
-            Message: Success Operation
             Data: [
               { 
-                ID: 1,
-                NameProduct: Netflix,
-                DetailProduct: Langganan Netflix untuk 1 bulan,
-                Price: 200000,
-                Limit: 4,
-                Photo: logo-netflix-upload-file-2021-12-12T07:19:15.jpeg,
-                Url: https://storage.googleapis.com/sahril-bucket/netflix-try-upload-file-2021-12-12T07:19:15.jpeg
+                ID: 3,
+                NameProduct: Youtube-Music,
+                DetailProduct: Lorem,
+                Price: 300000,
+                Limit: 6,
+                Photo: Youtube-Music-2021-12-13T10:06:45.jpg,
+                Url: https://storage.googleapis.com/barengin-bucket/Youtube-Music-2021-12-13T10:06:45.jpg
               },
               { 
-                ID: 2,
-                NameProduct: Spotify,
-                DetailProduct: Langganan Spotify untuk 1 bulan,
-                Price: 100000,
-                Limit: 5,
-                Photo: logo-spotify-upload-file-2021-12-12T12:12:12.jpeg,
-                Url: https://storage.googleapis.com/sahril-bucket/spotify-try-upload-file-2021-12-12T07:19:15.jpeg
+                ID: 4,
+                NameProduct: Youtube Premium,
+                DetailProduct: Berlangganan 1 bulan,
+                Price: 200000,
+                Limit: 4,
+                Photo: Youtube-Premium-2021-12-14T09:34:47.png,
+                Url: https://storage.googleapis.com/barengin-bucket/Youtube-Premium-2021-12-14T09:34:47.png
               }
             ]
+            Message: Success Operation
     getProductSuccess:
       description: Success Response Data
       content:
@@ -1096,16 +1095,16 @@ components:
             $ref: '#/components/schemas/responseProductWithData'
           example:
             Code: 200
-            Message: Success Operation
             Data: { 
               ID: 3,
-              NameProduct: Gramedia,
-              DetailProduct: Langganan Gramedia untuk 1 bulan,
-              Price: 150000,
-              Limit: 4,
-              Photo: logo-netflix-upload-file-2021-12-12T07:19:15.jpeg,
-              Url: https://storage.googleapis.com/sahril-bucket/netflix-try-upload-file-2021-12-12T07:19:15.jpeg
+                NameProduct: Youtube-Music,
+                DetailProduct: Lorem,
+                Price: 300000,
+                Limit: 6,
+                Photo: Youtube-Music-2021-12-13T10:06:45.jpg,
+                Url: https://storage.googleapis.com/barengin-bucket/Youtube-Music-2021-12-13T10:06:45.jpg
             }
+            Message: Success Operation
     updateProductFailed:
       description: Bad Request Response
       content:
@@ -1135,10 +1134,10 @@ components:
             $ref: '#/components/schemas/responseCreateGroupProductWithData'
           example:
             Code: 200
-            Message: Success Operation
             Data: { 
               GroupProductID: 1,
             }
+            Message: Success Operation
     createGroupProductFailed:
       description: Bad Request Response
       content:
@@ -1162,9 +1161,54 @@ components:
             $ref: '#/components/schemas/responseGroupProductWithDataArray'
           example:
             Code: 200
-            Message: Success Operation
             Data: [
               { 
+                ID: 1,
+                ProducstID: 3, 
+                NameGroupProduct: Youtube-Music-1,
+                Limit: 6,
+                CapacityGroupProduct: 2,
+                Price: 300000,
+                AdminFee: 5000,
+                TotalPrice: 305000,
+                DurationGroup: 12-26-2021,
+                Name_Product: Youtube-Music,
+                Status: Available,
+                Url: https://storage.googleapis.com/barengin-bucket/Youtube-Music-2021-12-13T10:06:45.jpg,
+                GetOrder: [
+                  {
+                    UsersID: 79,
+                    GroupProductID: 1,
+                    Name: nuril
+                  }
+                ]
+              },
+              { 
+                ID: 2,
+                ProducstID: 3, 
+                NameGroupProduct: Youtube-Music-2,
+                Limit: 6,
+                CapacityGroupProduct: 1,
+                Price: 300000,
+                AdminFee: 5000,
+                TotalPrice: 305000,
+                DurationGroup: 12-26-2021,
+                Name_Product: Youtube-Music,
+                Status: Available,
+                Url: https://storage.googleapis.com/barengin-bucket/Youtube-Music-2021-12-13T10:06:45.jpg,
+                GetOrder: null
+              }
+            ]
+            Message: Success Operation
+    getGroupProductSuccess:
+      description: Success Response Data
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/responseGroupProductWithData'
+          example:
+            Code: 200
+            Data: { 
                 ID: 1,
                 ProducstID: 3, 
                 NameGroupProduct: Youtube-Music-1,
@@ -1176,23 +1220,16 @@ components:
                 DurationGroup: 12-26-2021,
                 Name_Product: Youtube-Music,
                 Status: Available,
-                Url: https://storage.googleapis.com/barengin-bucket/Youtube-Music-2021-12-13T10:06:45.jpg
-              },
-              { 
-                ID: 2,
-                ProducstID: 3, 
-                NameGroupProduct: Youtube-Music-1,
-                Limit: 6,
-                CapacityGroupProduct: 1,
-                Price: 300000,
-                AdminFee: 5000,
-                TotalPrice: 305000,
-                DurationGroup: 12-26-2021,
-                Name_Product: Youtube-Music,
-                Status: Available,
-                Url: https://storage.googleapis.com/barengin-bucket/Youtube-Music-2021-12-13T10:06:45.jpg
+                Url: https://storage.googleapis.com/barengin-bucket/Youtube-Music-2021-12-13T10:06:45.jpg,
+                GetOrder: [
+                  {
+                    UsersID: 79,
+                    GroupProductID: 1,
+                    Name: nuril
+                  }
+                ]
               }
-            ]
+            Message: Success Operation
     getAllGroupProductsAvailableFailed:
       description: Bad Request Response
       content:
@@ -1206,68 +1243,6 @@ components:
               $ref: '#/components/examples/dataNotFound'
             Bad Request:
               $ref: '#/components/examples/badRequest'
-    getAllGroupProductsAvailableSuccess:
-      description: Success Response Data
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/responseGroupProductWithDataArray'
-          example:
-            Code: 200
-            Message: Success Operation
-            Data: [
-              { 
-                ID: 1,
-                ProducstID: 3, 
-                NameGroupProduct: Youtube-Music-1,
-                Limit: 6,
-                CapacityGroupProduct: 1,
-                Price: 300000,
-                AdminFee: 5000,
-                TotalPrice: 305000,
-                DurationGroup: 12-26-2021,
-                Name_Product: Youtube-Music,
-                Status: Available,
-                Url: https://storage.googleapis.com/barengin-bucket/Youtube-Music-2021-12-13T10:06:45.jpg
-              },
-              { 
-                ID: 2,
-                ProducstID: 3, 
-                NameGroupProduct: Youtube-Music-1,
-                Limit: 6,
-                CapacityGroupProduct: 1,
-                Price: 300000,
-                AdminFee: 5000,
-                TotalPrice: 305000,
-                DurationGroup: 12-26-2021,
-                Name_Product: Youtube-Music,
-                Status: Available,
-                Url: https://storage.googleapis.com/barengin-bucket/Youtube-Music-2021-12-13T10:06:45.jpg
-              }
-            ]
-    getGroupProductSuccess:
-      description: Success Response Data
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/responseGroupProductWithData'
-          example:
-            Code: 200
-            Message: Success Operation
-            Data: { 
-                ID: 1,
-                ProducstID: 3, 
-                NameGroupProduct: Youtube-Music-1,
-                Limit: 6,
-                CapacityGroupProduct: 1,
-                Price: 300000,
-                AdminFee: 5000,
-                TotalPrice: 305000,
-                DurationGroup: 12-26-2021,
-                Name_Product: Youtube-Music,
-                Status: Available,
-                Url: https://storage.googleapis.com/barengin-bucket/Youtube-Music-2021-12-13T10:06:45.jpg
-              }
     createOrderSuccess:
       description: Success Operation
       content:
@@ -1419,7 +1394,7 @@ components:
     invalidParam:
       value:
         Code: 400
-        Message: Invalid Parameter
+        Message: Invalid Param
     invalidPassword:
       value:
         Code: 400
