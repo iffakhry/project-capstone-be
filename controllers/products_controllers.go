@@ -27,7 +27,7 @@ type ValidatorProduct struct {
 	Name_Product   string `validate:"required"`
 	Detail_Product string `validate:"required"`
 	Price          int    `validate:"required,gt=0"`
-	Limit          int    `validate:"required,gt=0"`
+	Limit          int    `validate:"required,gt=1"`
 	Photo          string `validate:"required"`
 	Url            string `validate:"required"`
 }
@@ -147,16 +147,16 @@ func GetProductByIdControllers(c echo.Context) error {
 // controller untuk memperbarui data product by id
 func UpdateProductControllers(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
+	_, role := middlewares.ExtractTokenId(c) // check token
+	if role != "admin" {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
+	}
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Id"))
 	}
 	product, _ := databases.GetProductById(id)
 	if product == nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
-	}
-	_, role := middlewares.ExtractTokenId(c) // check token
-	if role != "admin" {
-		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
 	}
 	update_product := models.Products{}
 	c.Bind(&update_product)
@@ -246,16 +246,16 @@ func UpdateProductControllers(c echo.Context) error {
 // controller untuk menghapus data product by id
 func DeleteProductControllers(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
+	_, role := middlewares.ExtractTokenId(c)
+	if role != "admin" {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
+	}
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Id"))
 	}
 	product, _ := databases.GetProductById(id)
 	if product == nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
-	}
-	_, role := middlewares.ExtractTokenId(c)
-	if role != "admin" {
-		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
 	}
 	databases.DeleteProduct(id)
 	return c.JSON(http.StatusOK, response.SuccessResponseNonData("Success Operation"))

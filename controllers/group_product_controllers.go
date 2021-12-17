@@ -16,15 +16,14 @@ func CreateGroupProductControllers(c echo.Context) error {
 	new_group := models.GroupProduct{}
 	id := c.Param("id_products")
 	id_product, err := strconv.Atoi(id)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Param"))
-	}
-	c.Bind(&new_group)
-
 	id_user, role := middlewares.ExtractTokenId(c)
 	if role == "admin" {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
 	}
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Param"))
+	}
+	c.Bind(&new_group)
 	new_group.UsersID = uint(id_user)
 	new_group.ProductsID = uint(id_product)
 

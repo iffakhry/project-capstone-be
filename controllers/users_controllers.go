@@ -17,6 +17,10 @@ import (
 
 // controller untuk menampilkan seluruh data users
 func GetAllUsersControllers(c echo.Context) error {
+	_, role := middlewares.ExtractTokenId(c) // check token
+	if role != "admin" {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
+	}
 	users, err := databases.GetAllUsers()
 	if users == nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
@@ -31,7 +35,10 @@ func GetAllUsersControllers(c echo.Context) error {
 func GetUserControllers(c echo.Context) error {
 	id := c.Param("id")
 	conv_id, err := strconv.Atoi(id)
-	// log.Println("id", conv_id)
+	logged, role := middlewares.ExtractTokenId(c) // check token
+	if logged != conv_id || role == "admin" {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
+	}
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Id"))
 	}
@@ -91,19 +98,16 @@ func CreateUserControllers(c echo.Context) error {
 // controller untuk menghapus user by id
 func DeleteUserControllers(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
-
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Id"))
-	}
-
-	user, _ := databases.GetUserById(id)
-	if user == nil {
-		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
-	}
-
 	logged, role := middlewares.ExtractTokenId(c) // check token
 	if logged != id && role != "admin" {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
+	}
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Id"))
+	}
+	user, _ := databases.GetUserById(id)
+	if user == nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
 	}
 	databases.DeleteUser(id)
 
@@ -113,7 +117,10 @@ func DeleteUserControllers(c echo.Context) error {
 // controller untuk memperbarui data user by id (update)
 func UpdateUserControllers(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
-
+	logged, role := middlewares.ExtractTokenId(c) // check token
+	if logged != id && role != "admin" {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
+	}
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Id"))
 	}
@@ -121,11 +128,6 @@ func UpdateUserControllers(c echo.Context) error {
 	user, _ := databases.GetUserById(id)
 	if user == nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
-	}
-
-	logged, role := middlewares.ExtractTokenId(c) // check token
-	if logged != id && role != "admin" {
-		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
 	}
 	users := models.Users{}
 	c.Bind(&users)
