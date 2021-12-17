@@ -16,22 +16,21 @@ import (
 func CreateGroupProductControllers(c echo.Context) error {
 	new_group := models.GroupProduct{}
 	id := c.Param("id_products")
-	id_product, err := strconv.Atoi(id)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Param"))
-	}
 	c.Bind(&new_group)
 
+	id_product, err := strconv.Atoi(id)
 	id_user, role := middlewares.ExtractTokenId(c)
 	if role == "admin" {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
+	}
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Param"))
 	}
 
 	duration := time.Now().AddDate(0, 0, 14)
 	//mengambil banyaknya jumlah data yang ada pada group
 	_, len_group, _ := databases.GetAllGroupProduct()
-	name, price, _, er := databases.GetDataProduct(int(id_product))
-
+	name, price, _, _ := databases.GetDataProduct(int(id_product))
 	fee := 5000
 
 	new_group.UsersID = uint(id_user)
@@ -51,9 +50,7 @@ func CreateGroupProductControllers(c echo.Context) error {
 	if er != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Bad Request"))
 	}
-	// if d == nil {
-	// 	return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Id Product Not Found"))
-	// }
+
 	return c.JSON(http.StatusOK, response.SuccessResponseData("Success Operation", d))
 }
 

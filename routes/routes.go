@@ -21,10 +21,6 @@ func New() *echo.Echo {
 	// route users tanpa JWT
 	e.POST("/signup", controllers.CreateUserControllers)
 	e.POST("/login", controllers.LoginUserControllers)
-	e.GET("/users/:id", controllers.GetUserControllers)
-	e.GET("/users", controllers.GetAllUsersControllers)
-
-	//order
 
 	//route group product tanpa JWT
 	e.GET("/products/group", controllers.GetAllGroupProductControllers)
@@ -44,13 +40,15 @@ func New() *echo.Echo {
 	j.POST("/products/group/:id_products", controllers.CreateGroupProductControllers)
 
 	// route users dengan JWT
-	j.PUT("/users/:id", controllers.UpdateUserControllers)
-	j.DELETE("/users/:id", controllers.DeleteUserControllers)
+	j.GET("/users", controllers.GetAllUsersControllers)       // admin
+	j.GET("/users/:id", controllers.GetUserControllers)       // admin dan pemilik akun
+	j.PUT("/users/:id", controllers.UpdateUserControllers)    // admin dan pemilik akun
+	j.DELETE("/users/:id", controllers.DeleteUserControllers) // admin dan pemilik akun
 
 	// route product dengan JWT
-	j.POST("/products", controllers.CreateProductControllers)
-	j.PUT("/products/:id", controllers.UpdateProductControllers)
-	j.DELETE("/products/:id", controllers.DeleteProductControllers)
+	j.POST("/products", controllers.CreateProductControllers)       // admin
+	j.PUT("/products/:id", controllers.UpdateProductControllers)    // admin
+	j.DELETE("/products/:id", controllers.DeleteProductControllers) // admin
 
 	//route order
 	j.POST("/orders/:id_group", controllers.CreateOrderControllers)
