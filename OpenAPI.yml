@@ -257,7 +257,7 @@ paths:
     post:
       tags:
       - Orders
-      summary: Create a new order
+      summary: Create a new order for customers only
       parameters:
         - $ref: '#/components/parameters/idGroup'
       security:
@@ -273,7 +273,7 @@ paths:
     get:
       tags:
         - Orders
-      summary: Get order by id_order
+      summary: Get order by id order
       parameters:
         - $ref: '#/components/parameters/idOrder'
       security:
@@ -287,7 +287,7 @@ paths:
     get:
       tags:
         - Orders
-      summary: Get all order by id_group
+      summary: Get all orders by id group for admin only
       parameters:
         - $ref: '#/components/parameters/idGroup'
       security:
@@ -308,14 +308,14 @@ paths:
         - JWTAuth: []
       responses:
         '200':
-          $ref: '#/components/responses/getAllOrdersSuccess'
+          $ref: '#/components/responses/getAllOrdersByIdUserSuccess'
         '400':
           $ref: '#/components/responses/OrderResponseFailed'
   /jwt/orders/update/{id_order}:
     put:
       tags:
         - Orders
-      summary: Update order by id_order
+      summary: Update order by id order for admin only
       security:
         - JWTAuth: []
       parameters:
@@ -1251,10 +1251,10 @@ components:
             $ref: '#/components/schemas/responseCreateOrderWithData'
           example:
             Code: 200
-            Message: Success Operation
             Data: { 
               OrderID: 1,
             }
+            Message: Success Operation
     createOrderFailed:
       description: Bad Request
       content:
@@ -1327,6 +1327,33 @@ components:
                 GroupProductID: 1,
                 NameProduct: Youtube-Music,
                 PriceOrder: 50833,
+                Credential: "email: subs.netflix@mail.com, password: netflix123"
+              }            
+            ]
+    getAllOrdersByIdUserSuccess:
+      description: Success Operation
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/responseOrderWithDataArray'
+          example:
+            Code: 200
+            Message: Success Operation
+            Data: [
+              {
+                ID: 7,
+                UsersID: 38,
+                GroupProductID: 1,
+                NameProduct: Youtube-Music,
+                PriceOrder: 50833,
+                Credential: "email: subs.spotify@mail.com, password: spotify123"
+              },
+              {
+                ID: 17,
+                UsersID: 38,
+                GroupProductID: 2,
+                NameProduct: Spotify,
+                PriceOrder: 20833,
                 Credential: "email: subs.netflix@mail.com, password: netflix123"
               }            
             ]
