@@ -36,7 +36,7 @@ func GetUserControllers(c echo.Context) error {
 	id := c.Param("id")
 	conv_id, err := strconv.Atoi(id)
 	logged, role := middlewares.ExtractTokenId(c) // check token
-	if logged != conv_id || role == "admin" {
+	if logged != conv_id && role != "admin" {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
 	}
 	if err != nil {
