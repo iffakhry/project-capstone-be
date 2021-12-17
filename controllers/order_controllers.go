@@ -21,7 +21,13 @@ func CreateOrderControllers(c echo.Context) error {
 	c.Bind(&new_oder)
 	id_user, role := middlewares.ExtractTokenId(c)
 
+	t_price, limit, _, n_product, status, _ := databases.GetDataGroupProductById(id_group)
 	new_oder.Order.UsersID = uint(id_user)
+
+	new_oder.Order.GroupProductID = uint(id_group)
+	new_oder.Order.PriceOrder = t_price / limit
+	new_oder.Order.NameProduct = n_product
+	new_oder.Order.DetailCredential = "Email: , Password: "
 
 	// mengecek apakah user sudah tergabung di group
 	cek, e := databases.CekUserInGroup(uint(id_group), uint(id_user))
@@ -29,15 +35,15 @@ func CreateOrderControllers(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
 	} else {
 
-		status, data, err := databases.CreateOrder(&new_oder, id_group)
+		data, err := databases.CreateOrder(&new_oder, id_group)
 
-		if status == "Full" {
+		if status != "Available" {
 			return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Group Product Full"))
 		}
 		if err != nil || e != nil {
 			return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Bad Request"))
 		}
-		if data == nil {
+		if data == nil || t_price == 0 {
 			return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Id Group Product Not Found"))
 		}
 		return c.JSON(http.StatusBadRequest, response.SuccessResponseData("Success Operation", data))
@@ -125,20 +131,3 @@ func UpdateOrderControllers(c echo.Context) error {
 	}
 	return c.JSON(http.StatusOK, response.SuccessResponseData("Success Operation", data))
 }
-
-// func CekOrderControllers(c echo.Context) error {
-// 	id := c.Param("id_group")
-// 	id_group_product, err := strconv.Atoi(id)
-// 	id_user, _ := middlewares.ExtractTokenId(c)
-// 	if err != nil {
-// 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Id"))
-// 	}
-// 	data, e := databases.CekUserInGroup(uint(id_group_product), uint(id_user))
-// 	if data == nil {
-// 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
-// 	}
-// 	if e != nil {
-// 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Bad Request"))
-// 	}
-// 	return c.JSON(http.StatusOK, response.SuccessResponseData("Success Operation", data))
-// }
