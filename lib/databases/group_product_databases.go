@@ -4,39 +4,37 @@ import (
 	"final-project/config"
 	"final-project/models"
 	"fmt"
-	"strconv"
-	"time"
 )
 
 var query_join string = "products.limit,products.name_product,products.url,products.price,group_products.id,group_products.products_id,group_products.name_group_product,group_products.capacity_group_product,group_products.admin_fee,group_products.total_price,group_products.duration_group,group_products.status"
 
 // function database untuk menambahkan user baru (registrasi)
 func CreateGroupProduct(group *models.GroupProduct, id_product uint) (interface{}, error) {
-	duration := time.Now().AddDate(0, 0, 14)
-	//mengambil banyaknya jumlah data yang ada pada group
-	_, len_group, _ := GetAllGroupProduct()
-	name, price, _, er := GetDataProduct(int(id_product))
-	if name != "" || price != 0 {
-		fee := 5000
+	// duration := time.Now().AddDate(0, 0, 14)
+	// //mengambil banyaknya jumlah data yang ada pada group
+	// _, len_group, _ := GetAllGroupProduct()
+	// name, price, _, er := GetDataProduct(int(id_product))
+	// if name != "" || price != 0 {
+	// 	fee := 5000
 
-		group.NameGroupProduct = name + "-" + strconv.Itoa(len_group+1)
-		group.CapacityGroupProduct = 0
-		group.AdminFee = fee
-		group.TotalPrice = fee + price
-		group.DurationGroup = duration.Format("02-01-2006")
-		group.Status = "Available"
+	// 	group.NameGroupProduct = name + "-" + strconv.Itoa(len_group+1)
+	// 	group.CapacityGroupProduct = 0
+	// 	group.AdminFee = fee
+	// 	group.TotalPrice = fee + price
+	// 	group.DurationGroup = duration.Format("02-01-2006")
+	// 	group.Status = "Available"
 
-		if err := config.DB.Create(&group).Error; err != nil {
-			return nil, err
-		}
-		Create_Res := models.ResGroup{
-			GroupProductID: group.ID,
-		}
-
-		return Create_Res, nil
+	if err := config.DB.Create(&group).Error; err != nil {
+		return nil, err
+	}
+	Create_Res := models.ResGroup{
+		GroupProductID: group.ID,
 	}
 
-	return nil, er
+	return Create_Res, nil
+	// }
+
+	// return nil, er
 }
 
 func GetAllGroupProduct() (interface{}, int, error) {

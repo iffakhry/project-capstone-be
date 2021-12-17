@@ -7,6 +7,7 @@ import (
 	response "final-project/responses"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/labstack/echo/v4"
 )
@@ -25,16 +26,34 @@ func CreateGroupProductControllers(c echo.Context) error {
 	if role == "admin" {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
 	}
+
+	duration := time.Now().AddDate(0, 0, 14)
+	//mengambil banyaknya jumlah data yang ada pada group
+	_, len_group, _ := databases.GetAllGroupProduct()
+	name, price, _, er := databases.GetDataProduct(int(id_product))
+
+	fee := 5000
+
 	new_group.UsersID = uint(id_user)
 	new_group.ProductsID = uint(id_product)
+	new_group.NameGroupProduct = name + "-" + strconv.Itoa(len_group+1)
+	new_group.CapacityGroupProduct = 0
+	new_group.AdminFee = fee
+	new_group.TotalPrice = fee + price
+	new_group.DurationGroup = duration.Format("02-01-2006")
+	new_group.Status = "Available"
+
+	if name == "" || price == 0 {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Id Product Not Found"))
+	}
 
 	d, er := databases.CreateGroupProduct(&new_group, new_group.ProductsID)
 	if er != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Bad Request"))
 	}
-	if d == nil {
-		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Id Product Not Found"))
-	}
+	// if d == nil {
+	// 	return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Id Product Not Found"))
+	// }
 	return c.JSON(http.StatusOK, response.SuccessResponseData("Success Operation", d))
 }
 
