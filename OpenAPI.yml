@@ -1311,7 +1311,6 @@ components:
             $ref: '#/components/schemas/responseOrderWithDataArray'
           example:
             Code: 200
-            Message: Success Operation
             Data: [
               {
                 ID: 1,
@@ -1319,7 +1318,7 @@ components:
                 GroupProductID: 1,
                 NameProduct: Youtube-Music,
                 PriceOrder: 50833,
-                Credential: "email: subs.spotify@mail.com, password: spotify123"
+                DetailCredential: "email: subs.spotify@mail.com, password: spotify123"
               },
               {
                 ID: 2,
@@ -1327,9 +1326,10 @@ components:
                 GroupProductID: 1,
                 NameProduct: Youtube-Music,
                 PriceOrder: 50833,
-                Credential: "email: subs.netflix@mail.com, password: netflix123"
+                DetailCredential: "email: subs.netflix@mail.com, password: netflix123"
               }            
             ]
+            Message: Success Operation
     getAllOrdersByIdUserSuccess:
       description: Success Operation
       content:
@@ -1338,7 +1338,6 @@ components:
             $ref: '#/components/schemas/responseOrderWithDataArray'
           example:
             Code: 200
-            Message: Success Operation
             Data: [
               {
                 ID: 7,
@@ -1346,7 +1345,7 @@ components:
                 GroupProductID: 1,
                 NameProduct: Youtube-Music,
                 PriceOrder: 50833,
-                Credential: "email: subs.spotify@mail.com, password: spotify123"
+                DetailCredential: "email: subs.spotify@mail.com, password: spotify123"
               },
               {
                 ID: 17,
@@ -1354,9 +1353,10 @@ components:
                 GroupProductID: 2,
                 NameProduct: Spotify,
                 PriceOrder: 20833,
-                Credential: "email: subs.netflix@mail.com, password: netflix123"
+                DetailCredential: "email: subs.netflix@mail.com, password: netflix123"
               }            
             ]
+            Message: Success Operation
   examples:
     accessForbidden:
       value:
