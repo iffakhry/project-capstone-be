@@ -4,53 +4,27 @@ import (
 	"final-project/config"
 	"final-project/models"
 	"fmt"
+	"log"
+	"os"
+	"time"
+
+	"github.com/xendit/xendit-go"
+	"github.com/xendit/xendit-go/ewallet"
 )
 
-func CreateOrder(Order *models.OrderRequest, id_group int) (in string, i interface{}, er error) {
-	t_price, limit, _, n_product, status, er := GetDataGroupProductById(id_group)
-	if t_price == 0 {
-		return "", nil, er
-	}
-	fmt.Println("cek status", status)
-	if status != "Available" {
-		return "Full", nil, er
-	}
-
-	Order.Order.GroupProductID = uint(id_group)
-	Order.Order.PriceOrder = t_price / limit
-	Order.Order.NameProduct = n_product
-	Order.Order.DetailCredential = "email: subs.spotify@mail.com, password: spotify123"
-
+func CreateOrder(Order *models.OrderRequest, id_group int) (interface{}, error) {
 	if err := config.DB.Create(&Order.Order).Error; err != nil {
-		return "", nil, err
-	}
-	// req_credit := models.CreditCard{
-	// 	OrderID: Order.Order.ID,
-	// 	Typ:     Order.CreditCard.Typ,
-	// 	Name:    Order.CreditCard.Name,
-	// 	Number:  Order.CreditCard.Number,
-	// 	Cvv:     Order.CreditCard.Cvv,
-	// 	Month:   Order.CreditCard.Month,
-	// 	Year:    Order.CreditCard.Year,
-	// }
-	// req_order := models.Order{
-	// 	CreditCard: req_credit,
-	// }
-
-	Create_Res := models.Response{
-		OrderID: Order.Order.ID,
+		return nil, err
 	}
 
-	Order.CreditCard.OrderID = Order.Order.ID
-	config.DB.Create(&Order.CreditCard)
 	UpdateGroupProductCapacity(id_group)
+	Create_Res, _ := PaymentXendit(Order.Order.ID, Order.ResPayment.Phone, Order.ResPayment.Amount)
 
-	return "", Create_Res, nil
+	return Create_Res, nil
 }
 
 func GetOrderByIdOrder(id int) (i interface{}, e error, id_user uint) {
 	order := models.GetOrder{}
-	// UpdateGroupProductCapacity(id)
 	query := config.DB.Table("orders").Select("*").Where("orders.deleted_at IS NULL AND orders.id = ? ", id).Find(&order)
 	if query.Error != nil || query.RowsAffected < 1 {
 		return nil, query.Error, 0
@@ -60,7 +34,6 @@ func GetOrderByIdOrder(id int) (i interface{}, e error, id_user uint) {
 
 func GetOrderByIdGroup(id int) (i interface{}, e error) {
 	order := []models.GetOrder{}
-	// UpdateGroupProductCapacity(id)
 	query := config.DB.Table("orders").Select("*").Where("orders.deleted_at IS NULL AND orders.group_product_id = ? ", id).Find(&order)
 	if query.Error != nil || query.RowsAffected < 1 {
 		return nil, query.Error
@@ -69,7 +42,6 @@ func GetOrderByIdGroup(id int) (i interface{}, e error) {
 }
 func GetOrderByIdUser(id int) (i interface{}, e error) {
 	order := []models.GetOrder{}
-	// UpdateGroupProductCapacity(id)
 	query := config.DB.Table("orders").Select("*").Where("orders.deleted_at IS NULL AND orders.users_id = ? ", id).Find(&order)
 	if query.Error != nil || query.RowsAffected < 1 {
 		return nil, query.Error
@@ -90,7 +62,6 @@ func GetUserOrderByIdGroup(id int) (interface{}, error) {
 func CekUserInGroup(id_group, id_user uint) (interface{}, error) {
 	order := models.Order{}
 	query := config.DB.Where("group_product_id = ? && users_id = ?", id_group, id_user).Find(&order)
-	fmt.Println("cek roww", query.RowsAffected)
 	if query.Error != nil || query.RowsAffected < 1 {
 		return nil, query.Error
 	}
@@ -105,4 +76,39 @@ func UpdateOrderDetail(id_order int, detail string) (interface{}, error) {
 		return nil, query1.Error
 	}
 	return res, nil
+}
+
+func PaymentXendit(id_order uint, phone string, amount int) (interface{}, error) {
+
+	xendit.Opt.SecretKey = os.Getenv("KEY_XENDIT")
+
+	t := time.Now()
+	formatted := fmt.Sprintf("%d%02d%02d%02d%02d%02d",
+		t.Year(), t.Month(), t.Day(),
+		t.Hour(), t.Minute(), t.Second())
+
+	data := ewallet.CreatePaymentParams{
+		ExternalID:  "OVO-ewallet-" + formatted,
+		Amount:      float64(amount),
+		Phone:       phone,
+		EWalletType: xendit.EWalletTypeOVO,
+		CallbackURL: "mystore.com/callback",
+		RedirectURL: "mystore.com/redirect",
+	}
+
+	resp, err := ewallet.CreatePayment(&data)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	res_pay := models.Payment{
+		OrderID:     id_order,
+		EwalletType: string(resp.EWalletType),
+		ExternalId:  resp.ExternalID,
+		Amount:      resp.Amount,
+		BusinessId:  resp.BusinessID,
+		Created:     resp.Created.Format("02-01-2006"),
+	}
+	config.DB.Create(&res_pay)
+	return res_pay, nil
 }

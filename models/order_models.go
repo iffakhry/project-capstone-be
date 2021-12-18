@@ -11,30 +11,21 @@ type Order struct {
 	PriceOrder       int
 	NameProduct      string
 	DetailCredential string
-	CreditCard       CreditCard
+	Payment          Payment
 }
 
-type CreditCard struct {
-	OrderID uint
-	Typ     string `json:"typ" `
-	Name    string `json:"name" `
-	Number  string `json:"number" `
-	Cvv     int    `json:"cvv" `
-	Month   int    `json:"month" `
-	Year    int    `json:"year" `
+type ResPayment struct {
+	Phone  string `json:"phone" `
+	Amount int    `json:"amount" `
 }
 
 type OrderRequest struct {
 	Order      Order      `json:"order" `
-	CreditCard CreditCard `json:"credit_card" `
+	ResPayment ResPayment `json:"payment" `
 }
 
 type Detail struct {
 	DetailCredential string `json:"detail" form:"detail"`
-}
-
-type Response struct {
-	OrderID uint
 }
 
 type GetOrder struct {
@@ -49,4 +40,13 @@ type GetUserOrder struct {
 	UsersID        uint
 	GroupProductID uint
 	Name           string
+}
+
+type Payment struct {
+	OrderID     uint
+	EwalletType string
+	ExternalId  string
+	Amount      float64
+	BusinessId  string
+	Created     string
 }
