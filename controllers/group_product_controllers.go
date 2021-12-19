@@ -30,7 +30,7 @@ func CreateGroupProductControllers(c echo.Context) error {
 	duration := time.Now().AddDate(0, 0, 14)
 	//mengambil banyaknya jumlah data yang ada pada group
 	_, len_group, _ := databases.GetAllGroupProduct()
-	name, price, _, _ := databases.GetDataProduct(int(id_product))
+	name, price, limit, _ := databases.GetDataProduct(int(id_product))
 	fee := 5000
 
 	new_group.UsersID = uint(id_user)
@@ -38,7 +38,7 @@ func CreateGroupProductControllers(c echo.Context) error {
 	new_group.NameGroupProduct = name + "-" + strconv.Itoa(len_group+1)
 	new_group.CapacityGroupProduct = 0
 	new_group.AdminFee = fee
-	new_group.TotalPrice = fee + price
+	new_group.TotalPrice = (price / limit) + fee
 	new_group.DurationGroup = duration.Format("02-01-2006")
 	new_group.Status = "Available"
 

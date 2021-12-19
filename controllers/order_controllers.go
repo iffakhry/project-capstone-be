@@ -5,6 +5,7 @@ import (
 	"final-project/middlewares"
 	"final-project/models"
 	response "final-project/responses"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -21,17 +22,21 @@ func CreateOrderControllers(c echo.Context) error {
 	c.Bind(&new_oder)
 	id_user, role := middlewares.ExtractTokenId(c)
 
-	t_price, limit, _, n_product, status, _ := databases.GetDataGroupProductById(id_group)
+	t_price, _, _, n_product, status, er := databases.GetDataGroupProductById(id_group)
 	new_oder.Order.UsersID = uint(id_user)
 
 	new_oder.Order.GroupProductID = uint(id_group)
-	new_oder.Order.PriceOrder = t_price / limit
+	new_oder.Order.PriceOrder = t_price
 	new_oder.Order.NameProduct = n_product
 	new_oder.Order.DetailCredential = "Email: , Password: "
 
 	// mengecek apakah user sudah tergabung di group
+	fmt.Println("cek err", er)
 	cek, e := databases.CekUserInGroup(uint(id_group), uint(id_user))
-	if cek != nil || role == "admin" {
+	if er != nil || e != nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Bad Request"))
+	}
+	if cek != 0 || role == "admin" {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
 	} else {
 
@@ -40,7 +45,7 @@ func CreateOrderControllers(c echo.Context) error {
 		if status != "Available" {
 			return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Group Product Full"))
 		}
-		if err != nil || e != nil {
+		if err != nil {
 			return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Bad Request"))
 		}
 		if data == nil || t_price == 0 {
@@ -58,11 +63,11 @@ func GetOrderByIdOrderControllers(c echo.Context) error {
 	token, _ := middlewares.ExtractTokenId(c)
 
 	data, e, id_user := databases.GetOrderByIdOrder(id_order)
-	if data == nil {
-		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
-	}
 	if id_user != uint(token) {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
+	}
+	if data == nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
 	}
 	if e != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Bad Request"))
@@ -78,11 +83,11 @@ func GetOrderByIdGroupControllers(c echo.Context) error {
 	_, role := middlewares.ExtractTokenId(c)
 
 	data, e := databases.GetOrderByIdGroup(id_group)
-	if data == nil {
-		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
-	}
 	if role != "admin" {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
+	}
+	if data == nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
 	}
 	if e != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Bad Request"))
@@ -98,11 +103,11 @@ func GetOrderByIdUsersControllers(c echo.Context) error {
 	token, _ := middlewares.ExtractTokenId(c)
 
 	data, e := databases.GetOrderByIdUser(id_user)
-	if data == nil {
-		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
-	}
 	if token != id_user {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
+	}
+	if data == nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
 	}
 	if e != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Bad Request"))
@@ -120,11 +125,11 @@ func UpdateOrderControllers(c echo.Context) error {
 	_, role := middlewares.ExtractTokenId(c)
 
 	data, e := databases.UpdateOrderDetail(id_order, detail.DetailCredential)
-	if data == nil {
-		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
-	}
 	if role != "admin" {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
+	}
+	if data == nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
 	}
 	if e != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Bad Request"))
