@@ -49,7 +49,7 @@ paths:
     post:
       tags:
         - Sign Up
-      summary: Create a new account for customer
+      summary: Create a new account for customer only
       requestBody:
         $ref: '#/components/requestBodies/requestBodyUser'
       responses:
@@ -60,25 +60,25 @@ paths:
 ####################################
 #  USERS
 ####################################
-  /users:
+  /jwt/users:
     get:
       tags:
         - Users
-      summary: Get all customer's data for admin
-      #security:
-       # - JWTAuth: []
+      summary: Get all customer's data for admin only
+      security:
+       - JWTAuth: []
       responses:
         '200':
           $ref: '#/components/responses/getAllUsersSuccess'
         '400':
           $ref: '#/components/responses/getAllDataFailed'
-  /users/{id}:
+  /jwt/users/{id}:
     get:
       tags:
         - Users
       summary: Get customer's data by id
-      #security:
-       # - JWTAuth: []
+      security:
+       - JWTAuth: []
       parameters:
         - $ref: '#/components/parameters/idParam'
       responses:
@@ -86,7 +86,6 @@ paths:
           $ref: '#/components/responses/getUserSuccess'
         '400':
           $ref: '#/components/responses/getDataByIdFailed'
-  /jwt/users/{id}:
     put:
       tags:
         - Users
@@ -144,7 +143,7 @@ paths:
     post:
       tags:
         - Products
-      summary: Create a new product for admin
+      summary: Create a new product for admin only
       security:
         - JWTAuth: []
       requestBody:
@@ -160,7 +159,7 @@ paths:
     put:
       tags:
         - Products
-      summary: Update product by id for admin
+      summary: Update product by id for admin only
       security:
         - JWTAuth: []
       parameters:
@@ -177,7 +176,7 @@ paths:
     delete:
       tags:
       - Products
-      summary: Delete product by id for admin
+      summary: Delete product by id for admin only
       security:
         - JWTAuth: []
       parameters:
@@ -294,7 +293,7 @@ paths:
         - JWTAuth: []
       responses:
         '200':
-          $ref: '#/components/responses/getAllOrdersSuccess'
+          $ref: '#/components/responses/getAllOrdersByIdGroupSuccess'
         '400':
           $ref: '#/components/responses/OrderResponseFailed'
   /jwt/orders/users/{id_user}:
@@ -376,16 +375,16 @@ components:
       properties:
         name_product:
           type: string
-          description: "minLength: 1"
+          minLength: 1
         detail_product:
           type: string
-          description: "minLength: 1"
+          minLength: 1
         price:
           type: integer
-          description: "minimum value: 1"
+          minimum: 1
         limit:
           type: integer
-          description: "minimum value: 1"
+          minimum: 2
         photo:
           type: string
           format: binary
@@ -400,16 +399,16 @@ components:
       properties:
         name_product:
           type: string
-          description: "minLength: 1"
+          minLength: 1
         detail_product:
           type: string
-          description: "minLength: 1"
+          minLength: 1
         price:
           type: integer
-          description: "minimum value: 1"
+          minimum: 1
         limit:
           type: integer
-          description: "minimum value: 1"
+          minimum: 2
         photo:
           type: string
           format: binary
@@ -417,20 +416,12 @@ components:
     requestDataOrder:
       type: object
       properties:
-        credit_card:
+        payment:
           type: object
           properties:
-            typ:
+            phone:
               type: string
-            name:
-              type: string
-            number:
-              type: string
-            cvv:
-              type: integer
-            month:
-              type: integer
-            year:
+            amount:
               type: integer
     requestDataOrderUpdate:
       type: object
@@ -660,6 +651,16 @@ components:
           properties:
             OrderID:
               type: integer
+            EwalletType: 
+              type: string
+            ExternalId:  
+              type: string
+            Amount:
+              type: integer
+            BusinessId:  
+              type: string
+            Created: 
+              type: string
         Message:
           type: string
     responseOrderWithData:
@@ -842,13 +843,9 @@ components:
           schema:  
             $ref: '#/components/schemas/requestDataOrder'
           example:
-            credit_card:
-              typ: Visa
-              name: Supriadi
-              number: 1234-1234-1234-1234
-              cvv: 234
-              month: 12
-              year: 21
+            payment:
+              phone: "08123456789"
+              amount: 25000
     requestBodyOrderUpdate: 
       required: true
       content:
@@ -1252,7 +1249,12 @@ components:
           example:
             Code: 200
             Data: { 
-              OrderID: 1,
+              OrderID: 3,
+              EwalletType: OVO,
+              ExternalId: OVO-ewallet-20211219043142,
+              Amount: 25000,
+              BusinessId: 61b820fec8dadfc293726c7e,
+              Created: 19-12-2021
             }
             Message: Success Operation
     createOrderFailed:
@@ -1281,11 +1283,27 @@ components:
           example:
             Code: 200
             Data: {
-              UsersID: 7,
-              GroupProductID: 8,
-              NameProduct: Spotify,
-              PriceOrder: 50833,
-              DetailCredential: "email: subs.spotify@mail.com, password: spotify123"
+              UsersID: 150,
+              GroupProductID: 1,
+              NameProduct: Netflix,
+              PriceOrder: 1254,
+              DetailCredential: "Email: , Password: "
+            }
+            Message: Success Operation
+    getOrderUpdateSuccess:
+      description: Success Operation
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/responseOrderWithData'
+          example:
+            Code: 200
+            Data: {
+              UsersID: 150,
+              GroupProductID: 1,
+              NameProduct: Netflix,
+              PriceOrder: 1254,
+              DetailCredential: "Email: subs.netflix@mail.com, Password: qwerty"
             }
             Message: Success Operation
     OrderResponseFailed:
@@ -1303,7 +1321,7 @@ components:
               $ref: '#/components/examples/dataNotFound'
             Bad Request:
               $ref: '#/components/examples/badRequest'
-    getAllOrdersSuccess:
+    getAllOrdersByIdGroupSuccess:
       description: Success Operation
       content:
         application/json:
@@ -1313,21 +1331,19 @@ components:
             Code: 200
             Data: [
               {
-                ID: 1,
-                UsersID: 79,
+                UsersID: 150,
                 GroupProductID: 1,
-                NameProduct: Youtube-Music,
-                PriceOrder: 50833,
-                DetailCredential: "email: subs.spotify@mail.com, password: spotify123"
+                NameProduct: Netflix,
+                PriceOrder: 1254,
+                DetailCredential: "Email: , Password: "
               },
               {
-                ID: 2,
-                UsersID: 79,
+                UsersID: 162,
                 GroupProductID: 1,
-                NameProduct: Youtube-Music,
-                PriceOrder: 50833,
-                DetailCredential: "email: subs.netflix@mail.com, password: netflix123"
-              }            
+                NameProduct: Netfllix,
+                PriceOrder: 1254,
+                DetailCredential: "Email: , Password: "
+              }          
             ]
             Message: Success Operation
     getAllOrdersByIdUserSuccess:
@@ -1340,21 +1356,19 @@ components:
             Code: 200
             Data: [
               {
-                ID: 7,
-                UsersID: 38,
+                UsersID: 150,
                 GroupProductID: 1,
-                NameProduct: Youtube-Music,
-                PriceOrder: 50833,
-                DetailCredential: "email: subs.spotify@mail.com, password: spotify123"
+                NameProduct: Netflix,
+                PriceOrder: 1254,
+                DetailCredential: "Email: , Password: "
               },
               {
-                ID: 17,
-                UsersID: 38,
+                UsersID: 150,
                 GroupProductID: 2,
                 NameProduct: Spotify,
-                PriceOrder: 20833,
-                DetailCredential: "email: subs.netflix@mail.com, password: netflix123"
-              }            
+                PriceOrder: 1500,
+                DetailCredential: "Email: , Password: "
+              }
             ]
             Message: Success Operation
   examples:
