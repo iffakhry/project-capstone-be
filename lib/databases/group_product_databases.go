@@ -3,7 +3,6 @@ package databases
 import (
 	"final-project/config"
 	"final-project/models"
-	"fmt"
 )
 
 var query_join string = "products.limit,products.name_product,products.url,products.price,group_products.id,group_products.products_id,group_products.name_group_product,group_products.capacity_group_product,group_products.admin_fee,group_products.total_price,group_products.duration_group,group_products.status"
@@ -104,7 +103,6 @@ func UpdateGroupProductCapacity(id_group_product int) (interface{}, error) {
 		return group, nil
 	}
 	capacity := group.CapacityGroupProduct + 1
-	fmt.Println("lihat capacity", capacity)
 	query1 := config.DB.Model(&group).Where("group_products.id = ?", id_group_product).Update("capacity_group_product", capacity)
 	if query1.Error != nil {
 		return nil, query1.Error
