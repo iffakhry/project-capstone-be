@@ -9,19 +9,6 @@ var query_join string = "products.limit,products.name_product,products.url,produ
 
 // function database untuk menambahkan user baru (registrasi)
 func CreateGroupProduct(group *models.GroupProduct, id_product uint) (interface{}, error) {
-	// duration := time.Now().AddDate(0, 0, 14)
-	// //mengambil banyaknya jumlah data yang ada pada group
-	// _, len_group, _ := GetAllGroupProduct()
-	// name, price, _, er := GetDataProduct(int(id_product))
-	// if name != "" || price != 0 {
-	// 	fee := 5000
-
-	// 	group.NameGroupProduct = name + "-" + strconv.Itoa(len_group+1)
-	// 	group.CapacityGroupProduct = 0
-	// 	group.AdminFee = fee
-	// 	group.TotalPrice = fee + price
-	// 	group.DurationGroup = duration.Format("02-01-2006")
-	// 	group.Status = "Available"
 
 	if err := config.DB.Create(&group).Error; err != nil {
 		return nil, err
@@ -31,15 +18,12 @@ func CreateGroupProduct(group *models.GroupProduct, id_product uint) (interface{
 	}
 
 	return Create_Res, nil
-	// }
 
-	// return nil, er
 }
 
 func GetAllGroupProduct() (interface{}, int, error) {
 	res_group := []models.GetGroupProduct{}
-	group := models.GroupProduct{}
-	query := config.DB.Table("group_products").Select(query_join).Joins("join products on group_products.products_id = products.id").Where("group_products.deleted_at IS NULL").Find(&group)
+	query := config.DB.Table("group_products").Select(query_join).Joins("join products on group_products.products_id = products.id").Where("group_products.deleted_at IS NULL").Find(&res_group)
 	if query.Error != nil {
 		return nil, 0, query.Error
 	}
@@ -47,12 +31,11 @@ func GetAllGroupProduct() (interface{}, int, error) {
 		user_order, _ := GetUserOrderByIdGroup(int(res_group[i].ID))
 		res_group[i].GetOrder = user_order
 	}
-	return group, len(res_group), nil
+	return res_group, len(res_group), nil
 }
 
 func GetGroupProductById(id int) (interface{}, error) {
 	group := models.GetGroupProduct{}
-	// UpdateGroupProductCapacity(id)
 	query := config.DB.Table("group_products").Select(query_join).Joins("join products on group_products.products_id = products.id").Where("group_products.deleted_at IS NULL AND group_products.id = ? ", id).Find(&group)
 	if query.Error != nil || query.RowsAffected < 1 {
 		return nil, query.Error
@@ -65,7 +48,6 @@ func GetGroupProductById(id int) (interface{}, error) {
 
 func GetGroupProductByAvailable(str string) (interface{}, error) {
 	group := []models.GetGroupProduct{}
-	// UpdateGroupProductCapacity(id)\
 	query := config.DB.Table("group_products").Select(query_join).Joins("join products on group_products.products_id = products.id").Where("group_products.deleted_at IS NULL AND group_products.status = ?", str).Find(&group)
 
 	if query.Error != nil || query.RowsAffected < 1 {
@@ -80,9 +62,7 @@ func GetGroupProductByAvailable(str string) (interface{}, error) {
 
 func GetGroupProductByIdProducts(id_products int) (interface{}, error) {
 	res_group := []models.GetGroupProduct{}
-	group := models.GroupProduct{}
-	// UpdateGroupProductCapacity(id)
-	query := config.DB.Table("group_products").Select(query_join).Joins("join products on group_products.products_id = products.id").Where("group_products.deleted_at IS NULL AND group_products.products_id = ? ", id_products).Find(&group)
+	query := config.DB.Table("group_products").Select(query_join).Joins("join products on group_products.products_id = products.id").Where("group_products.deleted_at IS NULL AND group_products.products_id = ? ", id_products).Find(&res_group)
 	if query.Error != nil || query.RowsAffected < 1 {
 		return nil, query.Error
 	}
@@ -90,7 +70,7 @@ func GetGroupProductByIdProducts(id_products int) (interface{}, error) {
 		user_order, _ := GetUserOrderByIdGroup(int(res_group[i].ID))
 		res_group[i].GetOrder = user_order
 	}
-	return group, nil
+	return res_group, nil
 }
 
 func UpdateGroupProductCapacity(id_group_product int) (interface{}, error) {
@@ -123,11 +103,9 @@ func GetDataProduct(id_product int) (name string, price, limit int, er error) {
 
 func GetDataGroupProductById(id int) (t_price, limit int, n_group, n_product, status string, er error) {
 	res_group := models.GetGroupProduct{}
-	group := models.GroupProduct{}
-	// UpdateGroupProductCapacity(id)
-	query := config.DB.Table("group_products").Select(query_join).Joins("join products on group_products.products_id = products.id").Where("group_products.deleted_at IS NULL AND group_products.id = ? ", id).Find(&group)
+	query := config.DB.Table("group_products").Select(query_join).Joins("join products on group_products.products_id = products.id").Where("group_products.deleted_at IS NULL AND group_products.id = ? ", id).Find(&res_group)
 	if query.Error != nil || query.RowsAffected < 1 {
 		return 0, 0, "", "", "", query.Error
 	}
-	return group.TotalPrice, res_group.Limit, group.NameGroupProduct, res_group.Name_Product, group.Status, nil
+	return res_group.TotalPrice, res_group.Limit, res_group.NameGroupProduct, res_group.Name_Product, res_group.Status, nil
 }

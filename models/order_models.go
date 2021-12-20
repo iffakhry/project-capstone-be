@@ -18,11 +18,6 @@ type ResPayment struct {
 	Phone string `json:"phone" form:"phone" `
 }
 
-type OrderRequest struct {
-	Order      Order      ` json:"order" `
-	ResPayment ResPayment ` json:"payment" `
-}
-
 type Detail struct {
 	DetailCredential string `json:"detail" form:"detail"`
 }
