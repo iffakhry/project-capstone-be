@@ -323,9 +323,9 @@ paths:
         $ref: '#/components/requestBodies/requestBodyOrderUpdate'
       responses:
         '200':
-          $ref: '#/components/responses/getOrderUpdateSuccess'
+          $ref: '#/components/responses/UpdateOrderSuccess'
         '400':
-          $ref: '#/components/responses/OrderResponseFailed'
+          $ref: '#/components/responses/UpdateOrderFailed'
 ####################################
 #  COMPONENTS
 ####################################
@@ -415,14 +415,19 @@ components:
           description: "allowed file extension: jpg, png, jpeg && size <= 1050000 byte"
     requestDataOrder:
       type: object
+      required:
+      - phone
       properties:
-        payment:
-          type: object
-          properties:
-            phone:
-              type: string
+        phone:
+          type: string
+          pattern: '^[0]{1,1}[1-9]{1,1}[0-9]{6,14}$'
+          description: The first character must be "0" (zero). The second character must be one of "1-9". The next character must be numeric "0-9".
+          minLength: 8
+          maxLength: 16
     requestDataOrderUpdate:
       type: object
+      required:
+      - detail
       properties:
         detail:
           type: string
@@ -785,7 +790,7 @@ components:
                 password: qwerty
         multipart/form-data:
           schema:
-            $ref: '#/components/schemas/requestDataLogin'        
+            $ref: '#/components/schemas/requestDataLogin'     
     requestBodyUser:
       required: true
       content:
@@ -849,8 +854,7 @@ components:
           schema:  
             $ref: '#/components/schemas/requestDataOrder'
           example:
-            payment:
-              phone: "08123456789"
+            phone: "08123456789"
         multipart/form-data:
           schema:
             $ref: '#/components/schemas/requestDataOrder'
@@ -862,6 +866,9 @@ components:
             $ref: '#/components/schemas/requestDataOrderUpdate'
           example:
             detail: "Email: subs.netflix@mail.com, Password: qwerty"
+        multipart/form-data:
+          schema:
+            $ref: '#/components/schemas/requestDataOrderUpdate'
   responses:
     loginSuccess:
       description: Success Response Data
@@ -1276,12 +1283,14 @@ components:
           examples:
             Invalid Param:
               $ref: '#/components/examples/invalidParam'
+            Invalid Telephone Number:
+              $ref: '#/components/examples/invalidTelephoneNumber'
+            Bad Request:
+              $ref: '#/components/examples/badRequest'
             Access Forbidden:
               $ref: '#/components/examples/accessForbidden'
             Group Product Full:
               $ref: '#/components/examples/groupProductFull'
-            Bad Request:
-              $ref: '#/components/examples/badRequest'
             Id Group Product Not Found:
               $ref: '#/components/examples/idGroupProductNotFound'
     getOrderSuccess:
@@ -1299,23 +1308,6 @@ components:
               NameProduct: Netflix,
               PriceOrder: 1254,
               DetailCredential: "Email: , Password: "
-            }
-            Message: Success Operation
-    getOrderUpdateSuccess:
-      description: Success Operation
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/responseOrderWithData'
-          example:
-            Code: 200
-            Data: {
-              OrderID: 1,
-              UsersID: 150,
-              GroupProductID: 1,
-              NameProduct: Netflix,
-              PriceOrder: 1254,
-              DetailCredential: "Email: subs.netflix@mail.com, Password: qwerty"
             }
             Message: Success Operation
     OrderResponseFailed:
@@ -1387,6 +1379,40 @@ components:
               }
             ]
             Message: Success Operation
+    UpdateOrderSuccess:
+      description: Success Operation
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/responseOrderWithData'
+          example:
+            Code: 200
+            Data: {
+              OrderID: 1,
+              UsersID: 150,
+              GroupProductID: 1,
+              NameProduct: Netflix,
+              PriceOrder: 1254,
+              DetailCredential: "Email: subs.netflix@mail.com, Password: qwerty"
+            }
+            Message: Success Operation
+    UpdateOrderFailed:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/responseNonData'
+          examples:
+            Details Can't Be Empty:
+              $ref: '#/components/examples/detailsCantBeEmpty'
+            Invalid Id:
+              $ref: '#/components/examples/invalidId'
+            Data Not Found:
+              $ref: '#/components/examples/dataNotFound'
+            Access Forbidden:
+              $ref: '#/components/examples/dataNotFound'
+            Bad Request:
+              $ref: '#/components/examples/badRequest'
   examples:
     accessForbidden:
       value:
@@ -1408,6 +1434,10 @@ components:
       value:
         Code: 400
         Message: Data Not Found
+    detailsCantBeEmpty:
+      value:
+        Code: 400
+        Message: Details Can't Be Empty
     emailOrTelephoneNumberAlreadyExist:
       value: 
         Code: 400
