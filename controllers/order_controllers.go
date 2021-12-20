@@ -6,6 +6,7 @@ import (
 	"final-project/models"
 	response "final-project/responses"
 	"net/http"
+	"regexp"
 	"strconv"
 
 	validator "github.com/go-playground/validator/v10"
@@ -25,11 +26,9 @@ func CreateOrderControllers(c echo.Context) error {
 	erro := v.Var(new_payment.Phone, "required")
 	if erro != nil || len(new_payment.Phone) < 11 || len(new_payment.Phone) > 13 {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Telephone Number"))
+	} else if !regexp.MustCompile(`^08[1-9][0-9]{7,13}$`).MatchString(new_payment.Phone) {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Telephone Number"))
 	}
-
-	// if !regexp.MustCompile(`^08[1-9][0-9]{8,13}$`).MatchString(new_payment.Phone) {
-	// 	return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Telephone Number"))
-	// }
 
 	id_user, role := middlewares.ExtractTokenId(c)
 	t_price, _, _, n_product, status, er := databases.GetDataGroupProductById(id_group)
