@@ -24,7 +24,7 @@ func CreateOrderControllers(c echo.Context) error {
 	c.Bind(&new_payment)
 	v := validator.New()
 	erro := v.Var(new_payment.Phone, "required")
-	if erro != nil || len(new_payment.Phone) > 13 {
+	if erro != nil || len(new_payment.Phone) < 11 && len(new_payment.Phone) > 13 {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Telephone Number"))
 	}
 
