@@ -323,7 +323,7 @@ paths:
         $ref: '#/components/requestBodies/requestBodyOrderUpdate'
       responses:
         '200':
-          $ref: '#/components/responses/getOrderSuccess'
+          $ref: '#/components/responses/getOrderUpdateSuccess'
         '400':
           $ref: '#/components/responses/OrderResponseFailed'
 ####################################
@@ -421,8 +421,6 @@ components:
           properties:
             phone:
               type: string
-            amount:
-              type: integer
     requestDataOrderUpdate:
       type: object
       properties:
@@ -573,6 +571,8 @@ components:
               items:
                 type: object
                 properties:
+                  OrderID:
+                    type: integer
                   UsersID:
                     type: integer
                   GroupProductID:
@@ -621,6 +621,8 @@ components:
                   items:
                     type: object
                     properties:
+                      OrderID:
+                        type: integer
                       UsersID:
                         type: integer
                       GroupProductID:
@@ -656,7 +658,7 @@ components:
             ExternalId:  
               type: string
             Amount:
-              type: integer
+              type: number
             BusinessId:  
               type: string
             Created: 
@@ -671,6 +673,8 @@ components:
         Data:
           type: object
           properties:
+            OrderID:
+              type: integer
             UsersID:
               type: integer
             GroupProductID:
@@ -693,6 +697,8 @@ components:
           items:
             type: object
             properties:
+              OrderID:
+                type: integer
               UsersID:
                 type: integer
               GroupProductID:
@@ -845,7 +851,9 @@ components:
           example:
             payment:
               phone: "08123456789"
-              amount: 25000
+        multipart/form-data:
+          schema:
+            $ref: '#/components/schemas/requestDataOrder'
     requestBodyOrderUpdate: 
       required: true
       content:
@@ -853,7 +861,7 @@ components:
           schema:  
             $ref: '#/components/schemas/requestDataOrderUpdate'
           example:
-            detail: "email: subs.netflix@mail.com, password: qwertyui"
+            detail: "Email: subs.netflix@mail.com, Password: qwerty"
   responses:
     loginSuccess:
       description: Success Response Data
@@ -1174,6 +1182,7 @@ components:
                 Url: https://storage.googleapis.com/barengin-bucket/Youtube-Music-2021-12-13T10:06:45.jpg,
                 GetOrder: [
                   {
+                    OrderID: 1,
                     UsersID: 79,
                     GroupProductID: 1,
                     Name: nuril
@@ -1220,6 +1229,7 @@ components:
                 Url: https://storage.googleapis.com/barengin-bucket/Youtube-Music-2021-12-13T10:06:45.jpg,
                 GetOrder: [
                   {
+                    OrderID: 1,
                     UsersID: 79,
                     GroupProductID: 1,
                     Name: nuril
@@ -1283,6 +1293,7 @@ components:
           example:
             Code: 200
             Data: {
+              OrderID: 1,
               UsersID: 150,
               GroupProductID: 1,
               NameProduct: Netflix,
@@ -1299,6 +1310,7 @@ components:
           example:
             Code: 200
             Data: {
+              OrderID: 1,
               UsersID: 150,
               GroupProductID: 1,
               NameProduct: Netflix,
@@ -1331,6 +1343,7 @@ components:
             Code: 200
             Data: [
               {
+                OrderID: 1,
                 UsersID: 150,
                 GroupProductID: 1,
                 NameProduct: Netflix,
@@ -1338,6 +1351,7 @@ components:
                 DetailCredential: "Email: , Password: "
               },
               {
+                OrderID: 2,
                 UsersID: 162,
                 GroupProductID: 1,
                 NameProduct: Netfllix,
@@ -1356,6 +1370,7 @@ components:
             Code: 200
             Data: [
               {
+                OrderID: 1,
                 UsersID: 150,
                 GroupProductID: 1,
                 NameProduct: Netflix,
@@ -1363,6 +1378,7 @@ components:
                 DetailCredential: "Email: , Password: "
               },
               {
+                OrderID: 3,
                 UsersID: 150,
                 GroupProductID: 2,
                 NameProduct: Spotify,
