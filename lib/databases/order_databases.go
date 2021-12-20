@@ -12,13 +12,13 @@ import (
 	"github.com/xendit/xendit-go/ewallet"
 )
 
-func CreateOrder(Order *models.OrderRequest, id_group int) (interface{}, error) {
-	if err := config.DB.Create(&Order.Order).Error; err != nil {
+func CreateOrder(Payment *models.ResPayment, Order *models.Order, id_group int) (interface{}, error) {
+	if err := config.DB.Create(&Order).Error; err != nil {
 		return nil, err
 	}
 
 	UpdateGroupProductCapacity(id_group)
-	Create_Res, _ := PaymentXendit(Order.Order.ID, Order.ResPayment.Phone, Order.Order.PriceOrder)
+	Create_Res, _ := PaymentXendit(Order.ID, Payment.Phone, Order.PriceOrder)
 
 	return Create_Res, nil
 }
@@ -122,6 +122,9 @@ func PaymentXendit(id_order uint, phone string, amount int) (interface{}, error)
 		BusinessId:  resp.BusinessID,
 		Created:     resp.Created.Format("02-01-2006"),
 	}
-	config.DB.Create(&res_pay)
+
+	if err := config.DB.Create(&res_pay).Error; err != nil {
+		return nil, err
+	}
 	return res_pay, nil
 }

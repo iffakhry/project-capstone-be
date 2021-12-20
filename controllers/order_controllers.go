@@ -5,33 +5,42 @@ import (
 	"final-project/middlewares"
 	"final-project/models"
 	response "final-project/responses"
-	"fmt"
 	"net/http"
+	"regexp"
 	"strconv"
 
+	validator "github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 )
 
 func CreateOrderControllers(c echo.Context) error {
-	new_oder := models.OrderRequest{}
+	new_order := models.Order{}
+	new_payment := models.ResPayment{}
 	id_group, er := strconv.Atoi(c.Param("id_group"))
 	if er != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Param"))
 	}
 
-	c.Bind(&new_oder)
+	c.Bind(&new_payment)
+	v := validator.New()
+	erro := v.Var(new_payment.Phone, "required")
+	if erro != nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Telephone Number"))
+	}
+	if !regexp.MustCompile("^[0]{1,1}[1-9]{1,1}[0-9]{6,14}$").MatchString(new_payment.Phone) {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Telephone Number"))
+	}
+
 	id_user, role := middlewares.ExtractTokenId(c)
-
 	t_price, _, _, n_product, status, er := databases.GetDataGroupProductById(id_group)
-	new_oder.Order.UsersID = uint(id_user)
 
-	new_oder.Order.GroupProductID = uint(id_group)
-	new_oder.Order.PriceOrder = t_price
-	new_oder.Order.NameProduct = n_product
-	new_oder.Order.DetailCredential = "Email: , Password: "
+	new_order.UsersID = uint(id_user)
+	new_order.GroupProductID = uint(id_group)
+	new_order.PriceOrder = t_price
+	new_order.NameProduct = n_product
+	new_order.DetailCredential = "Email: , Password: "
 
 	// mengecek apakah user sudah tergabung di group
-	fmt.Println("cek err", er)
 	cek, e := databases.CekUserInGroup(uint(id_group), uint(id_user))
 	if er != nil || e != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Bad Request"))
@@ -40,7 +49,7 @@ func CreateOrderControllers(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
 	} else {
 
-		data, err := databases.CreateOrder(&new_oder, id_group)
+		data, err := databases.CreateOrder(&new_payment, &new_order, id_group)
 
 		if status != "Available" {
 			return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Group Product Full"))
@@ -51,7 +60,7 @@ func CreateOrderControllers(c echo.Context) error {
 		if data == nil || t_price == 0 {
 			return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Id Group Product Not Found"))
 		}
-		return c.JSON(http.StatusBadRequest, response.SuccessResponseData("Success Operation", data))
+		return c.JSON(http.StatusOK, response.SuccessResponseData("Success Operation", data))
 	}
 }
 
@@ -119,6 +128,11 @@ func UpdateOrderControllers(c echo.Context) error {
 	detail := models.Detail{}
 	id_order, err := strconv.Atoi(c.Param("id_order"))
 	c.Bind(&detail)
+	v := validator.New()
+	erro := v.Var(detail.DetailCredential, "required")
+	if erro != nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Details Can't Be Empty"))
+	}
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Id"))
 	}

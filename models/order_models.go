@@ -15,12 +15,12 @@ type Order struct {
 }
 
 type ResPayment struct {
-	Phone string `json:"phone" form:"phone"`
+	Phone string `json:"phone" form:"phone" `
 }
 
 type OrderRequest struct {
-	Order      Order      `json:"order" `
-	ResPayment ResPayment `json:"payment" `
+	Order      Order      ` json:"order" `
+	ResPayment ResPayment ` json:"payment" `
 }
 
 type Detail struct {
