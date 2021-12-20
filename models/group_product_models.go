@@ -28,7 +28,7 @@ type GetGroupProduct struct {
 	Name_Product         string
 	Status               string
 	Url                  string
-	GetOrder             interface{}
+	GetOrder             interface{} `gorm:"type:text"`
 }
 
 type ResGroup struct {
