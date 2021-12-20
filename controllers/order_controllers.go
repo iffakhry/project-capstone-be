@@ -24,10 +24,11 @@ func CreateOrderControllers(c echo.Context) error {
 	c.Bind(&new_payment)
 	v := validator.New()
 	erro := v.Var(new_payment.Phone, "required")
-	if erro != nil {
+	if erro != nil || len(new_payment.Phone) > 13 {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Telephone Number"))
 	}
-	if !regexp.MustCompile("^[0]{1,1}[1-9]{1,1}[0-9]{6,14}$").MatchString(new_payment.Phone) {
+
+	if !regexp.MustCompile(`^08[1-9][0-9]{8,13}$`).MatchString(new_payment.Phone) {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Telephone Number"))
 	}
 
