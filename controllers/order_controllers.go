@@ -49,7 +49,7 @@ func CreateOrderControllers(c echo.Context) error {
 	if len_phone < 11 || len_phone > 13 {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Telephone Number"))
 	}
-	if !regexp.MustCompile(`^08[0-9].*$`).MatchString(new_payment.Phone) {
+	if !regexp.MustCompile(`^08[1-9][0-9].*$`).MatchString(new_payment.Phone) {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Telephone Number"))
 	} else {
 
