@@ -23,12 +23,7 @@ func CreateOrderControllers(c echo.Context) error {
 
 	c.Bind(&new_payment)
 	v := validator.New()
-	erro := v.Var(new_payment.Phone, "required")
-	if erro != nil || len(new_payment.Phone) < 11 || len(new_payment.Phone) > 13 {
-		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Telephone Number"))
-	} else if !regexp.MustCompile(`^08[1-9][0-9]{3,13}$`).MatchString(new_payment.Phone) {
-		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Telephone Number"))
-	}
+	var regx = regexp.MustCompile("^08[1-9][0-9]{8,13}$")
 
 	id_user, role := middlewares.ExtractTokenId(c)
 	t_price, _, _, n_product, status, er := databases.GetDataGroupProductById(id_group)
@@ -46,6 +41,12 @@ func CreateOrderControllers(c echo.Context) error {
 	}
 	if cek != 0 || role == "admin" {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
+	}
+	erro := v.Var(new_payment.Phone, "required")
+	if erro != nil || len(new_payment.Phone) < 11 || len(new_payment.Phone) > 13 {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Telephone Number"))
+	} else if !regx.MatchString(new_payment.Phone) {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Telephone Number"))
 	} else {
 
 		data, err := databases.CreateOrder(&new_payment, &new_order, id_group)
