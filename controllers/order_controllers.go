@@ -6,6 +6,7 @@ import (
 	"final-project/models"
 	response "final-project/responses"
 	"net/http"
+	"regexp"
 	"strconv"
 
 	validator "github.com/go-playground/validator/v10"
@@ -25,13 +26,7 @@ func CreateOrderControllers(c echo.Context) error {
 	erro := v.Var(new_payment.Phone, "required")
 	if erro != nil || len(new_payment.Phone) < 11 || len(new_payment.Phone) > 13 {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Telephone Number"))
-	}
-	// if !regexp.MustCompile(`^08[1-9][0-9]+$`).MatchString(new_payment.Phone) {
-	// 	return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Telephone Number"))
-	// }
-	// fmt.Println("cek index", new_payment.Phone[0])
-	// fmt.Println("cek index", new_payment.Phone[1])
-	if new_payment.Phone[0] != 48 || new_payment.Phone[1] != 56 {
+	} else if !regexp.MustCompile(`^08[1-9][0-9]{3,13}$`).MatchString(new_payment.Phone) {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Telephone Number"))
 	}
 
@@ -46,7 +41,9 @@ func CreateOrderControllers(c echo.Context) error {
 
 	// mengecek apakah user sudah tergabung di group
 	cek, e := databases.CekUserInGroup(uint(id_group), uint(id_user))
-
+	if er != nil || e != nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Bad Request"))
+	}
 	if cek != 0 || role == "admin" {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
 	} else {
@@ -56,7 +53,7 @@ func CreateOrderControllers(c echo.Context) error {
 		if status != "Available" {
 			return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Group Product Full"))
 		}
-		if err != nil || er != nil || e != nil {
+		if err != nil {
 			return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Bad Request"))
 		}
 		if data == nil || t_price == 0 {
