@@ -44,9 +44,10 @@ func CreateOrderControllers(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
 	}
 	erro := v.Var(new_payment.Phone, "required")
-	if erro != nil || len_phone < 11 || len_phone > 13 {
+	if !regx.MatchString(new_payment.Phone) {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Telephone Number"))
-	} else if !regx.MatchString(new_payment.Phone) {
+	}
+	if erro != nil || len_phone < 11 || len_phone > 13 {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Telephone Number"))
 	} else {
 
