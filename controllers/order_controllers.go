@@ -6,7 +6,6 @@ import (
 	"final-project/models"
 	response "final-project/responses"
 	"net/http"
-	"regexp"
 	"strconv"
 
 	validator "github.com/go-playground/validator/v10"
@@ -23,7 +22,7 @@ func CreateOrderControllers(c echo.Context) error {
 
 	c.Bind(&new_payment)
 	v := validator.New()
-	var regx, _ = regexp.Compile(`^08[1-9][0-9].*$`)
+	// var regx, _ = regexp.Compile(`^0.8[1-9][0-9].*$`)
 	var len_phone = len(new_payment.Phone)
 
 	id_user, role := middlewares.ExtractTokenId(c)
@@ -44,7 +43,8 @@ func CreateOrderControllers(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
 	}
 	erro := v.Var(new_payment.Phone, "required")
-	if !regx.MatchString(new_payment.Phone) {
+	// if !regx.MatchString(new_payment.Phone) {
+	if new_payment.Phone[0] != '0' || new_payment.Phone[1] != '8' {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Telephone Number"))
 	}
 	if erro != nil || len_phone < 11 || len_phone > 13 {
