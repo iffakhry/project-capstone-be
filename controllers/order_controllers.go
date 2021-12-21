@@ -55,14 +55,14 @@ func CreateOrderControllers(c echo.Context) error {
 
 		data, err := databases.CreateOrder(&new_payment, &new_order, id_group)
 
+		if data == nil || t_price == 0 {
+			return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Id Group Product Not Found"))
+		}
 		if status != "Available" {
 			return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Group Product Full"))
 		}
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Bad Request"))
-		}
-		if data == nil || t_price == 0 {
-			return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Id Group Product Not Found"))
 		}
 		return c.JSON(http.StatusOK, response.SuccessResponseData("Success Operation", data))
 	}
