@@ -128,3 +128,11 @@ func PaymentXendit(id_order uint, phone string, amount int) (interface{}, error)
 	}
 	return res_pay, nil
 }
+
+func DeleteOrder(id_order int) (interface{}, error) {
+	order := models.Order{}
+	if err := config.DB.Where("id = ?", id_order).Delete(&order).Error; err != nil {
+		return nil, err
+	}
+	return order, nil
+}
