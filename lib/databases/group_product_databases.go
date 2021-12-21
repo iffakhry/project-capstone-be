@@ -24,7 +24,7 @@ func CreateGroupProduct(group *models.GroupProduct, id_product uint) (interface{
 func GetAllGroupProduct() (interface{}, int, error) {
 	res_group := []models.GetGroupProduct{}
 	query := config.DB.Table("group_products").Select(query_join).Joins("join products on group_products.products_id = products.id").Where("group_products.deleted_at IS NULL").Find(&res_group)
-	if query.Error != nil {
+	if query.Error != nil || query.RowsAffected < 1 {
 		return nil, 0, query.Error
 	}
 	for i, _ := range res_group {
@@ -108,4 +108,12 @@ func GetDataGroupProductById(id int) (t_price, limit int, n_group, n_product, st
 		return 0, 0, "", "", "", query.Error
 	}
 	return res_group.TotalPrice, res_group.Limit, res_group.NameGroupProduct, res_group.Name_Product, res_group.Status, nil
+}
+
+func DeleteGroupProduct(id_group int) (interface{}, error) {
+	group := models.GroupProduct{}
+	if err := config.DB.Where("id = ?", id_group).Delete(&group).Error; err != nil {
+		return nil, err
+	}
+	return group, nil
 }
