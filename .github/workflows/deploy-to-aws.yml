@@ -21,5 +21,6 @@ jobs:
           git pull origin main
           docker stop final-project
           docker rm final-project
+          docker rmi final-app:latest
           docker build -t final-app:latest .
           docker run -d --restart unless-stopped -p 80:8080 --name final-project final-app:latest
