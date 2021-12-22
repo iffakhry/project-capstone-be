@@ -24,8 +24,9 @@
 
 <!-- [![Product Name Screen Shot][product-screenshot]](https://example.com) -->
 
-Barengin merupakan marketplace yang mengumpulkan calon customer .....
+Barengin merupakan platform untuk mempertemukan calon customer yang ingin berlangganan produk digital tertentu dengan pengguna lain untuk mendapatkan keuntungan layanan premium secara patungan.
 
+Berikut fitur yang terdapat dalam barengin :
 | Feature | Admin | Customer | Guest
 |:----------| :----------:| :----------:|:----------:|
 | Signup | No | No | Yes
@@ -37,8 +38,8 @@ Barengin merupakan marketplace yang mengumpulkan calon customer .....
 | Delete user by id | Yes | Yes | No
 |---|---|---|---|
 | Create product | Yes | No | No
-| Get all products | No | No | No
-| Get product by id | No | No | No
+| Get all products | Yes | Yes | Yes
+| Get product by id | Yes | Yes | Yes
 | Update product by id | Yes | No | No
 | Delete product by id | Yes | No | No
 |---|---|---|---|
@@ -75,7 +76,7 @@ Barengin merupakan marketplace yang mengumpulkan calon customer .....
 <!-- ERD -->
 ## ERD
 <img src="images/erd.png">
-
+<p align="right">(<a href="#top">back to top</a>)</p>
 <!-- How to Use -->
 ## How to Use
 
