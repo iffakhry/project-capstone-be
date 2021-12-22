@@ -253,6 +253,10 @@ func DeleteProductControllers(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Id"))
 	}
+	data_group_product, _ := databases.GetGroupProductByIdProducts(id)
+	if data_group_product != nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access is denied ID data is in the group product"))
+	}
 	product, _ := databases.GetProductById(id)
 	if product == nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
