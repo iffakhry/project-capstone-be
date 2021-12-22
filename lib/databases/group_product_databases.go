@@ -94,9 +94,11 @@ func UpdatePlusGroupProductCapacity(id_group_product int) (interface{}, error) {
 
 func UpdateMinusGroupProductCapacity(id_group_product int) (interface{}, error) {
 	group := models.GroupProduct{}
+
 	config.DB.Find(&group, id_group_product)
-	capacity := group.CapacityGroupProduct - 1
-	query1 := config.DB.Model(&group).Where("group_products.id = ?", id_group_product).Updates(map[string]interface{}{"status": "Available", "capacity_group_product": capacity})
+	_, _, capacity := GetOrderByIdGroup(id_group_product)
+
+	query1 := config.DB.Model(&group).Where("group_products.id = ?", id_group_product).Updates(map[string]interface{}{"status": "Available", "capacity_group_product": capacity - 1})
 	if query1.Error != nil {
 		return nil, query1.Error
 	}
