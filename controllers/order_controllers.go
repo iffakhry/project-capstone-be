@@ -131,24 +131,28 @@ func GetOrderByIdUsersControllers(c echo.Context) error {
 func UpdateOrderControllers(c echo.Context) error {
 	detail := models.Detail{}
 	id_order, err := strconv.Atoi(c.Param("id_order"))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Id"))
+	}
 	c.Bind(&detail)
+
+	_, role := middlewares.ExtractTokenId(c)
+	if role != "admin" {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
+	}
+
 	v := validator.New()
 	erro := v.Var(detail.DetailCredential, "required")
 	if erro != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Details Can't Be Empty"))
 	}
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Id"))
-	}
-	_, role := middlewares.ExtractTokenId(c)
 
-	data, e := databases.UpdateOrderDetail(id_order, detail.DetailCredential)
-	if role != "admin" {
-		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
-	}
-	if data == nil {
+	cek, _, _ := databases.GetOrderByIdOrder(id_order)
+	if cek == nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
 	}
+
+	data, e := databases.UpdateOrderDetail(id_order, detail.DetailCredential)
 	if e != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Bad Request"))
 	}
