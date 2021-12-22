@@ -24,7 +24,7 @@
 
 <!-- [![Product Name Screen Shot][product-screenshot]](https://example.com) -->
 
-Barengin merupakan platform untuk mempertemukan calon customer yang ingin berlangganan produk digital tertentu dengan pengguna lain untuk mendapatkan keuntungan layanan premium secara patungan.
+Barengin merupakan suatu platform yang menjadi wadah untuk mempertemukan calon customer yang ingin berlangganan produk digital tertentu dengan calon customer lain untuk mendapatkan keuntungan layanan premium secara patungan.
 
 Berikut fitur yang terdapat dalam barengin :
 | Feature | Admin | Customer | Guest
@@ -73,13 +73,71 @@ Berikut fitur yang terdapat dalam barengin :
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
+<!-- How to Use -->
+## How to Use
+### * Running on Local Server
+- Install Golang, Postman, MySQL Management System (ex. MySQL Workbench)
+- Clone repository with HTTPS:
+```
+git clone https://github.com/project-capstone/project-capstone-be.git
+```
+* Create File `.env`:
+```
+export CONNECTION_DB="[username]:[password]@tcp(127.0.0.1:3306)/[db_name]?charset=utf8&parseTime=True&loc=Local"
+
+export GOOGLE_API_KEY="[geocode_api_key]"
+
+export KEY_XENDIT = "[xendit_key]"
+```
+* Run `main.go` on local terminal
+```
+$ go run main.go
+```
+* Run the endpoint according to the OpenAPI Documentation (Swagger) via Postman 
+
+<br/>
+
+### * Running on Cloud Server
+- Create new instance
+- Configure inbound rules, add http, https, mysql ports
+- Create RDS Instance (MySQL)
+- Run instance
+- Install docker in instance
+```
+sudo apt install docker.io
+```
+- Change docker access mode
+```
+sudo chmod 777 /var/run/docker.sock
+```
+- Add `ssh key` in instance
+```
+ssh-keygen
+```
+- Add  `ssh key` in github account, ssh & gpg key -> new ssh -> fill ssh from `id_rsa.pub` value
+- Clone repository with SSH:
+```
+git@github.com:project-capstone/project-capstone-be.git
+```
+- [optional] rename project name
+```
+mv [project_name] [new_project_name ex: app]
+```
+- Create File `.env` in directory project on cloud server:
+```
+export CONNECTION_DB="[username]:[password]@tcp([rds_instance_url]:3306)/[db_name]?charset=utf8&parseTime=True&loc=Local"
+
+export GOOGLE_API_KEY="[geocode_api_key]"
+
+export KEY_XENDIT = "[xendit_key]"
+```
+- Configure CI/CD in local
+- Push CI/CD to cloud server
+- Run the endpoint according to the OpenAPI Documentation (Swagger) via Postman
 <!-- ERD -->
 ## ERD
 <img src="images/erd.png">
 <p align="right">(<a href="#top">back to top</a>)</p>
-<!-- How to Use -->
-## How to Use
-
 
 <!-- CONTACT -->
 ## Contact
