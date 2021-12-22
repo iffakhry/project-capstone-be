@@ -17,7 +17,7 @@ func CreateOrder(Payment *models.ResPayment, Order *models.Order, id_group int) 
 		return nil, err
 	}
 
-	UpdateGroupProductCapacity(id_group)
+	UpdatePlusGroupProductCapacity(id_group)
 	Create_Res, _ := PaymentXendit(Order.ID, Payment.Phone, Order.PriceOrder)
 
 	return Create_Res, nil
@@ -34,17 +34,18 @@ func GetOrderByIdOrder(id int) (i interface{}, e error, id_user uint) {
 	return order, nil, order.UsersID
 }
 
-func GetOrderByIdGroup(id int) (i interface{}, e error) {
+func GetOrderByIdGroup(id int) (interface{}, error, int) {
 	order := []models.GetOrder{}
 	query := config.DB.Table("orders").Select("*").Where("orders.deleted_at IS NULL AND orders.group_product_id = ? ", id).Find(&order)
 	if query.Error != nil || query.RowsAffected < 1 {
-		return nil, query.Error
+		return nil, query.Error, 0
 	}
 	for i, _ := range order {
 		res_idorder, _ := CekUserInGroup(order[i].GroupProductID, order[i].UsersID)
 		order[i].OrderID = res_idorder
 	}
-	return order, nil
+	capacity := len(order)
+	return order, nil, capacity
 }
 func GetOrderByIdUser(id int) (i interface{}, e error) {
 	order := []models.GetOrder{}
@@ -131,6 +132,8 @@ func PaymentXendit(id_order uint, phone string, amount int) (interface{}, error)
 
 func DeleteOrder(id_order int) (interface{}, error) {
 	order := models.Order{}
+	config.DB.Find(&order, id_order)
+	UpdateMinusGroupProductCapacity(int(order.GroupProductID))
 	if err := config.DB.Where("id = ?", id_order).Delete(&order).Error; err != nil {
 		return nil, err
 	}
