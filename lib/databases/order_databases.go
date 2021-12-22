@@ -17,7 +17,7 @@ func CreateOrder(Payment *models.ResPayment, Order *models.Order, id_group int) 
 		return nil, err
 	}
 
-	UpdateGroupProductCapacity(id_group)
+	UpdatePlusGroupProductCapacity(id_group)
 	Create_Res, _ := PaymentXendit(Order.ID, Payment.Phone, Order.PriceOrder)
 
 	return Create_Res, nil
@@ -83,11 +83,11 @@ func CekUserInGroup(id_group, id_user uint) (id_order uint, er error) {
 
 func UpdateOrderDetail(id_order int, detail string) (interface{}, error) {
 	order := models.Order{}
-	res := models.GetOrder{}
-	query1 := config.DB.Model(&order).Where("orders.deleted_at IS NULL AND orders.id = ?", id_order).Update("detail_credential", detail).Find(&res, id_order)
+	query1 := config.DB.Model(&order).Where("orders.deleted_at IS NULL AND orders.id = ?", id_order).Update("detail_credential", detail).Find(&order)
 	if query1.Error != nil {
 		return nil, query1.Error
 	}
+	res, _, _ := GetOrderByIdOrder(id_order)
 	return res, nil
 }
 
@@ -127,4 +127,14 @@ func PaymentXendit(id_order uint, phone string, amount int) (interface{}, error)
 		return nil, err
 	}
 	return res_pay, nil
+}
+
+func DeleteOrder(id_order int) (interface{}, error) {
+	order := models.Order{}
+	config.DB.Find(&order, id_order)
+	UpdateMinusGroupProductCapacity(int(order.GroupProductID))
+	if err := config.DB.Where("id = ?", id_order).Delete(&order).Error; err != nil {
+		return nil, err
+	}
+	return order, nil
 }

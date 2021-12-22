@@ -38,6 +38,7 @@ func New() *echo.Echo {
 
 	// group product JWT
 	j.POST("/products/group/:id_products", controllers.CreateGroupProductControllers)
+	j.DELETE("/products/group/delete/:id_group", controllers.DeleteGroupProductControllers)
 
 	// route users dengan JWT
 	j.GET("/users", controllers.GetAllUsersControllers)       // admin
@@ -55,6 +56,7 @@ func New() *echo.Echo {
 	j.GET("/orders/id/:id_order", controllers.GetOrderByIdOrderControllers)
 	j.GET("/orders/group/:id_group", controllers.GetOrderByIdGroupControllers)
 	j.GET("/orders/users/:id_user", controllers.GetOrderByIdUsersControllers)
-	j.PUT("/orders/update/:id_order", controllers.UpdateOrderControllers) //admin
+	j.PUT("/orders/update/:id_order", controllers.UpdateOrderControllers)    //admin
+	j.DELETE("/orders/delete/:id_order", controllers.DeleteOrderControllers) //admin
 	return e
 }

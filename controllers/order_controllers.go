@@ -73,10 +73,10 @@ func GetOrderByIdOrderControllers(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Id"))
 	}
-	token, _ := middlewares.ExtractTokenId(c)
+	token, role := middlewares.ExtractTokenId(c)
 
 	data, e, id_user := databases.GetOrderByIdOrder(id_order)
-	if id_user != uint(token) {
+	if id_user != uint(token) && role != "admin" {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
 	}
 	if data == nil {
@@ -113,10 +113,10 @@ func GetOrderByIdUsersControllers(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Id"))
 	}
-	token, _ := middlewares.ExtractTokenId(c)
+	token, role := middlewares.ExtractTokenId(c)
 
 	data, e := databases.GetOrderByIdUser(id_user)
-	if token != id_user {
+	if token != id_user && role != "admin" {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
 	}
 	if data == nil {
@@ -131,26 +131,48 @@ func GetOrderByIdUsersControllers(c echo.Context) error {
 func UpdateOrderControllers(c echo.Context) error {
 	detail := models.Detail{}
 	id_order, err := strconv.Atoi(c.Param("id_order"))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Id"))
+	}
 	c.Bind(&detail)
+
+	_, role := middlewares.ExtractTokenId(c)
+	if role != "admin" {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
+	}
+
 	v := validator.New()
 	erro := v.Var(detail.DetailCredential, "required")
 	if erro != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Details Can't Be Empty"))
 	}
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Id"))
-	}
-	_, role := middlewares.ExtractTokenId(c)
 
-	data, e := databases.UpdateOrderDetail(id_order, detail.DetailCredential)
-	if role != "admin" {
-		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
-	}
-	if data == nil {
+	cek, _, _ := databases.GetOrderByIdOrder(id_order)
+	if cek == nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
 	}
+
+	data, e := databases.UpdateOrderDetail(id_order, detail.DetailCredential)
 	if e != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Bad Request"))
 	}
 	return c.JSON(http.StatusOK, response.SuccessResponseData("Success Operation", data))
+}
+
+func DeleteOrderControllers(c echo.Context) error {
+	id, err := strconv.Atoi(c.Param("id_order"))
+	logged, role := middlewares.ExtractTokenId(c) // check token
+	if logged != id && role != "admin" {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
+	}
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Id"))
+	}
+	data, _, _ := databases.GetOrderByIdOrder(id)
+	if data == nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
+	}
+	databases.DeleteOrder(id)
+
+	return c.JSON(http.StatusOK, response.SuccessResponseNonData("Success Operation"))
 }
