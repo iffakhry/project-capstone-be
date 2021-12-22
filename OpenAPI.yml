@@ -249,6 +249,20 @@ paths:
           $ref: '#/components/responses/createGroupProductSuccess'
         '400':
           $ref: '#/components/responses/createGroupProductFailed'
+  /jwt/products/group/delete/:id_group:
+    delete:
+      tags:
+        - Group Products
+      summary: Delete group product by id group for admin only
+      security:
+        -  JWTAuth: []
+      parameters:
+        - $ref: '#/components/parameters/idGroup'
+      responses:  
+        '200':
+            $ref: '#/components/responses/successOperationNonData'
+        '400':
+            $ref: '#/components/responses/deleteGroupProductFailed'
 ####################################
 #  ORDERS
 ####################################
@@ -326,6 +340,20 @@ paths:
           $ref: '#/components/responses/UpdateOrderSuccess'
         '400':
           $ref: '#/components/responses/UpdateOrderFailed'
+  /jwt/orders/delete/:id_order:
+    delete:
+      tags:
+        - Orders
+      summary: Delete order by id order for admin only
+      security:
+        -  JWTAuth: []
+      parameters:
+        - $ref: '#/components/parameters/idOrder'
+      responses:  
+        '200':
+            $ref: '#/components/responses/successOperationNonData'
+        '400':
+            $ref: '#/components/responses/deleteDataByIdFailed'
 ####################################
 #  COMPONENTS
 ####################################
@@ -420,10 +448,10 @@ components:
       properties:
         phone:
           type: string
-          pattern: '^[0]{1,1}[1-9]{1,1}[0-9]{6,14}$'
-          description: The first character must be "0" (zero). The second character must be one of "1-9". The next character must be numeric "0-9".
-          minLength: 8
-          maxLength: 16
+          pattern: '^08[1-9][0-9]{8,13}$'
+          description: The first 2 character must be "08". The third character must be one of "1-9". The next character must be numeric "0-9".
+          minLength: 11
+          maxLength: 13
     requestDataOrderUpdate:
       type: object
       required:
@@ -782,11 +810,11 @@ components:
           examples:
             Admin:
               value:
-                email: admin@admin.com
-                password: admin123
+                email: administrator@tog.org
+                password: headon_f1
             Customer:
               value:
-                email: perospero@mail.com
+                email: perospero@gmail.com
                 password: qwerty
         multipart/form-data:
           schema:
@@ -1036,12 +1064,12 @@ components:
           schema:
             $ref: '#/components/schemas/responseNonData'
           examples:
+            Access Forbidden:
+                $ref: '#/components/examples/accessForbidden'
             Invalid Id:
               $ref: '#/components/examples/invalidId'
             Data Not Found:
               $ref: '#/components/examples/dataNotFound'
-            Access Forbidden:
-                $ref: '#/components/examples/accessForbidden'
     createProductFailed:
       description: Bad Request Response
       content:
@@ -1257,6 +1285,21 @@ components:
               $ref: '#/components/examples/dataNotFound'
             Bad Request:
               $ref: '#/components/examples/badRequest'
+    deleteGroupProductFailed:
+      description: Bad Request Response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/responseNonData'
+          examples:
+            Access Forbidden:
+              $ref: '#/components/examples/accessForbidden'
+            Access is denied:
+              $ref: '#/components/examples/accessIsDenied'
+            Invalid Id:  
+              $ref: '#/components/examples/invalidId'
+            Data Not Found:
+              $ref: '#/components/examples/dataNotFound'
     createOrderSuccess:
       description: Success Operation
       content:
@@ -1283,16 +1326,16 @@ components:
           examples:
             Invalid Param:
               $ref: '#/components/examples/invalidParam'
-            Invalid Telephone Number:
-              $ref: '#/components/examples/invalidTelephoneNumber'
             Bad Request:
               $ref: '#/components/examples/badRequest'
             Access Forbidden:
               $ref: '#/components/examples/accessForbidden'
-            Group Product Full:
-              $ref: '#/components/examples/groupProductFull'
+            Invalid Telephone Number:
+              $ref: '#/components/examples/invalidTelephoneNumber'
             Id Group Product Not Found:
               $ref: '#/components/examples/idGroupProductNotFound'
+            Group Product Full:
+              $ref: '#/components/examples/groupProductFull'
     getOrderSuccess:
       description: Success Operation
       content:
@@ -1319,9 +1362,9 @@ components:
           examples:
             Invalid Id:
               $ref: '#/components/examples/invalidId'
-            Data Not Found:
-              $ref: '#/components/examples/dataNotFound'
             Access Forbidden:
+              $ref: '#/components/examples/dataNotFound'
+            Data Not Found:
               $ref: '#/components/examples/dataNotFound'
             Bad Request:
               $ref: '#/components/examples/badRequest'
@@ -1407,13 +1450,17 @@ components:
               $ref: '#/components/examples/detailsCantBeEmpty'
             Invalid Id:
               $ref: '#/components/examples/invalidId'
-            Data Not Found:
-              $ref: '#/components/examples/dataNotFound'
             Access Forbidden:
+              $ref: '#/components/examples/dataNotFound'
+            Data Not Found:
               $ref: '#/components/examples/dataNotFound'
             Bad Request:
               $ref: '#/components/examples/badRequest'
   examples:
+    accessIsDenied:
+      value:
+        Code: 400
+        Message: Access is denied ID data is in the orderInvalid Id
     accessForbidden:
       value:
         Code: 400
