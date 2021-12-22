@@ -37,3 +37,23 @@ func InitMigrate() {
 	DB.AutoMigrate(&models.Payment{})
 	DB.AutoMigrate(&models.Order{})
 }
+
+func InitDBTest() {
+	//Set data source that will be used
+	connection := "root:qwerty@tcp(127.0.0.1:3306)/todo_list_test?charset=utf8mb4&parseTime=True&loc=Local"
+
+	var err error
+	//Initialize DB session
+	DB, err = gorm.Open(mysql.Open(connection), &gorm.Config{})
+	if err != nil {
+		panic("Failed to connect database")
+	}
+
+	//Migrate the database schema
+	InitMigrationTest()
+}
+
+//Declare function to auto-migrate the schema
+func InitMigrationTest() {
+	DB.AutoMigrate(&models.Users{})
+}
