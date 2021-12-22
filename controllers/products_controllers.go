@@ -7,6 +7,7 @@ import (
 	response "final-project/responses"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -26,7 +27,7 @@ type ValidatorProduct struct {
 	Name_Product   string `validate:"required"`
 	Detail_Product string `validate:"required"`
 	Price          int    `validate:"required,gt=0"`
-	Limit          int    `validate:"required,gt=0"`
+	Limit          int    `validate:"required,gt=1"`
 	Photo          string `validate:"required"`
 	Url            string `validate:"required"`
 }
@@ -85,6 +86,7 @@ func CreateProductControllers(c echo.Context) error {
 	u, err := url.Parse("https://storage.googleapis.com/" + bucket + "/" + sw.Attrs().Name)
 	new_product.Url = fmt.Sprintf("%v", u)
 	if err != nil {
+		log.Println(err)
 		return c.JSON(http.StatusInternalServerError, response.InternalServerErrorResponse("Failed to Upload File"))
 	}
 
@@ -145,16 +147,16 @@ func GetProductByIdControllers(c echo.Context) error {
 // controller untuk memperbarui data product by id
 func UpdateProductControllers(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
+	_, role := middlewares.ExtractTokenId(c) // check token
+	if role != "admin" {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
+	}
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Id"))
 	}
 	product, _ := databases.GetProductById(id)
 	if product == nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
-	}
-	_, role := middlewares.ExtractTokenId(c) // check token
-	if role != "admin" {
-		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
 	}
 	update_product := models.Products{}
 	c.Bind(&update_product)
@@ -244,16 +246,20 @@ func UpdateProductControllers(c echo.Context) error {
 // controller untuk menghapus data product by id
 func DeleteProductControllers(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
+	_, role := middlewares.ExtractTokenId(c)
+	if role != "admin" {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
+	}
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Id"))
+	}
+	data_group_product, _ := databases.GetGroupProductByIdProducts(id)
+	if data_group_product != nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access is denied ID data is in the group product"))
 	}
 	product, _ := databases.GetProductById(id)
 	if product == nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
-	}
-	_, role := middlewares.ExtractTokenId(c)
-	if role != "admin" {
-		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
 	}
 	databases.DeleteProduct(id)
 	return c.JSON(http.StatusOK, response.SuccessResponseNonData("Success Operation"))

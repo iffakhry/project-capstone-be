@@ -21,10 +21,6 @@ func New() *echo.Echo {
 	// route users tanpa JWT
 	e.POST("/signup", controllers.CreateUserControllers)
 	e.POST("/login", controllers.LoginUserControllers)
-	e.GET("/users/:id", controllers.GetUserControllers)
-	e.GET("/users", controllers.GetAllUsersControllers)
-
-	//order
 
 	//route group product tanpa JWT
 	e.GET("/products/group", controllers.GetAllGroupProductControllers)
@@ -42,20 +38,25 @@ func New() *echo.Echo {
 
 	// group product JWT
 	j.POST("/products/group/:id_products", controllers.CreateGroupProductControllers)
+	j.DELETE("/products/group/delete/:id_group", controllers.DeleteGroupProductControllers)
 
 	// route users dengan JWT
-	j.PUT("/users/:id", controllers.UpdateUserControllers)
-	j.DELETE("/users/:id", controllers.DeleteUserControllers)
+	j.GET("/users", controllers.GetAllUsersControllers)       // admin
+	j.GET("/users/:id", controllers.GetUserControllers)       // admin dan pemilik akun
+	j.PUT("/users/:id", controllers.UpdateUserControllers)    // admin dan pemilik akun
+	j.DELETE("/users/:id", controllers.DeleteUserControllers) // admin dan pemilik akun
 
 	// route product dengan JWT
-	j.POST("/products", controllers.CreateProductControllers)
-	j.PUT("/products/:id", controllers.UpdateProductControllers)
-	j.DELETE("/products/:id", controllers.DeleteProductControllers)
+	j.POST("/products", controllers.CreateProductControllers)       // admin
+	j.PUT("/products/:id", controllers.UpdateProductControllers)    // admin
+	j.DELETE("/products/:id", controllers.DeleteProductControllers) // admin
 
 	//route order
 	j.POST("/orders/:id_group", controllers.CreateOrderControllers)
 	j.GET("/orders/id/:id_order", controllers.GetOrderByIdOrderControllers)
 	j.GET("/orders/group/:id_group", controllers.GetOrderByIdGroupControllers)
 	j.GET("/orders/users/:id_user", controllers.GetOrderByIdUsersControllers)
+	j.PUT("/orders/update/:id_order", controllers.UpdateOrderControllers)    //admin
+	j.DELETE("/orders/delete/:id_order", controllers.DeleteOrderControllers) //admin
 	return e
 }

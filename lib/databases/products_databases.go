@@ -69,3 +69,13 @@ func DeleteProduct(id int) (interface{}, error) {
 	}
 	return product, nil
 }
+
+// function database untuk menampilkan data product by id user
+func GetProductByIdUser(id_user int) (interface{}, error) {
+	var get_product_by_id_user models.GetProduct
+	query := config.DB.Table("products").Select("*").Where("products.deleted_at IS NULL AND products.users_id = ?", id_user).Find(&get_product_by_id_user)
+	if query.Error != nil || query.RowsAffected == 0 {
+		return nil, query.Error
+	}
+	return get_product_by_id_user, nil
+}

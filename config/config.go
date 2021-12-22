@@ -34,6 +34,26 @@ func InitMigrate() {
 	DB.AutoMigrate(&models.Users{})
 	DB.AutoMigrate(&models.GroupProduct{})
 	DB.AutoMigrate(&models.Products{})
-	DB.AutoMigrate(&models.CreditCard{})
+	DB.AutoMigrate(&models.Payment{})
 	DB.AutoMigrate(&models.Order{})
+}
+
+func InitDBTest() {
+	err := godotenv.Load()
+	if err != nil {
+		panic("Error loading .env file")
+	}
+	config := os.Getenv("CONNECTION_DB_TESTING")
+
+	var e error
+
+	DB, e = gorm.Open(mysql.Open(config), &gorm.Config{})
+	if e != nil {
+		panic(e)
+	}
+	InitMigrateTest()
+}
+
+func InitMigrateTest() {
+	DB.AutoMigrate(&models.Users{})
 }

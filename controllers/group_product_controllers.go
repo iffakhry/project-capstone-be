@@ -7,6 +7,7 @@ import (
 	response "final-project/responses"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/labstack/echo/v4"
 )
@@ -15,26 +16,41 @@ import (
 func CreateGroupProductControllers(c echo.Context) error {
 	new_group := models.GroupProduct{}
 	id := c.Param("id_products")
-	id_product, err := strconv.Atoi(id)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Param"))
-	}
 	c.Bind(&new_group)
 
+	id_product, err := strconv.Atoi(id)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Id"))
+	}
 	id_user, role := middlewares.ExtractTokenId(c)
 	if role == "admin" {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
 	}
+
+	duration := time.Now().AddDate(0, 0, 14)
+	//mengambil banyaknya jumlah data yang ada pada group
+	_, len_group, _ := databases.GetAllGroupProduct()
+	name, price, limit, _ := databases.GetDataProduct(int(id_product))
+	fee := 5000
+
 	new_group.UsersID = uint(id_user)
 	new_group.ProductsID = uint(id_product)
+	new_group.NameGroupProduct = name + "-" + strconv.Itoa(len_group+1)
+	new_group.CapacityGroupProduct = 0
+	new_group.AdminFee = fee
+	new_group.TotalPrice = (price / limit) + fee
+	new_group.DurationGroup = duration.Format("02-01-2006")
+	new_group.Status = "Available"
+
+	if name == "" || price == 0 {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Id Product Not Found"))
+	}
 
 	d, er := databases.CreateGroupProduct(&new_group, new_group.ProductsID)
 	if er != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Bad Request"))
 	}
-	if d == nil {
-		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Id Product Not Found"))
-	}
+
 	return c.JSON(http.StatusOK, response.SuccessResponseData("Success Operation", d))
 }
 
@@ -94,4 +110,26 @@ func GetAvailableGroupProductControllers(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Bad Request"))
 	}
 	return c.JSON(http.StatusOK, response.SuccessResponseData("Success Operation", data))
+}
+
+func DeleteGroupProductControllers(c echo.Context) error {
+	id, err := strconv.Atoi(c.Param("id_group"))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Id"))
+	}
+	logged, role := middlewares.ExtractTokenId(c) // check token
+	if logged != id && role != "admin" {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
+	}
+	data_order, _, _ := databases.GetOrderByIdGroup(id)
+	if data_order != nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access is denied ID data is in the order"))
+	}
+	data, _ := databases.GetGroupProductById(id)
+	if data == nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
+	}
+	databases.DeleteGroupProduct(id)
+
+	return c.JSON(http.StatusOK, response.SuccessResponseNonData("Success Operation"))
 }

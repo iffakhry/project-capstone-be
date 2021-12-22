@@ -4,16 +4,16 @@
 <br/>
 <div align="center">
 <!--  mengarah ke repo  -->
-  <a href="https://github.com/sahrilmahendra/project2-airbnb">
-    <img src="images/Logo.png" width="140" height="80">
+  <a href="https://github.com/project-capstone">
+    <img src="images/Logo.png" width="267" height="80">
   </a>
 
-  <h3 align="center">Project Airbnb</h3>
+  <h3 align="center">Barengin</h3>
 
   <p align="center">
-    Project Airbnb Program Immersive Back End Batch 4
+    Final Project Capstone Program Immersive Alterra Academy
     <br />
-    <a href="https://app.swaggerhub.com/apis-docs/supriadi15001/Project2_Alta-BE4_AirbnbApp_v1/1.1"><strong>Explore the docs Open API »</strong></a>
+    <a href="https://app.swaggerhub.com/apis-docs/supriadi15001/final-project_alta_barengin/1.0"><strong>Explore the docs Open API »</strong></a>
     <br />
   </p>
 </div>
@@ -24,23 +24,38 @@
 
 <!-- [![Product Name Screen Shot][product-screenshot]](https://example.com) -->
 
-Airbnb merupakan marketplace yang digunakan untuk memesan tempat penginapan dan homestay.
-Berikut merupakan fitur yang terdapat dalam project ini :
-<div>
-      <ul>
-        <li><h5>Users</h5></li>
-        <p>Users dapat melakukan Create, Read, Update, Delete (CRUD) pada data user.
-        <br>User yang telah melakukan registrasi (create) dapat melakukan login.</p>
-        <li><h5>Homestay</h5></a></li>
-        <p>Users dapat melakukan Create, Read, Update, Delete (CRUD) pada data homestay.
-        <br>Fitur Update dan Delete hanya dapat dilakukan pada homestay miliknya sendiri.
-        <br>User dapat melihat semua data homestay termasuk homestay yang dimilikinya sendiri.</p>
-        <li><h5>Reservation</h5></a></li>
-        <p>Users dapat melakukan reservation homestay.
-        <br>Users dapat mengecek ketersediaan homestay.
-        <br>Users dapat melihat data reservation.</p>
-      </ul>
-</div>
+Barengin merupakan suatu platform yang menjadi wadah untuk mempertemukan calon customer yang ingin berlangganan produk digital tertentu dengan calon customer lain untuk mendapatkan keuntungan layanan premium secara patungan.
+
+Berikut fitur yang terdapat dalam barengin :
+| Feature | Admin | Customer | Guest
+|:----------| :----------:| :----------:|:----------:|
+| Signup | No | No | Yes
+| Login | Yes | Yes | No
+|---|---|---|---|
+| Get all users | Yes | No | No
+| Get user by id | Yes | Yes | No
+| Update user by id | Yes | Yes | No
+| Delete user by id | Yes | Yes | No
+|---|---|---|---|
+| Create product | Yes | No | No
+| Get all products | Yes | Yes | Yes
+| Get product by id | Yes | Yes | Yes
+| Update product by id | Yes | No | No
+| Delete product by id | Yes | No | No
+|---|---|---|---|
+| Create group product | No | Yes | No
+| Get all group product | Yes | Yes | Yes
+| Get group product by id group product | Yes | Yes | Yes
+| Get group product by id product | Yes | Yes | Yes
+| Get group product by status | Yes | Yes | Yes
+|---|---|---|---|
+| Create order | No | Yes | No
+| Get all orders by id group | Yes | No | No
+| Get all order by id user | Yes | Yes | No
+| Get order by id order | Yes | Yes | No
+| Update order by id order | Yes | No | No
+|---|---|---|---|
+
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 ### Built With
@@ -58,15 +73,77 @@ Berikut merupakan fitur yang terdapat dalam project ini :
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
+<!-- How to Use -->
+## How to Use
+### * Running on Local Server
+- Install Golang, Postman, MySQL Management System (ex. MySQL Workbench)
+- Clone repository with HTTPS:
+```
+git clone https://github.com/project-capstone/project-capstone-be.git
+```
+* Create File `.env`:
+```
+export CONNECTION_DB="[username]:[password]@tcp(127.0.0.1:3306)/[db_name]?charset=utf8&parseTime=True&loc=Local"
+
+export GOOGLE_API_KEY="[geocode_api_key]"
+
+export KEY_XENDIT = "[xendit_key]"
+```
+* Run `main.go` on local terminal
+```
+$ go run main.go
+```
+* Run the endpoint according to the OpenAPI Documentation (Swagger) via Postman 
+
+<br/>
+
+### * Running on Cloud Server
+- Create new instance
+- Configure inbound rules, add http, https, mysql ports
+- Create RDS Instance (MySQL)
+- Run instance
+- Install docker in instance
+```
+sudo apt install docker.io
+```
+- Change docker access mode
+```
+sudo chmod 777 /var/run/docker.sock
+```
+- Add `ssh key` in instance
+```
+ssh-keygen
+```
+- Add  `ssh key` in github account, ssh & gpg key -> new ssh -> fill ssh from `id_rsa.pub` value
+- Clone repository with SSH:
+```
+git@github.com:project-capstone/project-capstone-be.git
+```
+- [optional] rename project name
+```
+mv [project_name] [new_project_name ex: app]
+```
+- Create File `.env` in directory project on cloud server:
+```
+export CONNECTION_DB="[username]:[password]@tcp([rds_instance_url]:3306)/[db_name]?charset=utf8&parseTime=True&loc=Local"
+
+export GOOGLE_API_KEY="[geocode_api_key]"
+
+export KEY_XENDIT = "[xendit_key]"
+```
+- Configure CI/CD in local
+- Push CI/CD to cloud server
+- Run the endpoint according to the OpenAPI Documentation (Swagger) via Postman
 <!-- ERD -->
 ## ERD
-<img src="images/erd.jpeg">
+<img src="images/erd.png">
+<p align="right">(<a href="#top">back to top</a>)</p>
 
 <!-- CONTACT -->
 ## Contact
 
-Project Link : [https://github.com/sahrilmahendra/project2-airbnb](https://github.com/sahrilmahendra/project2-airbnb)<br/>
-Open API Documentation : [https://app.swaggerhub.com/apis-docs/supriadi15001/Project2_Alta-BE4_AirbnbApp_v1/1.1](https://app.swaggerhub.com/apis-docs/supriadi15001/Project2_Alta-BE4_AirbnbApp_v1/1.1)&nbsp;
+Project Link : [https://github.com/project-capstone](https://github.com/project-capstone)<br/>
+Open API Documentation : [https://app.swaggerhub.com/apis-docs/supriadi15001/final-project_alta_barengin/1.0#/](https://github.com/project-capstone)&nbsp;
 <!-- :heart: -->
 <!-- CONTRIBUTOR -->
 Contributor :
