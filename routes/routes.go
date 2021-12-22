@@ -21,14 +21,12 @@ func New() *echo.Echo {
 	// route users tanpa JWT
 	e.POST("/signup", controllers.CreateUserControllers)
 	e.POST("/login", controllers.LoginUserControllers)
-	e.GET("/users/:id", controllers.GetUserControllers)
-	e.GET("/users", controllers.GetAllUsersControllers)
 
 	//route group product tanpa JWT
-	e.GET("/products/group/id/:id_group", controllers.GetByIdGroupProductControllers)
-	e.GET("/products/group/:id_products", controllers.GetByIdProductsGroupProductControllers)
 	e.GET("/products/group", controllers.GetAllGroupProductControllers)
+	e.GET("/products/group/:id_group", controllers.GetByIdGroupProductControllers)
 	e.GET("/products/group/status/:status", controllers.GetAvailableGroupProductControllers)
+	e.GET("/products/group/products/:id_products", controllers.GetByIdProductsGroupProductControllers)
 
 	// route product tanpa JWT
 	e.GET("/products", controllers.GetAllProductControllers)
@@ -37,16 +35,28 @@ func New() *echo.Echo {
 	// group JWT
 	j := e.Group("/jwt")
 	j.Use(middleware.JWT([]byte(constants.SECRET_JWT)))
-	// j.POST("/products/group", controllers.CreateGroupProductControllers)
+
+	// group product JWT
 	j.POST("/products/group/:id_products", controllers.CreateGroupProductControllers)
+	j.DELETE("/products/group/delete/:id_group", controllers.DeleteGroupProductControllers)
 
 	// route users dengan JWT
-	j.PUT("/users/:id", controllers.UpdateUserControllers)
-	j.DELETE("/users/:id", controllers.DeleteUserControllers)
+	j.GET("/users", controllers.GetAllUsersControllers)       // admin
+	j.GET("/users/:id", controllers.GetUserControllers)       // admin dan pemilik akun
+	j.PUT("/users/:id", controllers.UpdateUserControllers)    // admin dan pemilik akun
+	j.DELETE("/users/:id", controllers.DeleteUserControllers) // admin dan pemilik akun
 
 	// route product dengan JWT
-	j.POST("/products", controllers.CreateProductControllers)
-	j.PUT("/products/:id", controllers.UpdateProductControllers)
-	j.DELETE("/products/:id", controllers.DeleteProductControllers)
+	j.POST("/products", controllers.CreateProductControllers)       // admin
+	j.PUT("/products/:id", controllers.UpdateProductControllers)    // admin
+	j.DELETE("/products/:id", controllers.DeleteProductControllers) // admin
+
+	//route order
+	j.POST("/orders/:id_group", controllers.CreateOrderControllers)
+	j.GET("/orders/id/:id_order", controllers.GetOrderByIdOrderControllers)
+	j.GET("/orders/group/:id_group", controllers.GetOrderByIdGroupControllers)
+	j.GET("/orders/users/:id_user", controllers.GetOrderByIdUsersControllers)
+	j.PUT("/orders/update/:id_order", controllers.UpdateOrderControllers)    //admin
+	j.DELETE("/orders/delete/:id_order", controllers.DeleteOrderControllers) //admin
 	return e
 }

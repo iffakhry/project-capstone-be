@@ -15,6 +15,7 @@ type Products struct {
 	GroupProduct   []GroupProduct
 }
 
+// struktur get data product
 type GetProduct struct {
 	ID             uint
 	Name_Product   string
