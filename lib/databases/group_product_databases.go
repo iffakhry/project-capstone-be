@@ -73,6 +73,19 @@ func GetGroupProductByIdProducts(id_products int) (interface{}, error) {
 	return res_group, nil
 }
 
+func GetGroupProductByIdUser(id_user int) (interface{}, error) {
+	res_group := []models.GetGroupProduct{}
+	query := config.DB.Table("group_products").Select(query_join).Joins("join products on group_products.products_id = products.id").Where("group_products.deleted_at IS NULL AND group_products.users_id = ? ", id_user).Find(&res_group)
+	if query.Error != nil || query.RowsAffected < 1 {
+		return nil, query.Error
+	}
+	for i, _ := range res_group {
+		user_order, _ := GetUserOrderByIdGroup(int(res_group[i].ID))
+		res_group[i].GetOrder = user_order
+	}
+	return res_group, nil
+}
+
 func UpdatePlusGroupProductCapacity(id_group_product int) (interface{}, error) {
 	group := models.GroupProduct{}
 	config.DB.Find(&group, id_group_product)

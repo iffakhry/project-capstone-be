@@ -105,6 +105,18 @@ func DeleteUserControllers(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Id"))
 	}
+	product, _ := databases.GetProductByIdUser(id)
+	if product != nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access is denied ID data is in the users"))
+	}
+	group_product, _ := databases.GetGroupProductByIdUser(id)
+	if group_product != nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access is denied ID data is in the group product"))
+	}
+	order, _ := databases.GetOrderByIdUser(id)
+	if order == nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access is denied ID data is in the order"))
+	}
 	user, _ := databases.GetUserById(id)
 	if user == nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
@@ -124,7 +136,6 @@ func UpdateUserControllers(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Id"))
 	}
-
 	user, _ := databases.GetUserById(id)
 	if user == nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
