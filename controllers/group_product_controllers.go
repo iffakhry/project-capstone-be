@@ -19,12 +19,12 @@ func CreateGroupProductControllers(c echo.Context) error {
 	c.Bind(&new_group)
 
 	id_product, err := strconv.Atoi(id)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Id"))
+	}
 	id_user, role := middlewares.ExtractTokenId(c)
 	if role == "admin" {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
-	}
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Param"))
 	}
 
 	duration := time.Now().AddDate(0, 0, 14)
@@ -114,6 +114,9 @@ func GetAvailableGroupProductControllers(c echo.Context) error {
 
 func DeleteGroupProductControllers(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id_group"))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Id"))
+	}
 	logged, role := middlewares.ExtractTokenId(c) // check token
 	if logged != id && role != "admin" {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
@@ -121,9 +124,6 @@ func DeleteGroupProductControllers(c echo.Context) error {
 	data_order, _, _ := databases.GetOrderByIdGroup(id)
 	if data_order != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access is denied ID data is in the order"))
-	}
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Id"))
 	}
 	data, _ := databases.GetGroupProductById(id)
 	if data == nil {

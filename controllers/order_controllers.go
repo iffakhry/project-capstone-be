@@ -18,7 +18,7 @@ func CreateOrderControllers(c echo.Context) error {
 	new_payment := models.ResPayment{}
 	id_group, er := strconv.Atoi(c.Param("id_group"))
 	if er != nil {
-		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Param"))
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Id"))
 	}
 
 	c.Bind(&new_payment)
@@ -161,12 +161,12 @@ func UpdateOrderControllers(c echo.Context) error {
 
 func DeleteOrderControllers(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id_order"))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Id"))
+	}
 	logged, role := middlewares.ExtractTokenId(c) // check token
 	if logged != id && role != "admin" {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
-	}
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Id"))
 	}
 	data, _, _ := databases.GetOrderByIdOrder(id)
 	if data == nil {
