@@ -4,7 +4,7 @@
 <br/>
 <div align="center">
 <!--  mengarah ke repo  -->
-  <a href="https://github.com/sahrilmahendra/project2-airbnb">
+  <a href="https://github.com/project-capstone">
     <img src="images/Logo.png" width="267" height="80">
   </a>
 
