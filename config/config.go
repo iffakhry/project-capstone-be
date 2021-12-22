@@ -39,21 +39,21 @@ func InitMigrate() {
 }
 
 func InitDBTest() {
-	//Set data source that will be used
-	connection := "root:qwerty@tcp(127.0.0.1:3306)/todo_list_test?charset=utf8mb4&parseTime=True&loc=Local"
-
-	var err error
-	//Initialize DB session
-	DB, err = gorm.Open(mysql.Open(connection), &gorm.Config{})
+	err := godotenv.Load()
 	if err != nil {
-		panic("Failed to connect database")
+		panic("Error loading .env file")
 	}
+	config := os.Getenv("CONNECTION_DB_TESTING")
 
-	//Migrate the database schema
-	InitMigrationTest()
+	var e error
+
+	DB, e = gorm.Open(mysql.Open(config), &gorm.Config{})
+	if e != nil {
+		panic(e)
+	}
+	InitMigrateTest()
 }
 
-//Declare function to auto-migrate the schema
-func InitMigrationTest() {
+func InitMigrateTest() {
 	DB.AutoMigrate(&models.Users{})
 }
