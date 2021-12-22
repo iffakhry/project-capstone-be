@@ -95,7 +95,7 @@ func GetOrderByIdGroupControllers(c echo.Context) error {
 	}
 	_, role := middlewares.ExtractTokenId(c)
 
-	data, e := databases.GetOrderByIdGroup(id_group)
+	data, e, _ := databases.GetOrderByIdGroup(id_group)
 	if role != "admin" {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
 	}

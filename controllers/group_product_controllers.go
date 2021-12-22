@@ -118,7 +118,7 @@ func DeleteGroupProductControllers(c echo.Context) error {
 	if logged != id && role != "admin" {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
 	}
-	data_order, _ := databases.GetOrderByIdGroup(id)
+	data_order, _, _ := databases.GetOrderByIdGroup(id)
 	if data_order != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access is denied ID data is in the order"))
 	}
