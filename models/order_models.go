@@ -6,12 +6,13 @@ import (
 
 type Order struct {
 	gorm.Model
-	UsersID          uint
-	GroupProductID   uint
-	PriceOrder       int
-	NameProduct      string
-	DetailCredential string
-	Payment          Payment
+	UsersID        uint
+	GroupProductID uint
+	PriceOrder     int
+	NameProduct    string
+	Email          string
+	Password       string
+	Payment        Payment
 }
 
 type ResPayment struct {
@@ -19,7 +20,8 @@ type ResPayment struct {
 }
 
 type Detail struct {
-	DetailCredential string `json:"detail" form:"detail"`
+	Email    string `json:"email" form:"email"`
+	Password string `json:"password" form:"password"`
 }
 
 type Payment struct {
@@ -32,12 +34,13 @@ type Payment struct {
 }
 
 type GetOrder struct {
-	OrderID          uint
-	UsersID          uint
-	GroupProductID   uint
-	NameProduct      string
-	PriceOrder       int
-	DetailCredential string
+	OrderID        uint
+	UsersID        uint
+	GroupProductID uint
+	NameProduct    string
+	PriceOrder     int
+	Email          string
+	Password       string
 }
 
 type GetUserOrder struct {

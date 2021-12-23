@@ -29,7 +29,8 @@ func CreateOrderControllers(c echo.Context) error {
 	new_order.GroupProductID = uint(id_group)
 	new_order.PriceOrder = t_price
 	new_order.NameProduct = n_product
-	new_order.DetailCredential = ""
+	new_order.Email = ""
+	new_order.Password = ""
 
 	// mengecek apakah user sudah tergabung di group
 	cek, e := databases.CekUserInGroup(uint(id_group), uint(id_user))
@@ -139,9 +140,13 @@ func UpdateOrderControllers(c echo.Context) error {
 	}
 
 	v := validator.New()
-	erro := v.Var(detail.DetailCredential, "required")
-	if erro != nil {
-		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Details Can't Be Empty"))
+	err_mail := v.Var(detail.Email, "required,email")
+	if err_mail != nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Email"))
+	}
+	er_pass := v.Var(detail.Password, "required")
+	if er_pass != nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Password"))
 	}
 
 	cek, _, _ := databases.GetOrderByIdOrder(id_order)
@@ -149,7 +154,7 @@ func UpdateOrderControllers(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
 	}
 
-	data, e := databases.UpdateOrderDetail(id_order, detail.DetailCredential)
+	data, e := databases.UpdateOrderDetail(id_order, detail.Email, detail.Password)
 	if e != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Bad Request"))
 	}

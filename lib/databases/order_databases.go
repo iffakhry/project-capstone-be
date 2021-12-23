@@ -82,9 +82,9 @@ func CekUserInGroup(id_group, id_user uint) (id_order uint, er error) {
 	return order.ID, nil
 }
 
-func UpdateOrderDetail(id_order int, detail string) (interface{}, error) {
+func UpdateOrderDetail(id_order int, email, password string) (interface{}, error) {
 	order := models.Order{}
-	query1 := config.DB.Model(&order).Where("orders.deleted_at IS NULL AND orders.id = ?", id_order).Update("detail_credential", detail).Find(&order)
+	query1 := config.DB.Model(&order).Where("orders.deleted_at IS NULL AND orders.id = ?", id_order).Updates(map[string]interface{}{"email": email, "password": password}).Find(&order)
 	if query1.Error != nil {
 		return nil, query1.Error
 	}
