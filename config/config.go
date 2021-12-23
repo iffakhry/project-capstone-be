@@ -39,11 +39,11 @@ func InitMigrate() {
 }
 
 func InitDBTest() {
-	err := godotenv.Load()
-	if err != nil {
-		panic("Error loading .env file")
-	}
-	config := os.Getenv("CONNECTION_DB_TESTING")
+	// err := godotenv.Load()
+	// if err != nil {
+	// 	panic("Error loading .env file")
+	// }
+	config := "root:nuril123@tcp(127.0.0.1:3306)/db_final_project_testing?charset=utf8&parseTime=True&loc=Local"
 
 	var e error
 
