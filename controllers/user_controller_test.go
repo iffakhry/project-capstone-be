@@ -437,10 +437,11 @@ func TestCreateUserControllerFailed_8(t *testing.T) {
 		Name:     "sahrilbaru",
 		Email:    "sahril@gmail.com",
 		Password: "qwerty",
-		Phone:    "+628111222111",
+		Phone:    "+628123456789",
 	}
 
 	e := InitEcho()
+	InsertUser()
 
 	body, err := json.Marshal(newDataUser)
 	if err != nil {

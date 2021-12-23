@@ -64,6 +64,251 @@ func InsertMockToDb() {
 	config.DB.Save(&mock_data_group2)
 }
 
+func TestGetByIdGroupControllerSuccess(t *testing.T) {
+	var testCases = struct {
+		name       string
+		path       string
+		expectCode int
+	}{
+		name:       "Success Operation",
+		path:       "/products/group/:id_group",
+		expectCode: http.StatusOK,
+	}
+
+	e := InitEcho()
+	InsertMockToDb()
+
+	req := httptest.NewRequest(http.MethodGet, testCases.path, nil)
+	res := httptest.NewRecorder()
+	context := e.NewContext(req, res)
+	context.SetPath(testCases.path)
+	context.SetParamNames("id_group")
+	context.SetParamValues("1")
+
+	if assert.NoError(t, GetByIdGroupProductControllers(context)) {
+		body := res.Body.String()
+		var responses GroupResponseSuccess
+		err := json.Unmarshal([]byte(body), &responses)
+
+		if err != nil {
+			assert.Error(t, err, "error")
+		}
+		assert.Equal(t, testCases.expectCode, res.Code)
+		assert.Equal(t, testCases.name, responses.Message)
+	}
+}
+func TestGetByIdGroupControllerFailed(t *testing.T) {
+	var testCases = struct {
+		name       string
+		path       string
+		expectCode int
+	}{
+		name:       "",
+		path:       "/products/group/:id_group",
+		expectCode: http.StatusBadRequest,
+	}
+
+	e := InitEcho()
+	t.Run("tescase_data_not_found", func(t *testing.T) {
+		testCases.name = "Data Not Found"
+
+		req := httptest.NewRequest(http.MethodGet, testCases.path, nil)
+		res := httptest.NewRecorder()
+		context := e.NewContext(req, res)
+		context.SetPath(testCases.path)
+		context.SetParamNames("id_group")
+		context.SetParamValues("3")
+
+		if assert.NoError(t, GetByIdGroupProductControllers(context)) {
+			body := res.Body.String()
+			var responses GroupResponseSuccess
+			err := json.Unmarshal([]byte(body), &responses)
+
+			if err != nil {
+				assert.Error(t, err, "error")
+			}
+
+			assert.Equal(t, testCases.expectCode, res.Code)
+			assert.Equal(t, testCases.name, responses.Message)
+
+		}
+	})
+	t.Run("tescase_bad_request", func(t *testing.T) {
+		testCases.name = "Bad Request"
+
+		InsertMockToDb()
+		config.DB.Migrator().DropTable(models.GroupProduct{})
+
+		req := httptest.NewRequest(http.MethodGet, testCases.path, nil)
+		res := httptest.NewRecorder()
+		context := e.NewContext(req, res)
+		context.SetPath(testCases.path)
+		context.SetParamNames("id_group")
+		context.SetParamValues("1")
+
+		if assert.NoError(t, GetByIdGroupProductControllers(context)) {
+			body := res.Body.String()
+			var responses GroupResponseSuccess
+			err := json.Unmarshal([]byte(body), &responses)
+
+			if err != nil {
+
+				assert.Error(t, err, "error")
+			}
+
+			assert.Equal(t, testCases.expectCode, res.Code)
+			assert.Equal(t, testCases.name, responses.Message)
+		}
+	})
+	t.Run("tescase_Invalid_param", func(t *testing.T) {
+		testCases.name = "Invalid Id"
+
+		InsertMockToDb()
+		req := httptest.NewRequest(http.MethodGet, testCases.path, nil)
+		res := httptest.NewRecorder()
+		context := e.NewContext(req, res)
+		context.SetPath(testCases.path)
+		context.SetParamNames("id_group")
+		context.SetParamValues("a")
+
+		if assert.NoError(t, GetByIdGroupProductControllers(context)) {
+			body := res.Body.String()
+			var responses GroupResponseSuccess
+			err := json.Unmarshal([]byte(body), &responses)
+
+			if err != nil {
+				assert.Error(t, err, "error")
+			}
+			assert.Equal(t, testCases.expectCode, res.Code)
+			assert.Equal(t, testCases.name, responses.Message)
+		}
+	})
+}
+
+// get group by id product success
+func TestGetByIdProductGroupControllerSuccess(t *testing.T) {
+	var testCases = struct {
+		name       string
+		path       string
+		expectCode int
+	}{
+		name:       "Success Operation",
+		path:       "/products/group/products/:id_products",
+		expectCode: http.StatusOK,
+	}
+
+	e := InitEcho()
+	InsertMockToDb()
+
+	req := httptest.NewRequest(http.MethodGet, testCases.path, nil)
+	res := httptest.NewRecorder()
+	context := e.NewContext(req, res)
+	context.SetPath(testCases.path)
+	context.SetParamNames("id_products")
+	context.SetParamValues("1")
+
+	if assert.NoError(t, GetByIdProductsGroupProductControllers(context)) {
+		body := res.Body.String()
+		var responses GroupResponseSuccess
+		err := json.Unmarshal([]byte(body), &responses)
+
+		if err != nil {
+			assert.Error(t, err, "error")
+		}
+		assert.Equal(t, testCases.expectCode, res.Code)
+		assert.Equal(t, testCases.name, responses.Message)
+	}
+}
+
+// get group by id product failed
+func TestGetByIdProductGroupControllerFailed(t *testing.T) {
+	var testCases = struct {
+		name       string
+		path       string
+		expectCode int
+	}{
+		name:       "",
+		path:       "/products/group/products/:id_products",
+		expectCode: http.StatusBadRequest,
+	}
+
+	e := InitEcho()
+	t.Run("tescase_data_not_found", func(t *testing.T) {
+		testCases.name = "Data Not Found"
+
+		req := httptest.NewRequest(http.MethodGet, testCases.path, nil)
+		res := httptest.NewRecorder()
+		context := e.NewContext(req, res)
+		context.SetPath(testCases.path)
+		context.SetParamNames("id_products")
+		context.SetParamValues("3")
+
+		if assert.NoError(t, GetByIdProductsGroupProductControllers(context)) {
+			body := res.Body.String()
+			var responses GroupResponseSuccess
+			err := json.Unmarshal([]byte(body), &responses)
+
+			if err != nil {
+				assert.Error(t, err, "error")
+			}
+
+			assert.Equal(t, testCases.expectCode, res.Code)
+			assert.Equal(t, testCases.name, responses.Message)
+
+		}
+	})
+	t.Run("tescase_bad_request", func(t *testing.T) {
+		testCases.name = "Bad Request"
+
+		InsertMockToDb()
+		config.DB.Migrator().DropTable(models.GroupProduct{})
+
+		req := httptest.NewRequest(http.MethodGet, testCases.path, nil)
+		res := httptest.NewRecorder()
+		context := e.NewContext(req, res)
+		context.SetPath(testCases.path)
+		context.SetParamNames("id_products")
+		context.SetParamValues("1")
+
+		if assert.NoError(t, GetByIdProductsGroupProductControllers(context)) {
+			body := res.Body.String()
+			var responses GroupResponseSuccess
+			err := json.Unmarshal([]byte(body), &responses)
+
+			if err != nil {
+
+				assert.Error(t, err, "error")
+			}
+
+			assert.Equal(t, testCases.expectCode, res.Code)
+			assert.Equal(t, testCases.name, responses.Message)
+		}
+	})
+	t.Run("tescase_Invalid_param", func(t *testing.T) {
+		testCases.name = "Invalid Id"
+
+		InsertMockToDb()
+		req := httptest.NewRequest(http.MethodGet, testCases.path, nil)
+		res := httptest.NewRecorder()
+		context := e.NewContext(req, res)
+		context.SetPath(testCases.path)
+		context.SetParamNames("id_products")
+		context.SetParamValues("a")
+
+		if assert.NoError(t, GetByIdProductsGroupProductControllers(context)) {
+			body := res.Body.String()
+			var responses GroupResponseSuccess
+			err := json.Unmarshal([]byte(body), &responses)
+
+			if err != nil {
+				assert.Error(t, err, "error")
+			}
+			assert.Equal(t, testCases.expectCode, res.Code)
+			assert.Equal(t, testCases.name, responses.Message)
+		}
+	})
+}
+
 func TestGetAllGroupControllerSuccess(t *testing.T) {
 	var testCases = []struct {
 		name       string
@@ -79,7 +324,7 @@ func TestGetAllGroupControllerSuccess(t *testing.T) {
 
 	e := InitEcho()
 	InsertMockToDb()
-	req := httptest.NewRequest(http.MethodGet, "/products/group", nil)
+	req := httptest.NewRequest(http.MethodGet, testCases[0].path, nil)
 	res := httptest.NewRecorder()
 	context := e.NewContext(req, res)
 
@@ -102,64 +347,173 @@ func TestGetAllGroupControllerSuccess(t *testing.T) {
 	}
 }
 
+//get all group failed
 func TestGetAllGroupControllerFailed2(t *testing.T) {
 	var testCases = struct {
 		name       string
 		path       string
 		expectCode int
 	}{
-		name:       "Bad Request",
+		name:       "",
 		path:       "/products/group",
 		expectCode: http.StatusBadRequest,
 	}
 
 	e := InitEcho()
-	config.DB.Migrator().DropTable(models.GroupProduct{})
-	config.DB.Save(&mock_data_product)
-	req := httptest.NewRequest(http.MethodGet, testCases.path, nil)
-	res := httptest.NewRecorder()
-	context := e.NewContext(req, res)
+	t.Run("get_all_data_not_found", func(t *testing.T) {
+		testCases.name = "Data Not Found"
+		req := httptest.NewRequest(http.MethodGet, testCases.path, nil)
+		res := httptest.NewRecorder()
+		context := e.NewContext(req, res)
 
-	// for index, testCase := range testCases {
-	// context.SetPath(testCase.path)
+		if assert.NoError(t, GetAllGroupProductControllers(context)) {
+			body := res.Body.String()
+			var responses GroupResponseSuccess
+			err := json.Unmarshal([]byte(body), &responses)
 
-	if assert.NoError(t, GetAllGroupProductControllers(context)) {
-		body := res.Body.String()
-		var responses GroupResponseSuccess
-		err := json.Unmarshal([]byte(body), &responses)
+			if err != nil {
+				assert.Error(t, err, "error")
+			}
 
-		if err != nil {
-			assert.Error(t, err, "error")
+			assert.Equal(t, testCases.expectCode, res.Code)
+			assert.Equal(t, testCases.name, responses.Message)
 		}
+	})
+	t.Run("get_all_group_bad_request", func(t *testing.T) {
+		testCases.name = "Bad Request"
+		config.DB.Migrator().DropTable(models.GroupProduct{})
+		config.DB.Save(&mock_data_product)
+		req := httptest.NewRequest(http.MethodGet, testCases.path, nil)
+		res := httptest.NewRecorder()
+		context := e.NewContext(req, res)
 
-		assert.Equal(t, testCases.expectCode, res.Code)
-		assert.Equal(t, testCases.name, responses.Message)
-		// assert.Equal(t, "netflix-1", responses.Data[index].NameGroupProduct)
-		// }
-	}
+		if assert.NoError(t, GetAllGroupProductControllers(context)) {
+			body := res.Body.String()
+			var responses GroupResponseSuccess
+			err := json.Unmarshal([]byte(body), &responses)
+
+			if err != nil {
+				assert.Error(t, err, "error")
+			}
+
+			assert.Equal(t, testCases.expectCode, res.Code)
+			assert.Equal(t, testCases.name, responses.Message)
+		}
+	})
 }
-func TestGetAllGroupControllerFailed1(t *testing.T) {
+
+// get group by status failed
+func TestGetByStatusGroupControllerFailed(t *testing.T) {
 	var testCases = struct {
 		name       string
 		path       string
 		expectCode int
 	}{
-		name:       "Data Not Found",
-		path:       "/products/group",
+		name:       "",
+		path:       "/products/group/status/:status",
 		expectCode: http.StatusBadRequest,
 	}
 
 	e := InitEcho()
-	// InsertMockToDb()
-	// config.DB.Migrator().DropTable(models.GroupProduct{})
+	t.Run("tescase_data_not_found", func(t *testing.T) {
+		testCases.name = "Data Not Found"
+
+		req := httptest.NewRequest(http.MethodGet, testCases.path, nil)
+		res := httptest.NewRecorder()
+		context := e.NewContext(req, res)
+		context.SetPath(testCases.path)
+		context.SetParamNames("status")
+		context.SetParamValues("available")
+
+		if assert.NoError(t, GetAvailableGroupProductControllers(context)) {
+			body := res.Body.String()
+			var responses GroupResponseSuccess
+			err := json.Unmarshal([]byte(body), &responses)
+
+			if err != nil {
+				assert.Error(t, err, "error")
+			}
+
+			assert.Equal(t, testCases.expectCode, res.Code)
+			assert.Equal(t, testCases.name, responses.Message)
+
+		}
+	})
+	t.Run("tescase_bad_request", func(t *testing.T) {
+		testCases.name = "Bad Request"
+
+		InsertMockToDb()
+		config.DB.Migrator().DropTable(models.GroupProduct{})
+
+		req := httptest.NewRequest(http.MethodGet, testCases.path, nil)
+		res := httptest.NewRecorder()
+		context := e.NewContext(req, res)
+		context.SetPath(testCases.path)
+		context.SetParamNames("status")
+		context.SetParamValues("available")
+
+		if assert.NoError(t, GetAvailableGroupProductControllers(context)) {
+			body := res.Body.String()
+			var responses GroupResponseSuccess
+			err := json.Unmarshal([]byte(body), &responses)
+
+			if err != nil {
+
+				assert.Error(t, err, "error")
+			}
+
+			assert.Equal(t, testCases.expectCode, res.Code)
+			assert.Equal(t, testCases.name, responses.Message)
+		}
+	})
+	t.Run("tescase_Invalid_param", func(t *testing.T) {
+		testCases.name = "Invalid Param"
+
+		InsertMockToDb()
+		req := httptest.NewRequest(http.MethodGet, testCases.path, nil)
+		res := httptest.NewRecorder()
+		context := e.NewContext(req, res)
+		context.SetPath(testCases.path)
+		context.SetParamNames("status")
+		context.SetParamValues("1")
+
+		if assert.NoError(t, GetAvailableGroupProductControllers(context)) {
+			body := res.Body.String()
+			var responses GroupResponseSuccess
+			err := json.Unmarshal([]byte(body), &responses)
+
+			if err != nil {
+				assert.Error(t, err, "error")
+			}
+			assert.Equal(t, testCases.expectCode, res.Code)
+			assert.Equal(t, testCases.name, responses.Message)
+		}
+	})
+}
+
+// Get by status success
+func TestGetByStatusGroupControllerSuccess(t *testing.T) {
+	var testCases = struct {
+		name       string
+		path       string
+		expectCode int
+	}{
+		name:       "Success Operation",
+		path:       "/products/group/status/:status",
+		expectCode: http.StatusOK,
+	}
+
+	e := InitEcho()
+	InsertMockToDb()
+
 	req := httptest.NewRequest(http.MethodGet, testCases.path, nil)
 	res := httptest.NewRecorder()
 	context := e.NewContext(req, res)
+	context.SetPath(testCases.path)
+	context.SetParamNames("status")
+	context.SetParamValues("available")
 
-	// for index, testCase := range testCases {
-	// context.SetPath(testCase.path)
-
-	if assert.NoError(t, GetAllGroupProductControllers(context)) {
+	if assert.NoError(t, GetAvailableGroupProductControllers(context)) {
 		body := res.Body.String()
 		var responses GroupResponseSuccess
 		err := json.Unmarshal([]byte(body), &responses)
@@ -167,10 +521,42 @@ func TestGetAllGroupControllerFailed1(t *testing.T) {
 		if err != nil {
 			assert.Error(t, err, "error")
 		}
-
 		assert.Equal(t, testCases.expectCode, res.Code)
 		assert.Equal(t, testCases.name, responses.Message)
-		// assert.Equal(t, "netflix-1", responses.Data[index].NameGroupProduct)
-		// }
+	}
+}
+
+// Delete group success
+func TestDeleteGroupControllerSuccess(t *testing.T) {
+	var testCases = struct {
+		name       string
+		path       string
+		expectCode int
+	}{
+		name:       "Success Operation",
+		path:       "/products/group/delete/:id_group",
+		expectCode: http.StatusOK,
+	}
+
+	e := InitEcho()
+	InsertMockToDb()
+
+	req := httptest.NewRequest(http.MethodDelete, testCases.path, nil)
+	res := httptest.NewRecorder()
+	context := e.NewContext(req, res)
+	context.SetPath(testCases.path)
+	context.SetParamNames("id_group")
+	context.SetParamValues("1")
+
+	if assert.NoError(t, DeleteGroupProductControllers(context)) {
+		body := res.Body.String()
+		var responses GroupResponseSuccess
+		err := json.Unmarshal([]byte(body), &responses)
+
+		if err != nil {
+			assert.Error(t, err, "error")
+		}
+		assert.Equal(t, testCases.expectCode, res.Code)
+		assert.Equal(t, testCases.name, responses.Message)
 	}
 }

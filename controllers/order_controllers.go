@@ -55,14 +55,14 @@ func CreateOrderControllers(c echo.Context) error {
 
 		data, err := databases.CreateOrder(&new_payment, &new_order, id_group)
 
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Bad Request"))
+		}
 		if data == nil || t_price == 0 {
 			return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Id Group Product Not Found"))
 		}
 		if status != "Available" {
 			return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Group Product Full"))
-		}
-		if err != nil {
-			return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Bad Request"))
 		}
 		return c.JSON(http.StatusOK, response.SuccessResponseData("Success Operation", data))
 	}
@@ -79,11 +79,11 @@ func GetOrderByIdOrderControllers(c echo.Context) error {
 	if id_user != uint(token) && role != "admin" {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
 	}
-	if data == nil {
-		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
-	}
 	if e != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Bad Request"))
+	}
+	if data == nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
 	}
 	return c.JSON(http.StatusOK, response.SuccessResponseData("Success Operation", data))
 }
@@ -99,11 +99,11 @@ func GetOrderByIdGroupControllers(c echo.Context) error {
 	if role != "admin" {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
 	}
-	if data == nil {
-		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
-	}
 	if e != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Bad Request"))
+	}
+	if data == nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
 	}
 	return c.JSON(http.StatusOK, response.SuccessResponseData("Success Operation", data))
 }
@@ -119,11 +119,11 @@ func GetOrderByIdUsersControllers(c echo.Context) error {
 	if token != id_user && role != "admin" {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
 	}
-	if data == nil {
-		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
-	}
 	if e != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Bad Request"))
+	}
+	if data == nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
 	}
 	return c.JSON(http.StatusOK, response.SuccessResponseData("Success Operation", data))
 }
