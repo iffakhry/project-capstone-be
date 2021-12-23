@@ -17,30 +17,27 @@ func CreateOrderControllers(c echo.Context) error {
 	new_order := models.Order{}
 	new_payment := models.ResPayment{}
 	id_group, er := strconv.Atoi(c.Param("id_group"))
-	if er != nil {
-		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Id"))
-	}
 
 	c.Bind(&new_payment)
 	v := validator.New()
 	var len_phone = len(new_payment.Phone)
 
 	id_user, role := middlewares.ExtractTokenId(c)
-	t_price, _, _, n_product, status, er := databases.GetDataGroupProductById(id_group)
+	t_price, _, _, n_product, status, errr := databases.GetDataGroupProductById(id_group)
 
 	new_order.UsersID = uint(id_user)
 	new_order.GroupProductID = uint(id_group)
 	new_order.PriceOrder = t_price
 	new_order.NameProduct = n_product
-	new_order.DetailCredential = "Email: , Password: "
+	new_order.DetailCredential = ""
 
 	// mengecek apakah user sudah tergabung di group
 	cek, e := databases.CekUserInGroup(uint(id_group), uint(id_user))
-	if er != nil || e != nil {
-		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Bad Request"))
-	}
 	if cek != 0 || role == "admin" {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
+	}
+	if er != nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Id"))
 	}
 	erro := v.Var(new_payment.Phone, "required")
 	if erro != nil {
@@ -55,14 +52,14 @@ func CreateOrderControllers(c echo.Context) error {
 
 		data, err := databases.CreateOrder(&new_payment, &new_order, id_group)
 
+		if err != nil || errr != nil || e != nil {
+			return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Bad Request"))
+		}
 		if data == nil || t_price == 0 {
 			return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Id Group Product Not Found"))
 		}
 		if status != "Available" {
 			return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Group Product Full"))
-		}
-		if err != nil {
-			return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Bad Request"))
 		}
 		return c.JSON(http.StatusOK, response.SuccessResponseData("Success Operation", data))
 	}
@@ -70,14 +67,14 @@ func CreateOrderControllers(c echo.Context) error {
 
 func GetOrderByIdOrderControllers(c echo.Context) error {
 	id_order, err := strconv.Atoi(c.Param("id_order"))
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Id"))
-	}
 	token, role := middlewares.ExtractTokenId(c)
-
 	data, e, id_user := databases.GetOrderByIdOrder(id_order)
+
 	if id_user != uint(token) && role != "admin" {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
+	}
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Id"))
 	}
 	if data == nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
@@ -90,14 +87,14 @@ func GetOrderByIdOrderControllers(c echo.Context) error {
 
 func GetOrderByIdGroupControllers(c echo.Context) error {
 	id_group, err := strconv.Atoi(c.Param("id_group"))
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Id"))
-	}
 	_, role := middlewares.ExtractTokenId(c)
-
 	data, e, _ := databases.GetOrderByIdGroup(id_group)
+
 	if role != "admin" {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
+	}
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Id"))
 	}
 	if data == nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
@@ -110,14 +107,14 @@ func GetOrderByIdGroupControllers(c echo.Context) error {
 
 func GetOrderByIdUsersControllers(c echo.Context) error {
 	id_user, err := strconv.Atoi(c.Param("id_user"))
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Id"))
-	}
 	token, role := middlewares.ExtractTokenId(c)
-
 	data, e := databases.GetOrderByIdUser(id_user)
+
 	if token != id_user && role != "admin" {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
+	}
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Id"))
 	}
 	if data == nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
@@ -131,14 +128,14 @@ func GetOrderByIdUsersControllers(c echo.Context) error {
 func UpdateOrderControllers(c echo.Context) error {
 	detail := models.Detail{}
 	id_order, err := strconv.Atoi(c.Param("id_order"))
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Id"))
-	}
 	c.Bind(&detail)
-
 	_, role := middlewares.ExtractTokenId(c)
+
 	if role != "admin" {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
+	}
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Id"))
 	}
 
 	v := validator.New()
@@ -161,12 +158,12 @@ func UpdateOrderControllers(c echo.Context) error {
 
 func DeleteOrderControllers(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id_order"))
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Id"))
-	}
 	logged, role := middlewares.ExtractTokenId(c) // check token
 	if logged != id && role != "admin" {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
+	}
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Id"))
 	}
 	data, _, _ := databases.GetOrderByIdOrder(id)
 	if data == nil {

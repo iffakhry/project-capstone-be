@@ -18,13 +18,14 @@ func CreateGroupProductControllers(c echo.Context) error {
 	id := c.Param("id_products")
 	c.Bind(&new_group)
 
-	id_product, err := strconv.Atoi(id)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Id"))
-	}
 	id_user, role := middlewares.ExtractTokenId(c)
 	if role == "admin" {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
+	}
+
+	id_product, err := strconv.Atoi(id)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Id"))
 	}
 
 	duration := time.Now().AddDate(0, 0, 14)
@@ -42,13 +43,12 @@ func CreateGroupProductControllers(c echo.Context) error {
 	new_group.DurationGroup = duration.Format("02-01-2006")
 	new_group.Status = "Available"
 
-	if name == "" || price == 0 {
-		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Id Product Not Found"))
-	}
-
 	d, er := databases.CreateGroupProduct(&new_group, new_group.ProductsID)
 	if er != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Bad Request"))
+	}
+	if name == "" || price == 0 {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Id Product Not Found"))
 	}
 
 	return c.JSON(http.StatusOK, response.SuccessResponseData("Success Operation", d))
@@ -114,12 +114,12 @@ func GetAvailableGroupProductControllers(c echo.Context) error {
 
 func DeleteGroupProductControllers(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id_group"))
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Id"))
-	}
 	logged, role := middlewares.ExtractTokenId(c) // check token
 	if logged != id && role != "admin" {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
+	}
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Id"))
 	}
 	data_order, _, _ := databases.GetOrderByIdGroup(id)
 	if data_order != nil {
