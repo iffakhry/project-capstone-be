@@ -61,11 +61,11 @@ func GetByIdGroupProductControllers(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Id"))
 	}
 	data, e := databases.GetGroupProductById(id_group_product)
-	if data == nil {
-		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
-	}
 	if e != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Bad Request"))
+	}
+	if data == nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
 	}
 	return c.JSON(http.StatusOK, response.SuccessResponseData("Success Operation", data))
 }
@@ -76,11 +76,11 @@ func GetByIdProductsGroupProductControllers(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Id"))
 	}
 	data, e := databases.GetGroupProductByIdProducts(id_products)
-	if data == nil {
-		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
-	}
 	if e != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Bad Request"))
+	}
+	if data == nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
 	}
 	return c.JSON(http.StatusOK, response.SuccessResponseData("Success Operation", data))
 }
@@ -88,11 +88,11 @@ func GetByIdProductsGroupProductControllers(c echo.Context) error {
 // controller untuk menampilkan seluruh data users
 func GetAllGroupProductControllers(c echo.Context) error {
 	data, _, err := databases.GetAllGroupProduct()
-	if data == nil {
-		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
-	}
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Bad Request"))
+	}
+	if data == nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
 	}
 	return c.JSON(http.StatusOK, response.SuccessResponseData("Success Operation", data))
 }
@@ -103,11 +103,11 @@ func GetAvailableGroupProductControllers(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Param"))
 	}
 	data, e := databases.GetGroupProductByAvailable(status)
-	if data == nil {
-		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
-	}
 	if e != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Bad Request"))
+	}
+	if data == nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
 	}
 	return c.JSON(http.StatusOK, response.SuccessResponseData("Success Operation", data))
 }
