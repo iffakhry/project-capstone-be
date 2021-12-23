@@ -17,17 +17,34 @@ type GroupResponseSuccess struct {
 }
 
 var (
+	mock_data_login_admin = models.Users{
+		Email:    "admin@admin.com",
+		Password: "admin123",
+	}
+	mock_data_login_user1 = models.Users{
+		Email:    "user1@mail.com",
+		Password: "user123",
+	}
+	mock_data_admin = models.Users{
+		Name:     "admin",
+		Email:    "admin@admin.com",
+		Password: "admin123",
+		Phone:    "+111111111111",
+		Role:     "admin",
+	}
 	mock_data_user1 = models.Users{
 		Name:     "user1",
 		Email:    "user1@mail.com",
 		Password: "user123",
-		Phone:    "+628257237462",
+		Phone:    "+628257237412",
+		Role:     "customer",
 	}
 	mock_data_user2 = models.Users{
 		Name:     "user2",
 		Email:    "user2@mail.com",
 		Password: "user123",
 		Phone:    "+628257327462",
+		Role:     "customer",
 	}
 	mock_data_product = models.Products{
 		Name_Product:   "Netflix",
@@ -57,6 +74,7 @@ var (
 )
 
 func InsertMockToDb() {
+	config.DB.Save(&mock_data_admin)
 	config.DB.Save(&mock_data_user1)
 	config.DB.Save(&mock_data_user2)
 	config.DB.Save(&mock_data_product)
