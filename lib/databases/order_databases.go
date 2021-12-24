@@ -25,7 +25,7 @@ func CreateOrder(Payment *models.ResPayment, Order *models.Order, id_group int) 
 
 func GetOrderByIdOrder(id int) (i interface{}, e error, id_user uint) {
 	order := models.GetOrder{}
-	query := config.DB.Table("orders").Select("*").Where("orders.deleted_at IS NULL AND orders.id = ? ", id).Find(&order)
+	query := config.DB.Table("orders").Select("*").Joins("join payments on orders.id = payments.order_id").Where("orders.deleted_at IS NULL AND orders.id = ? ", id).Find(&order)
 	if query.Error != nil || query.RowsAffected < 1 {
 		return nil, query.Error, 0
 	}
@@ -36,7 +36,7 @@ func GetOrderByIdOrder(id int) (i interface{}, e error, id_user uint) {
 
 func GetOrderByIdGroup(id int) (interface{}, error, int) {
 	order := []models.GetOrder{}
-	query := config.DB.Table("orders").Select("*").Where("orders.deleted_at IS NULL AND orders.group_product_id = ? ", id).Find(&order)
+	query := config.DB.Table("orders").Select("*").Joins("join payments on orders.id = payments.order_id").Where("orders.deleted_at IS NULL AND orders.group_product_id = ? ", id).Find(&order)
 	if query.Error != nil || query.RowsAffected < 1 {
 		return nil, query.Error, 0
 	}
@@ -49,7 +49,7 @@ func GetOrderByIdGroup(id int) (interface{}, error, int) {
 }
 func GetOrderByIdUser(id int) (i interface{}, e error) {
 	order := []models.GetOrder{}
-	query := config.DB.Table("orders").Select("*").Where("orders.deleted_at IS NULL AND orders.users_id = ? ", id).Find(&order)
+	query := config.DB.Table("orders").Select("*").Joins("join payments on orders.id = payments.order_id").Where("orders.deleted_at IS NULL AND orders.users_id = ? ", id).Find(&order)
 	if query.Error != nil || query.RowsAffected < 1 {
 		return nil, query.Error
 	}

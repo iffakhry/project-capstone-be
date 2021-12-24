@@ -39,6 +39,9 @@ type GetOrder struct {
 	GroupProductID uint
 	NameProduct    string
 	PriceOrder     int
+	EwalletType    string
+	ExternalId     string
+	Created        string
 	Email          string
 	Password       string
 }
