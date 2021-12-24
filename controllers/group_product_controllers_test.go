@@ -58,8 +58,15 @@ var (
 		Limit:          5,
 		Photo:          "netflix.jpg",
 	}
+	mock_data_product2 = models.Products{
+		Name_Product:   "",
+		Detail_Product: "lorem",
+		Price:          0,
+		Limit:          5,
+		Photo:          "netflix.jpg",
+	}
 	mock_data_group = models.GroupProduct{
-		UsersID:              1,
+		UsersID:              2,
 		ProductsID:           1,
 		NameGroupProduct:     "netflix-1",
 		CapacityGroupProduct: 1,
@@ -68,7 +75,7 @@ var (
 		Status:               "Available",
 	}
 	mock_data_group2 = models.GroupProduct{
-		UsersID:              2,
+		UsersID:              3,
 		ProductsID:           1,
 		NameGroupProduct:     "netflix-2",
 		CapacityGroupProduct: 1,
@@ -124,36 +131,39 @@ func UsingJWTUser() (string, error) {
 	return token, nil
 }
 
-func TesCreateGroupControllerSuccess(t *testing.T) {
+func TestCreateGroupControllerSuccess(t *testing.T) {
 	var testCases = struct {
 		name       string
 		path       string
 		expectCode int
 	}{
 		name:       "Success Operation",
-		path:       "/orders/:id_group",
+		path:       "/products/group/:id_products",
 		expectCode: http.StatusOK,
 	}
 
 	e := InitEcho()
 	// Mendapatkan token
-	token, err := UsingJWTAdmin()
+	token, err := UsingJWTUser()
 	if err != nil {
 		panic(err)
 	}
 
-	InsertMockToDb()
+	// InsertMockToDb()
+	config.DB.Save(&mock_data_user1)
+	config.DB.Save(&mock_data_product)
+	config.DB.Save(&mock_data_group)
 
-	req := httptest.NewRequest(http.MethodDelete, testCases.path, nil)
+	req := httptest.NewRequest(http.MethodPost, testCases.path, nil)
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	req.Header.Set(echo.HeaderAuthorization, fmt.Sprintf("Bearer %v", token))
 	res := httptest.NewRecorder()
 	context := e.NewContext(req, res)
 	context.SetPath(testCases.path)
-	context.SetParamNames("id_group")
+	context.SetParamNames("id_products")
 	context.SetParamValues("1")
 
-	middleware.JWT([]byte(constants.SECRET_JWT))(DeleteGroupProductControllersTesting())(context)
+	middleware.JWT([]byte(constants.SECRET_JWT))(CreateGroupProductControllersTesting())(context)
 
 	body := res.Body.String()
 	var responses GroupResponseSuccess
@@ -163,6 +173,128 @@ func TesCreateGroupControllerSuccess(t *testing.T) {
 	}
 	assert.Equal(t, testCases.expectCode, res.Code)
 	assert.Equal(t, testCases.name, responses.Message)
+}
+
+func TestCreateGroupControllerFailed(t *testing.T) {
+	var testCases = struct {
+		name       string
+		path       string
+		expectCode int
+	}{
+		name:       "",
+		path:       "/products/group/:id_products",
+		expectCode: http.StatusBadRequest,
+	}
+
+	e := InitEcho()
+	// Mendapatkan token
+	token, err := UsingJWTUser()
+	if err != nil {
+		panic(err)
+	}
+
+	InsertMockToDb()
+
+	t.Run("tescase_create_access_forbidden", func(t *testing.T) {
+		testCases.name = "Access Forbidden"
+		token_user, err := UsingJWTAdmin()
+		if err != nil {
+			panic(err)
+		}
+
+		req := httptest.NewRequest(http.MethodPost, testCases.path, nil)
+		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+		req.Header.Set(echo.HeaderAuthorization, fmt.Sprintf("Bearer %v", token_user))
+		res := httptest.NewRecorder()
+		context := e.NewContext(req, res)
+		context.SetPath(testCases.path)
+		context.SetParamNames("id_products")
+		context.SetParamValues("1")
+
+		middleware.JWT([]byte(constants.SECRET_JWT))(CreateGroupProductControllersTesting())(context)
+
+		body := res.Body.String()
+		var responses GroupResponseSuccess
+		err = json.Unmarshal([]byte(body), &responses)
+		if err != nil {
+			assert.Error(t, err, "error")
+		}
+		assert.Equal(t, testCases.expectCode, res.Code)
+		assert.Equal(t, testCases.name, responses.Message)
+	})
+	t.Run("tescase_create_invalid_id", func(t *testing.T) {
+		testCases.name = "Invalid Id"
+
+		req := httptest.NewRequest(http.MethodPost, testCases.path, nil)
+		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+		req.Header.Set(echo.HeaderAuthorization, fmt.Sprintf("Bearer %v", token))
+		res := httptest.NewRecorder()
+		context := e.NewContext(req, res)
+		context.SetPath(testCases.path)
+		context.SetParamNames("id_products")
+		context.SetParamValues("e")
+
+		middleware.JWT([]byte(constants.SECRET_JWT))(CreateGroupProductControllersTesting())(context)
+
+		body := res.Body.String()
+		var responses GroupResponseSuccess
+		err = json.Unmarshal([]byte(body), &responses)
+		if err != nil {
+			assert.Error(t, err, "error")
+		}
+		assert.Equal(t, testCases.expectCode, res.Code)
+		assert.Equal(t, testCases.name, responses.Message)
+	})
+	t.Run("tescase_create_data_not_found", func(t *testing.T) {
+		testCases.name = "Id Product Not Found"
+		config.DB.Save(&mock_data_product2)
+		// config.DB.Save(models.GroupProduct{})
+		// config.DB.Migrator().DropTable(models.Products{})
+		req := httptest.NewRequest(http.MethodPost, testCases.path, nil)
+		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+		req.Header.Set(echo.HeaderAuthorization, fmt.Sprintf("Bearer %v", token))
+		res := httptest.NewRecorder()
+		context := e.NewContext(req, res)
+		context.SetPath(testCases.path)
+		context.SetParamNames("id_products")
+		context.SetParamValues("2")
+
+		middleware.JWT([]byte(constants.SECRET_JWT))(CreateGroupProductControllersTesting())(context)
+
+		body := res.Body.String()
+		var responses GroupResponseSuccess
+		err = json.Unmarshal([]byte(body), &responses)
+		if err != nil {
+			assert.Error(t, err, "error")
+		}
+		assert.Equal(t, testCases.expectCode, res.Code)
+		assert.Equal(t, testCases.name, responses.Message)
+	})
+	t.Run("tescase_create_bad_request", func(t *testing.T) {
+		testCases.name = "Bad Request"
+
+		config.DB.Migrator().DropTable(models.GroupProduct{})
+
+		req := httptest.NewRequest(http.MethodPost, testCases.path, nil)
+		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+		req.Header.Set(echo.HeaderAuthorization, fmt.Sprintf("Bearer %v", token))
+		res := httptest.NewRecorder()
+		context := e.NewContext(req, res)
+		context.SetPath(testCases.path)
+		context.SetParamNames("id_products")
+		context.SetParamValues("1")
+
+		middleware.JWT([]byte(constants.SECRET_JWT))(CreateGroupProductControllersTesting())(context)
+
+		body := res.Body.String()
+		var responses GroupResponseSuccess
+		err = json.Unmarshal([]byte(body), &responses)
+		if err != nil {
+			assert.Error(t, err, "error")
+		}
+		assert.Equal(t, testCases.expectCode, res.Code)
+		assert.Equal(t, testCases.name, responses.Message)
+	})
 
 }
 
@@ -648,6 +780,7 @@ func TestDeleteGroupControllerSuccess(t *testing.T) {
 	}
 
 	InsertMockToDb()
+	config.DB.Migrator().DropTable(models.Order{})
 
 	req := httptest.NewRequest(http.MethodDelete, testCases.path, nil)
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)

@@ -137,3 +137,6 @@ func DeleteGroupProductControllers(c echo.Context) error {
 func DeleteGroupProductControllersTesting() echo.HandlerFunc {
 	return DeleteGroupProductControllers
 }
+func CreateGroupProductControllersTesting() echo.HandlerFunc {
+	return CreateGroupProductControllers
+}
