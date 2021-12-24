@@ -119,11 +119,11 @@ func CreateProductControllers(c echo.Context) error {
 // controller untuk menampilkan seluruh data product
 func GetAllProductControllers(c echo.Context) error {
 	product, err := databases.GetAllProduct()
-	if product == nil {
-		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
-	}
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Bad Request"))
+	}
+	if product == nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
 	}
 	return c.JSON(http.StatusOK, response.SuccessResponseData("Success Operation", product))
 }
@@ -135,11 +135,11 @@ func GetProductByIdControllers(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Id"))
 	}
 	product, e := databases.GetProductById(id)
-	if product == nil {
-		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
-	}
 	if e != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Bad Request"))
+	}
+	if product == nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
 	}
 	return c.JSON(http.StatusOK, response.SuccessResponseData("Success Operation", product))
 }
@@ -160,7 +160,7 @@ func UpdateProductControllers(c echo.Context) error {
 	}
 	update_product := models.Products{}
 	c.Bind(&update_product)
-
+	update_product.UsersID = uint(id)
 	bucket := "barengin-bucket"
 
 	ctx := appengine.NewContext(c.Request())
@@ -227,15 +227,7 @@ func UpdateProductControllers(c echo.Context) error {
 		Url:            update_product.Url,
 	}
 	err = v.Struct(validasi_product)
-	if err == nil {
-		id_user_token, role := middlewares.ExtractTokenId(c)
-		update_product.UsersID = uint(id_user_token)
-		if role != "admin" {
-			return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
-		}
-		// log.Println("role", role)
-		_, err = databases.UpdateProduct(id, &update_product)
-	}
+	_, err = databases.UpdateProduct(id, &update_product)
 	if err != nil {
 		// log.Println("error", err)
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Bad Request"))
