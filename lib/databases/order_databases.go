@@ -121,7 +121,7 @@ func PaymentXendit(id_order uint, phone string, amount int) (interface{}, error)
 		ExternalId:  resp.ExternalID,
 		Amount:      resp.Amount,
 		BusinessId:  resp.BusinessID,
-		Created:     resp.Created.Format("02-01-2006"),
+		Created:     t.Format("02-01-2006"),
 	}
 
 	if err := config.DB.Create(&res_pay).Error; err != nil {
