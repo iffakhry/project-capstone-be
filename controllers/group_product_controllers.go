@@ -133,3 +133,7 @@ func DeleteGroupProductControllers(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, response.SuccessResponseNonData("Success Operation"))
 }
+
+func DeleteGroupProductControllersTesting() echo.HandlerFunc {
+	return DeleteGroupProductControllers
+}
