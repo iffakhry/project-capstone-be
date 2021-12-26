@@ -22,11 +22,11 @@ func GetAllUsersControllers(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
 	}
 	users, err := databases.GetAllUsers()
-	if users == nil {
-		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
-	}
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Bad Request"))
+	}
+	if users == nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
 	}
 	return c.JSON(http.StatusOK, response.SuccessResponseData("Success Operation", users))
 }
@@ -43,12 +43,13 @@ func GetUserControllers(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Id"))
 	}
 	user, e := databases.GetUserById(conv_id)
-	if user == nil {
-		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
-	}
 	if e != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Bad Request"))
 	}
+	if user == nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
+	}
+
 	return c.JSON(http.StatusOK, response.SuccessResponseData("Success Operation", user))
 }
 
@@ -175,7 +176,7 @@ func LoginUserControllers(c echo.Context) error {
 	user := models.Users{}
 	c.Bind(&user)
 	plan_pass := user.Password
-	log.Println(plan_pass)
+	log.Println("password login", plan_pass)
 	token, e := databases.LoginUser(plan_pass, &user)
 	if e != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Email or Password Incorrect"))
@@ -186,6 +187,11 @@ func LoginUserControllers(c echo.Context) error {
 // controller untuk kebutuhan testing get user
 func GetUserControllersTesting() echo.HandlerFunc {
 	return GetUserControllers
+}
+
+// controller untuk kebutuhan testing get user
+func GetAllUsersControllersTesting() echo.HandlerFunc {
+	return GetAllUsersControllers
 }
 
 // controller untuk kebutuhan testing update user

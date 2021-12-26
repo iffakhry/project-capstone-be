@@ -31,8 +31,8 @@ func GetUserById(id int) (interface{}, error) {
 }
 
 // function database untuk menambahkan user baru (registrasi)
-func CreateUser(user *models.Users) (interface{}, error) {
-	if err := config.DB.Create(&user).Error; err != nil {
+func CreateUser(users *models.Users) (interface{}, error) {
+	if err := config.DB.Create(&users).Error; err != nil {
 		return nil, err
 	}
 	return user, nil
