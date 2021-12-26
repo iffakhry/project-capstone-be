@@ -114,7 +114,7 @@ func DeleteUserControllers(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access is denied ID data is in the group product"))
 	}
 	order, _ := databases.GetOrderByIdUser(id)
-	if order == nil {
+	if order != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access is denied ID data is in the order"))
 	}
 	user, _ := databases.GetUserById(id)
