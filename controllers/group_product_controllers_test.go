@@ -20,6 +20,10 @@ type GroupResponseSuccess struct {
 	Message string
 	Data    []models.GroupProduct
 }
+type OrderResponseSuccess struct {
+	Message string
+	Data    models.Payment
+}
 
 var (
 	mock_data_login_admin = models.Users{
@@ -86,6 +90,18 @@ var (
 	mock_data_order = models.Order{
 		UsersID:        1,
 		GroupProductID: 1,
+		PriceOrder:     45000,
+	}
+	mock_data_order2 = models.Order{
+		UsersID:        1,
+		GroupProductID: 3,
+		PriceOrder:     45000,
+	}
+	mock_data_xendit = models.Payment{
+		OrderID:     1,
+		Amount:      45000,
+		EwalletType: "OVO",
+		ExternalId:  "1982773",
 	}
 )
 
@@ -96,6 +112,7 @@ func InsertMockToDb() {
 	config.DB.Save(&mock_data_product)
 	config.DB.Save(&mock_data_group)
 	config.DB.Save(&mock_data_group2)
+	config.DB.Save(&mock_data_xendit)
 	config.DB.Save(&mock_data_order)
 }
 

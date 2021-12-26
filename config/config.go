@@ -55,14 +55,14 @@ func InitDBTest() {
 }
 
 func InitMigrateTest() {
-	DB.Migrator().DropTable(&models.Users{})
-	DB.Migrator().DropTable(&models.GroupProduct{})
-	DB.Migrator().DropTable(&models.Products{})
 	DB.Migrator().DropTable(&models.Payment{})
 	DB.Migrator().DropTable(&models.Order{})
+	DB.Migrator().DropTable(&models.GroupProduct{})
+	DB.Migrator().DropTable(&models.Products{})
+	DB.Migrator().DropTable(&models.Users{})
 	DB.AutoMigrate(&models.Users{})
 	DB.AutoMigrate(&models.GroupProduct{})
 	DB.AutoMigrate(&models.Products{})
-	DB.AutoMigrate(&models.Payment{})
 	DB.AutoMigrate(&models.Order{})
+	DB.AutoMigrate(&models.Payment{})
 }
