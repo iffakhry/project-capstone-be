@@ -107,7 +107,7 @@ func DeleteUserControllers(c echo.Context) error {
 	}
 	product, _ := databases.GetProductByIdUser(id)
 	if product != nil {
-		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access is denied ID data is in the users"))
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access is denied ID data is in the product"))
 	}
 	group_product, _ := databases.GetGroupProductByIdUser(id)
 	if group_product != nil {
