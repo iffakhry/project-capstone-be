@@ -96,7 +96,8 @@ func PaymentXendit(id_order uint, phone string, amount int) (interface{}, error)
 
 	xendit.Opt.SecretKey = os.Getenv("KEY_XENDIT")
 
-	t := time.Now()
+	location, _ := time.LoadLocation("Asia/Jakarta")
+	t := time.Now().In(location)
 	formatted := fmt.Sprintf("%d%02d%02d%02d%02d%02d",
 		t.Year(), t.Month(), t.Day(),
 		t.Hour(), t.Minute(), t.Second())
