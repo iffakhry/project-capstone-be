@@ -49,6 +49,9 @@ func CreateOrderControllers(c echo.Context) error {
 	}
 	if !regexp.MustCompile(`^08[1-9][0-9].*$`).MatchString(new_payment.Phone) {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Telephone Number"))
+	}
+	if status != "Available" {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Group Product Full"))
 	} else {
 
 		data, err := databases.CreateOrder(&new_payment, &new_order, id_group)
@@ -59,9 +62,7 @@ func CreateOrderControllers(c echo.Context) error {
 		if data == nil || t_price == 0 {
 			return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Id Group Product Not Found"))
 		}
-		if status != "Available" {
-			return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Group Product Full"))
-		}
+
 		return c.JSON(http.StatusOK, response.SuccessResponseData("Success Operation", data))
 	}
 }
