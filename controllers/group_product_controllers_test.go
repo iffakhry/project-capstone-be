@@ -87,16 +87,13 @@ var (
 		TotalPrice:           250000,
 		Status:               "Available",
 	}
+
 	mock_data_order = models.Order{
 		UsersID:        1,
 		GroupProductID: 1,
 		PriceOrder:     45000,
 	}
-	mock_data_order2 = models.Order{
-		UsersID:        1,
-		GroupProductID: 3,
-		PriceOrder:     45000,
-	}
+
 	mock_data_xendit = models.Payment{
 		OrderID:     1,
 		Amount:      45000,

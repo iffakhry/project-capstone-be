@@ -31,7 +31,83 @@ var (
 	mock_data_payment_salah = models.ResPayment{
 		Phone: "12563722343",
 	}
+	mock_data_group3 = models.GroupProduct{
+		UsersID:              2,
+		ProductsID:           1,
+		NameGroupProduct:     "netflix-2",
+		CapacityGroupProduct: 1,
+		AdminFee:             5000,
+		TotalPrice:           1,
+		Status:               "Full",
+	}
+	mock_data_order2 = models.Order{
+		UsersID:        1,
+		GroupProductID: 1,
+		PriceOrder:     45000,
+	}
+	mock_data_xendit2 = models.Payment{
+		OrderID:     1,
+		Amount:      0,
+		EwalletType: "OVO",
+		ExternalId:  "1982773",
+	}
 )
+
+func InsertMockToDbFailed() {
+	config.DB.Save(&mock_data_admin)
+	config.DB.Save(&mock_data_user1)
+	config.DB.Save(&mock_data_product2)
+	config.DB.Save(&mock_data_group3)
+	config.DB.Save(&mock_data_xendit2)
+	// config.DB.Save(&mock_data_order)
+}
+func TestCreateOrderControllerFailed2(t *testing.T) {
+	var testCases = struct {
+		name       string
+		path       string
+		expectCode int
+	}{
+		name:       "",
+		path:       "/orders/:id_group",
+		expectCode: http.StatusBadRequest,
+	}
+	e := InitEcho()
+	// Mendapatkan token
+	token, err := UsingJWTUser()
+	if err != nil {
+		panic(err)
+	}
+	InsertMockToDbFailed()
+	// config.DB.Migrator().DropTable(models.Order{})
+
+	t.Run("Id Group Product Not Found", func(t *testing.T) {
+		testCases.name = "Group Product Full"
+		body, error := json.Marshal(mock_data_payment)
+		if error != nil {
+			t.Error(t, error, "error marshal")
+		}
+		req := httptest.NewRequest(http.MethodPost, testCases.path, bytes.NewBuffer(body))
+		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+		req.Header.Set(echo.HeaderAuthorization, fmt.Sprintf("Bearer %v", token))
+		res := httptest.NewRecorder()
+		context := e.NewContext(req, res)
+		context.SetPath(testCases.path)
+		context.SetParamNames("id_group")
+		context.SetParamValues("3")
+
+		middleware.JWT([]byte(constants.SECRET_JWT))(CreateOrderControllersTesting())(context)
+
+		body_res := res.Body.String()
+		var responses GroupResponseSuccess
+		err = json.Unmarshal([]byte(body_res), &responses)
+		if err != nil {
+			assert.Error(t, err, "error")
+		}
+		assert.Equal(t, testCases.expectCode, res.Code)
+		assert.Equal(t, testCases.name, responses.Message)
+
+	})
+}
 
 func TestCreateOrderControllerFailed(t *testing.T) {
 	var testCases = struct {
@@ -50,7 +126,6 @@ func TestCreateOrderControllerFailed(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-
 	InsertMockToDb()
 	// config.DB.Migrator().DropTable(models.Order{})
 	t.Run("access_forbidden", func(t *testing.T) {
@@ -210,35 +285,4 @@ func TestCreateOrderControllerFailed(t *testing.T) {
 		assert.Equal(t, testCases.name, responses.Message)
 
 	})
-	// t.Run("Id Group Product Not Found", func(t *testing.T) {
-	// 	testCases.name = "Id Group Product Not Found"
-	// 	config.DB.Save(&mock_data_product2)
-	// 	config.DB.Save(&mock_data_group2)
-	// 	body, error := json.Marshal(mock_data_payment)
-	// 	if error != nil {
-	// 		t.Error(t, error, "error marshal")
-	// 	}
-	// 	// config.DB.Migrator().DropTable(models.Order{})
-	// 	req := httptest.NewRequest(http.MethodPost, testCases.path, bytes.NewBuffer(body))
-	// 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-	// 	req.Header.Set(echo.HeaderAuthorization, fmt.Sprintf("Bearer %v", token))
-	// 	res := httptest.NewRecorder()
-	// 	context := e.NewContext(req, res)
-	// 	context.SetPath(testCases.path)
-	// 	context.SetParamNames("id_group")
-	// 	context.SetParamValues("2")
-
-	// 	middleware.JWT([]byte(constants.SECRET_JWT))(CreateOrderControllersTesting())(context)
-
-	// 	body_res := res.Body.String()
-	// 	var responses GroupResponseSuccess
-	// 	err = json.Unmarshal([]byte(body_res), &responses)
-	// 	if err != nil {
-	// 		assert.Error(t, err, "error")
-	// 	}
-	// 	assert.Equal(t, testCases.expectCode, res.Code)
-	// 	assert.Equal(t, testCases.name, responses.Message)
-
-	// })
-
 }
