@@ -143,7 +143,7 @@ export KEY_XENDIT = "[xendit_key]"
 ## Contact
 
 Project Link : [https://github.com/project-capstone](https://github.com/project-capstone)<br/>
-Open API Documentation : [https://app.swaggerhub.com/apis-docs/supriadi15001/final-project_alta_barengin/1.0#/](https://github.com/project-capstone)&nbsp;
+Open API Documentation : [https://app.swaggerhub.com/apis-docs/supriadi15001/final-project_alta_barengin/1.0#/](https://app.swaggerhub.com/apis-docs/supriadi15001/final-project_alta_barengin/1.0)&nbsp;
 <!-- :heart: -->
 <!-- CONTRIBUTOR -->
 Contributor :
