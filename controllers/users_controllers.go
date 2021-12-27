@@ -22,11 +22,11 @@ func GetAllUsersControllers(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
 	}
 	users, err := databases.GetAllUsers()
-	if users == nil {
-		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
-	}
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Bad Request"))
+	}
+	if users == nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
 	}
 	return c.JSON(http.StatusOK, response.SuccessResponseData("Success Operation", users))
 }
@@ -43,11 +43,11 @@ func GetUserControllers(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Id"))
 	}
 	user, e := databases.GetUserById(conv_id)
-	if user == nil {
-		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
-	}
 	if e != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Bad Request"))
+	}
+	if user == nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
 	}
 	return c.JSON(http.StatusOK, response.SuccessResponseData("Success Operation", user))
 }
@@ -107,16 +107,9 @@ func DeleteUserControllers(c echo.Context) error {
 	}
 	product, _ := databases.GetProductByIdUser(id)
 	if product != nil {
-		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access is denied ID data is in the users"))
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access is denied ID data is in the product"))
 	}
-	group_product, _ := databases.GetGroupProductByIdUser(id)
-	if group_product != nil {
-		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access is denied ID data is in the group product"))
-	}
-	order, _ := databases.GetOrderByIdUser(id)
-	if order == nil {
-		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access is denied ID data is in the order"))
-	}
+
 	user, _ := databases.GetUserById(id)
 	if user == nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
@@ -166,11 +159,6 @@ func UpdateUserControllers(c echo.Context) error {
 	if er != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Telephone Number"))
 	}
-	if users.Email == "admin@admin.com" {
-		users.Role = "admin"
-	} else {
-		users.Role = "customer"
-	}
 	if er == nil {
 		users.Password, _ = helper.HashPassword(users.Password) // generate plan password menjadi hash
 		_, er = databases.UpdateUser(id, &users)
@@ -197,6 +185,10 @@ func LoginUserControllers(c echo.Context) error {
 // controller untuk kebutuhan testing get user
 func GetUserControllersTesting() echo.HandlerFunc {
 	return GetUserControllers
+}
+
+func GetAllUsersControllersTesting() echo.HandlerFunc {
+	return GetAllUsersControllers
 }
 
 // controller untuk kebutuhan testing update user

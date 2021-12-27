@@ -34,6 +34,10 @@ var (
 		Email:    "user1@mail.com",
 		Password: "user123",
 	}
+	mock_data_login_user2 = models.Users{
+		Email:    "user2@mail.com",
+		Password: "user123",
+	}
 	mock_data_admin = models.Users{
 		Name:     "admin",
 		Email:    "admin@admin.com",
@@ -79,7 +83,7 @@ var (
 		Status:               "Available",
 	}
 	mock_data_group2 = models.GroupProduct{
-		UsersID:              3,
+		UsersID:              2,
 		ProductsID:           1,
 		NameGroupProduct:     "netflix-2",
 		CapacityGroupProduct: 1,
@@ -89,7 +93,7 @@ var (
 	}
 
 	mock_data_order = models.Order{
-		UsersID:        1,
+		UsersID:        2,
 		GroupProductID: 1,
 		PriceOrder:     45000,
 	}
@@ -134,6 +138,21 @@ func UsingJWTUser() (string, error) {
 	InsertMockToDb()
 	var user models.Users
 	tx := config.DB.Where("email = ? AND password = ?", mock_data_login_user1.Email, mock_data_login_user1.Password).First(&user)
+	if tx.Error != nil {
+		return "", tx.Error
+	}
+	// Mengektraksi token data user test
+	token, err := middlewares.CreateToken(int(user.ID), user.Role)
+	if err != nil {
+		return "", err
+	}
+	return token, nil
+}
+func UsingJWTUser2() (string, error) {
+	// Melakukan login data user test
+	InsertMockToDb()
+	var user models.Users
+	tx := config.DB.Where("email = ? AND password = ?", mock_data_login_user2.Email, mock_data_login_user2.Password).First(&user)
 	if tx.Error != nil {
 		return "", tx.Error
 	}

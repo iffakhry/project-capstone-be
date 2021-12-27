@@ -76,9 +76,6 @@ func GetOrderByIdOrderControllers(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Id"))
 	}
-	if data == nil {
-		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
-	}
 	if e != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Bad Request"))
 	}
@@ -99,15 +96,13 @@ func GetOrderByIdGroupControllers(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Id"))
 	}
-	if data == nil {
-		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
-	}
 	if e != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Bad Request"))
 	}
 	if data == nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
 	}
+
 	return c.JSON(http.StatusOK, response.SuccessResponseData("Success Operation", data))
 }
 
@@ -121,9 +116,6 @@ func GetOrderByIdUsersControllers(c echo.Context) error {
 	}
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Id"))
-	}
-	if data == nil {
-		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
 	}
 	if e != nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Bad Request"))
@@ -157,22 +149,22 @@ func UpdateOrderControllers(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Invalid Password"))
 	}
 
+	data, e := databases.UpdateOrderDetail(id_order, detail.Email, detail.Password)
+	if e != nil {
+		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Bad Request"))
+	}
 	cek, _, _ := databases.GetOrderByIdOrder(id_order)
 	if cek == nil {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Data Not Found"))
 	}
 
-	data, e := databases.UpdateOrderDetail(id_order, detail.Email, detail.Password)
-	if e != nil {
-		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Bad Request"))
-	}
 	return c.JSON(http.StatusOK, response.SuccessResponseData("Success Operation", data))
 }
 
 func DeleteOrderControllers(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id_order"))
-	logged, role := middlewares.ExtractTokenId(c) // check token
-	if logged != id && role != "admin" {
+	_, role := middlewares.ExtractTokenId(c) // check token
+	if role != "admin" {
 		return c.JSON(http.StatusBadRequest, response.BadRequestResponse("Access Forbidden"))
 	}
 	if err != nil {
@@ -189,4 +181,20 @@ func DeleteOrderControllers(c echo.Context) error {
 
 func CreateOrderControllersTesting() echo.HandlerFunc {
 	return CreateOrderControllers
+}
+func GetOrderByIdOrderControllersTesting() echo.HandlerFunc {
+	return GetOrderByIdOrderControllers
+}
+func GetOrderByIdGroupControllersTesting() echo.HandlerFunc {
+	return GetOrderByIdGroupControllers
+}
+func GetOrderByIdUsersControllersTesting() echo.HandlerFunc {
+	return GetOrderByIdUsersControllers
+}
+func UpdateOrderControllersTesting() echo.HandlerFunc {
+	return UpdateOrderControllers
+}
+
+func DeleteOrderControllerTesting() echo.HandlerFunc {
+	return DeleteOrderControllers
 }
