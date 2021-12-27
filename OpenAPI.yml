@@ -71,7 +71,7 @@ paths:
         '200':
           $ref: '#/components/responses/getAllUsersSuccess'
         '400':
-          $ref: '#/components/responses/getAllDataFailed'
+          $ref: '#/components/responses/getAllUsersFailed'
   /jwt/users/{id}:
     get:
       tags:
@@ -85,7 +85,7 @@ paths:
         '200':
           $ref: '#/components/responses/getUserSuccess'
         '400':
-          $ref: '#/components/responses/getDataByIdFailed'
+          $ref: '#/components/responses/getUserByIdFailed'
     put:
       tags:
         - Users
@@ -113,7 +113,7 @@ paths:
         '200':
           $ref: '#/components/responses/successOperationNonData'
         '400':
-          $ref: '#/components/responses/deleteDataByIdFailed'
+          $ref: '#/components/responses/deleteUserFailed'
 ####################################
 #  PRODUCTS
 ####################################
@@ -185,7 +185,7 @@ paths:
         '200':
           $ref: '#/components/responses/successOperationNonData'
         '400':
-          $ref: '#/components/responses/deleteDataByIdFailed'
+          $ref: '#/components/responses/deleteProductFailed'
 ####################################
 #  GROUP PRODUCTS
 ####################################
@@ -353,7 +353,7 @@ paths:
         '200':
             $ref: '#/components/responses/successOperationNonData'
         '400':
-            $ref: '#/components/responses/deleteDataByIdFailed'
+            $ref: '#/components/responses/deleteOrderFailed'
 ####################################
 #  COMPONENTS
 ####################################
@@ -719,6 +719,12 @@ components:
               type: string
             PriceOrder:
               type: integer
+            EwalletType: 
+              type: string
+            ExternalId:  
+              type: string
+            Created: 
+              type: string
             Email:
               type: string
             Password:
@@ -745,6 +751,12 @@ components:
                 type: string
               PriceOrder:
                 type: integer
+              EwalletType: 
+                type: string
+              ExternalId:  
+                type: string
+              Created: 
+                type: string
               Email:
                 type: string
               Password:
@@ -960,7 +972,7 @@ components:
           examples:
             Invalid Name:
               $ref: '#/components/examples/invalidName'
-            Name alphanumeric:
+            Name Contain Non-Alphanumeric:
               $ref: '#/components/examples/nameAlphanumeric'
             Invalid Email:
               $ref: '#/components/examples/invalidEmail'
@@ -1001,13 +1013,15 @@ components:
               }
             ]
             Message: Success Operation
-    getAllDataFailed:
+    getAllUsersFailed:
       description: Bad Request Response
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/responseNonData'
           examples:
+            Access Forbidden:
+                $ref: '#/components/examples/accessForbidden'
             Data Not Found:
               $ref: '#/components/examples/dataNotFound'
             Bad Request:
@@ -1027,13 +1041,15 @@ components:
               Phone: "+6281111222333"  
             }
             Message: Success Operation
-    getDataByIdFailed:
+    getUserByIdFailed:
       description: Bad Request Response
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/responseNonData'
           examples:
+            Access Forbidden:
+                $ref: '#/components/examples/accessForbidden'
             Invalid Id:
               $ref: '#/components/examples/invalidId'
             Data Not Found:
@@ -1047,14 +1063,16 @@ components:
           schema:
             $ref: '#/components/schemas/responseNonData'
           examples:
+            Access Forbidden:
+                $ref: '#/components/examples/accessForbidden'
             Invalid Id:
               $ref: '#/components/examples/invalidId'
             Data Not Found:
               $ref: '#/components/examples/dataNotFound'
-            Access Forbidden:
-                $ref: '#/components/examples/accessForbidden'
             Invalid Name:
               $ref: '#/components/examples/invalidName'
+            Name Contain Non-Alphanumeric:
+              $ref: '#/components/examples/nameAlphanumeric'
             Invalid Email:
               $ref: '#/components/examples/invalidEmail'
             Invalid Password:
@@ -1065,7 +1083,7 @@ components:
               $ref: '#/components/examples/invalidTelephoneNumber'
             Email or Telephone Number Already Exist:
               $ref: '#/components/examples/emailOrTelephoneNumberAlreadyExist'
-    deleteDataByIdFailed:
+    deleteUserFailed:
       description: Bad Request Response
       content:
         application/json:
@@ -1076,6 +1094,12 @@ components:
                 $ref: '#/components/examples/accessForbidden'
             Invalid Id:
               $ref: '#/components/examples/invalidId'
+            Id In The Product:
+              $ref: '#/components/examples/idInTheProduct'
+            Id In The Group Product:
+              $ref: '#/components/examples/idInTheGroup'
+            Id In The Order:
+              $ref: '#/components/examples/idInTheOrder'
             Data Not Found:
               $ref: '#/components/examples/dataNotFound'
     createProductFailed:
@@ -1117,8 +1141,8 @@ components:
             Data: [
               { 
                 ID: 3,
-                NameProduct: Youtube-Music,
-                DetailProduct: Lorem,
+                Name_Product: Youtube-Music,
+                Detail_Product: Lorem,
                 Price: 300000,
                 Limit: 6,
                 Photo: Youtube-Music-2021-12-13T10:06:45.jpg,
@@ -1126,8 +1150,8 @@ components:
               },
               { 
                 ID: 4,
-                NameProduct: Youtube Premium,
-                DetailProduct: Berlangganan 1 bulan,
+                Name_Product: Youtube Premium,
+                Detail_Product: Berlangganan 1 bulan,
                 Price: 200000,
                 Limit: 4,
                 Photo: Youtube-Premium-2021-12-14T09:34:47.png,
@@ -1135,6 +1159,17 @@ components:
               }
             ]
             Message: Success Operation
+    getAllDataFailed:
+      description: Bad Request Response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/responseNonData'
+          examples:
+            Bad Request:
+              $ref: '#/components/examples/badRequest'
+            Data Not Found:
+              $ref: '#/components/examples/dataNotFound'
     getProductSuccess:
       description: Success Response Data
       content:
@@ -1145,15 +1180,15 @@ components:
             Code: 200
             Data: { 
               ID: 3,
-                NameProduct: Youtube-Music,
-                DetailProduct: Lorem,
-                Price: 300000,
-                Limit: 6,
-                Photo: Youtube-Music-2021-12-13T10:06:45.jpg,
-                Url: https://storage.googleapis.com/barengin-bucket/Youtube-Music-2021-12-13T10:06:45.jpg
+              Name_Product: Youtube-Music,
+              Detail_Product: Lorem,
+              Price: 300000,
+              Limit: 6,
+              Photo: Youtube-Music-2021-12-13T10:06:45.jpg,
+              Url: https://storage.googleapis.com/barengin-bucket/Youtube-Music-2021-12-13T10:06:45.jpg
             }
             Message: Success Operation
-    updateProductFailed:
+    getDataByIdFailed:
       description: Bad Request Response
       content:
         application/json:
@@ -1162,18 +1197,46 @@ components:
           examples:
             Invalid Id:
               $ref: '#/components/examples/invalidId'
+            Bad Request:
+              $ref: '#/components/examples/badRequest' 
             Data Not Found:
               $ref: '#/components/examples/dataNotFound'
+    updateProductFailed:
+      description: Bad Request Response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/responseNonData'
+          examples:
             Access Forbidden:
               $ref: '#/components/examples/accessForbidden'
-            Bad Request:
-              $ref: '#/components/examples/badRequest'
+            Invalid Id:
+              $ref: '#/components/examples/invalidId'
+            Data Not Found:
+              $ref: '#/components/examples/dataNotFound'
             File Extension Not Allowed:
               $ref: '#/components/examples/fileExtensionNotAllowed'
             Illegal File:
               $ref: '#/components/examples/illegalFile'
             Size File Too Big:
               $ref: '#/components/examples/sizeFileTooBig'
+            Bad Request:
+              $ref: '#/components/examples/badRequest'
+    deleteProductFailed:
+      description: Bad Request Response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/responseNonData'
+          examples:
+            Access Forbidden:
+                $ref: '#/components/examples/accessForbidden'
+            Invalid Id:
+              $ref: '#/components/examples/invalidId'
+            Id In The Group Product:
+              $ref: '#/components/examples/idInTheGroup'
+            Data Not Found:
+              $ref: '#/components/examples/dataNotFound'
     createGroupProductSuccess:
       description: Success Operation
       content:
@@ -1193,10 +1256,10 @@ components:
           schema:
             $ref: '#/components/schemas/responseNonData'
           examples:
-            Invalid Param:
-              $ref: '#/components/examples/invalidParam'
             Access Forbidden:
               $ref: '#/components/examples/accessForbidden'
+            Invalid Param:
+              $ref: '#/components/examples/invalidParam'
             Bad Request:
               $ref: '#/components/examples/badRequest'
             Id Product Not Found: 
@@ -1302,10 +1365,10 @@ components:
           examples:
             Access Forbidden:
               $ref: '#/components/examples/accessForbidden'
-            Access is denied:
-              $ref: '#/components/examples/accessIsDenied'
             Invalid Id:  
               $ref: '#/components/examples/invalidId'
+            Id In The Order:
+              $ref: '#/components/examples/idInTheOrder'
             Data Not Found:
               $ref: '#/components/examples/dataNotFound'
     createOrderSuccess:
@@ -1332,18 +1395,18 @@ components:
           schema:
             $ref: '#/components/schemas/responseNonData'
           examples:
-            Invalid Param:
-              $ref: '#/components/examples/invalidParam'
-            Bad Request:
-              $ref: '#/components/examples/badRequest'
             Access Forbidden:
               $ref: '#/components/examples/accessForbidden'
+            Invalid Id:
+              $ref: '#/components/examples/invalidId'
             Invalid Telephone Number:
               $ref: '#/components/examples/invalidTelephoneNumber'
-            Id Group Product Not Found:
-              $ref: '#/components/examples/idGroupProductNotFound'
             Group Product Full:
               $ref: '#/components/examples/groupProductFull'
+            Bad Request:
+              $ref: '#/components/examples/badRequest'
+            Id Group Product Not Found:
+              $ref: '#/components/examples/idGroupProductNotFound'
     getOrderSuccess:
       description: Success Operation
       content:
@@ -1358,6 +1421,9 @@ components:
               GroupProductID: 1,
               NameProduct: Netflix,
               PriceOrder: 1254,
+              EwalletType: OVO,
+              ExternalId: OVO-ewallet-20211224135436,
+              Created: 24-12-2021,
               Email: " ",
               Password: " "
             }
@@ -1369,10 +1435,10 @@ components:
           schema:
             $ref: '#/components/schemas/responseNonData'
           examples:
-            Invalid Id:
-              $ref: '#/components/examples/invalidId'
             Access Forbidden:
               $ref: '#/components/examples/dataNotFound'
+            Invalid Id:
+              $ref: '#/components/examples/invalidId'
             Data Not Found:
               $ref: '#/components/examples/dataNotFound'
             Bad Request:
@@ -1392,6 +1458,9 @@ components:
                 GroupProductID: 1,
                 NameProduct: Netflix,
                 PriceOrder: 1254,
+                EwalletType: OVO,
+                ExternalId: OVO-ewallet-20211224135455,
+                Created: 21-12-2021,
                 Email: " ",
                 Password: " "
               },
@@ -1401,6 +1470,9 @@ components:
                 GroupProductID: 1,
                 NameProduct: Netfllix,
                 PriceOrder: 1254,
+                EwalletType: OVO,
+                ExternalId: OVO-ewallet-20211224135436,
+                Created: 24-12-2021,
                 Email: " ",
                 Password: " "
               }          
@@ -1421,7 +1493,10 @@ components:
                 GroupProductID: 1,
                 NameProduct: Netflix,
                 PriceOrder: 1254,
-                Email: " ",
+                EwalletType: OVO,
+                ExternalId: OVO-ewallet-20211224135436,
+                Created: 20-12-2021,
+                Email: "",
                 Password: " "
               },
               {
@@ -1430,6 +1505,9 @@ components:
                 GroupProductID: 2,
                 NameProduct: Spotify,
                 PriceOrder: 1500,
+                EwalletType: OVO,
+                ExternalId: OVO-ewallet-20211224135436,
+                Created: 24-12-2021,
                 Email: " ",
                 Password: " "
               }
@@ -1449,6 +1527,9 @@ components:
               GroupProductID: 1,
               NameProduct: Netflix,
               PriceOrder: 1254,
+              EwalletType: OVO,
+              ExternalId: OVO-ewallet-20211224135436,
+              Created: 24-12-2021,
               Email: "netflix@gmail.com",
               Password: "netflix123"
             }
@@ -1460,21 +1541,32 @@ components:
           schema:
             $ref: '#/components/schemas/responseNonData'
           examples:
-            Details Can't Be Empty:
-              $ref: '#/components/examples/detailsCantBeEmpty'
-            Invalid Id:
-              $ref: '#/components/examples/invalidId'
             Access Forbidden:
               $ref: '#/components/examples/dataNotFound'
+            Invalid Id:
+              $ref: '#/components/examples/invalidId'
+            Invalid Email:
+              $ref: '#/components/examples/invalidEmail'
+            Invalid Password:
+              $ref: '#/components/examples/invalidPassword'
             Data Not Found:
               $ref: '#/components/examples/dataNotFound'
             Bad Request:
               $ref: '#/components/examples/badRequest'
+    deleteOrderFailed:
+      description: Bad Request Response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/responseNonData'
+          examples:
+            Access Forbidden:
+                $ref: '#/components/examples/accessForbidden'
+            Invalid Id:
+              $ref: '#/components/examples/invalidId'
+            Data Not Found:
+              $ref: '#/components/examples/dataNotFound'
   examples:
-    accessIsDenied:
-      value:
-        Code: 400
-        Message: Access is denied ID data is in the orderInvalid Id
     accessForbidden:
       value:
         Code: 400
@@ -1495,10 +1587,6 @@ components:
       value:
         Code: 400
         Message: Data Not Found
-    detailsCantBeEmpty:
-      value:
-        Code: 400
-        Message: Details Can't Be Empty
     emailOrTelephoneNumberAlreadyExist:
       value: 
         Code: 400
@@ -1515,6 +1603,18 @@ components:
       value:
         Code: 400
         Message: Group Product Full
+    idInTheGroup:
+      value:
+        Code: 400
+        Message: Access is denied ID data is the group product
+    idInTheOrder:
+      value:
+        Code: 400
+        Message: Access is denied ID data is in the order
+    idInTheProduct:
+      value:
+        Code: 400
+        Message: Access is denied ID data is in the product
     idGroupProductNotFound:
       value:
         Code: 400
