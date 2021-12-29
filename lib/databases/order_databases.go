@@ -5,7 +5,6 @@ import (
 	"final-project/models"
 	"fmt"
 	"log"
-	"os"
 	"time"
 
 	"github.com/xendit/xendit-go"
@@ -94,7 +93,7 @@ func UpdateOrderDetail(id_order int, email, password string) (interface{}, error
 
 func PaymentXendit(id_order uint, phone string, amount int) (interface{}, error) {
 
-	xendit.Opt.SecretKey = os.Getenv("KEY_XENDIT")
+	xendit.Opt.SecretKey = "xnd_development_tH4wHTHz86d18y4bJ3t4Dw3i0DH6EtIhQq1sD9N8X0wV9br57kuTctFTlpFQtS"
 
 	t := time.Now()
 	formatted := fmt.Sprintf("%d%02d%02d%02d%02d%02d",

@@ -48,6 +48,11 @@ var (
 	}
 )
 
+type OrderResponse struct {
+	Message string
+	Data    models.Order
+}
+
 func InsertMockToDbFailed() {
 	config.DB.Save(&mock_data_admin)
 	config.DB.Save(&mock_data_user1)
@@ -55,6 +60,106 @@ func InsertMockToDbFailed() {
 	config.DB.Save(&mock_data_group3)
 	config.DB.Save(&mock_data_xendit2)
 	// config.DB.Save(&mock_data_order)
+}
+
+func TestCreateOrderControllerSuccess(t *testing.T) {
+	var testCases = struct {
+		name       string
+		path       string
+		expectCode int
+	}{
+		name:       "Success Operation",
+		path:       "/orders/:id_group",
+		expectCode: http.StatusOK,
+	}
+	e := InitEcho()
+	// Mendapatkan token
+	token, err := UsingJWTUser()
+	if err != nil {
+		panic(err)
+	}
+	config.InitMigrateTest()
+
+	// InsertMockToDbFailed()
+	// config.DB.Migrator().DropTable(models.Order{})
+	config.DB.Save(&mock_data_user1)
+	config.DB.Save(&mock_data_user2)
+	config.DB.Save(&mock_data_product)
+	config.DB.Save(&mock_data_group)
+	// config.DB.Save(&mock_data_order)
+	// config.DB.Save(&mock_data_xendit)
+
+	body, error := json.Marshal(mock_data_payment)
+	if error != nil {
+		t.Error(t, error, "error marshal")
+	}
+	req := httptest.NewRequest(http.MethodPost, testCases.path, bytes.NewBuffer(body))
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	req.Header.Set(echo.HeaderAuthorization, fmt.Sprintf("Bearer %v", token))
+	res := httptest.NewRecorder()
+	context := e.NewContext(req, res)
+	context.SetPath(testCases.path)
+	context.SetParamNames("id_group")
+	context.SetParamValues("1")
+
+	middleware.JWT([]byte(constants.SECRET_JWT))(CreateOrderControllersTesting())(context)
+
+	body_res := res.Body.String()
+	fmt.Println("body", body_res)
+	var responses GroupResponseSuccess
+	err = json.Unmarshal([]byte(body_res), &responses)
+	if err != nil {
+		assert.Error(t, err, "error")
+	}
+	assert.Equal(t, testCases.expectCode, res.Code)
+	assert.Equal(t, testCases.name, responses.Message)
+
+}
+func TestCreateOrderControllerFailed3(t *testing.T) {
+	var testCases = struct {
+		name       string
+		path       string
+		expectCode int
+	}{
+		name:       "",
+		path:       "/orders/:id_group",
+		expectCode: http.StatusBadRequest,
+	}
+	e := InitEcho()
+	// Mendapatkan token
+	token, err := UsingJWTUser()
+	if err != nil {
+		panic(err)
+	}
+	// InsertMockToDbFailed()
+	// config.DB.Migrator().DropTable(models.Order{})
+
+	testCases.name = "Id Group Product Not Found"
+	body, error := json.Marshal(mock_data_payment)
+	if error != nil {
+		t.Error(t, error, "error marshal")
+	}
+	req := httptest.NewRequest(http.MethodPost, testCases.path, bytes.NewBuffer(body))
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	req.Header.Set(echo.HeaderAuthorization, fmt.Sprintf("Bearer %v", token))
+	res := httptest.NewRecorder()
+	context := e.NewContext(req, res)
+	context.SetPath(testCases.path)
+	context.SetParamNames("id_group")
+	context.SetParamValues("5")
+
+	middleware.JWT([]byte(constants.SECRET_JWT))(CreateOrderControllersTesting())(context)
+
+	body_res := res.Body.String()
+	fmt.Println("body", body_res)
+	var responses GroupResponseSuccess
+	err = json.Unmarshal([]byte(body_res), &responses)
+	if err != nil {
+		assert.Error(t, err, "error")
+	}
+	assert.Equal(t, testCases.expectCode, res.Code)
+	assert.Equal(t, testCases.name, responses.Message)
+
 }
 func TestCreateOrderControllerFailed2(t *testing.T) {
 	var testCases = struct {

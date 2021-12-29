@@ -22,7 +22,7 @@ type GroupResponseSuccess struct {
 }
 type OrderResponseSuccess struct {
 	Message string
-	Data    models.Payment
+	Data    []models.Payment
 }
 
 var (
@@ -64,6 +64,7 @@ var (
 		Detail_Product: "lorem",
 		Price:          200000,
 		Limit:          5,
+		UsersID:        1,
 		Photo:          "netflix.jpg",
 	}
 	mock_data_product2 = models.Products{
@@ -71,6 +72,7 @@ var (
 		Detail_Product: "lorem",
 		Price:          0,
 		Limit:          5,
+		UsersID:        1,
 		Photo:          "netflix.jpg",
 	}
 	mock_data_group = models.GroupProduct{
@@ -103,6 +105,8 @@ var (
 		Amount:      45000,
 		EwalletType: "OVO",
 		ExternalId:  "1982773",
+		BusinessId:  "123124wqdd13",
+		Created:     "2021-12-30",
 	}
 )
 
@@ -113,7 +117,7 @@ func InsertMockToDb() {
 	config.DB.Save(&mock_data_product)
 	config.DB.Save(&mock_data_group)
 	config.DB.Save(&mock_data_group2)
-	config.DB.Save(&mock_data_xendit)
+	// config.DB.Save(&mock_data_xendit)
 	config.DB.Save(&mock_data_order)
 }
 
